@@ -112,7 +112,7 @@ func processDynamoDB(rootedResources map[string]bool) {
 			//fmt.Printf("skipping %v\n", *table)
 			continue
 		} else {
-			fmt.Println(*table)
+			fmt.Printf("\"%v\"\n", *table)
 		}
 	}
 }

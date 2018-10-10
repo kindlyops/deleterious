@@ -22,6 +22,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/kinesis"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/spf13/cobra"
 )
@@ -99,6 +100,8 @@ func orphaned(cmd *cobra.Command, args []string) {
 		processDynamoDB(rootedResources)
 	case Resource == "AWS::KMS::Key":
 		processKMS(rootedResources)
+	case Resource == "AWS::Kinesis::Stream":
+		processKinesis(rootedResources)
 	default:
 		fmt.Printf("%v is not yet supported", Resource)
 	}
@@ -109,6 +112,43 @@ func getSession() *session.Session {
 		AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
 		SharedConfigState:       session.SharedConfigEnable,
 	}))
+}
+
+func processKinesis(rootedResources map[string]bool) {
+	svc := kinesis.New(getSession())
+
+	var startStream *string
+	for ok := true; ok; ok = (startStream != nil) {
+		streams, err := svc.ListStreams(&kinesis.ListStreamsInput{
+			ExclusiveStartStreamName: startStream,
+			Limit:                    aws.Int64(50),
+		})
+		if err != nil {
+			fmt.Printf("Error listing Kinesis Streams: %v\n", err)
+		} else {
+			if *streams.HasMoreStreams {
+				if Debug {
+					fmt.Printf("Has more streams, setting startStream\n")
+				}
+				startStream = streams.StreamNames[len(streams.StreamNames)-1]
+			} else {
+				startStream = nil
+			}
+		}
+		for _, stream := range streams.StreamNames {
+			if Debug {
+				fmt.Printf("Processing %v\n", *stream)
+			}
+			if _, ok := rootedResources[*stream]; ok {
+				// this stream is owned by a cloudformation stack, skip it
+				if Debug {
+					fmt.Printf("Stream %v is owned by a cloudformation stack, skipping\n", *stream)
+				}
+			} else {
+				fmt.Printf("\"%v\"\n", *stream)
+			}
+		}
+	}
 }
 
 func processKMS(rootedResources map[string]bool) {

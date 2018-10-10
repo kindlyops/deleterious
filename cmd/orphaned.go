@@ -22,6 +22,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/spf13/cobra"
 )
 
@@ -67,11 +68,14 @@ func orphaned(cmd *cobra.Command, args []string) {
 	if err != nil {
 		fmt.Printf("Error listing stacks: %v", err)
 	}
+
+	// TODO handle paginated results with NextToken
+	// stacks.NextToken
 	//fmt.Printf("Got %v results\n", len(stacks.StackSummaries))
 	rootedResources := make(map[string]bool)
 
 	for _, stack := range stacks.StackSummaries {
-		//fmt.Printf("Processing %v\n", *stack.StackName)
+		// fmt.Printf("Processing %v\n", *stack.StackName)
 		resources, err := svc.ListStackResources(&cloudformation.ListStackResourcesInput{
 			StackName: stack.StackName,
 		})
@@ -81,8 +85,9 @@ func orphaned(cmd *cobra.Command, args []string) {
 		}
 		for _, resource := range resources.StackResourceSummaries {
 			if *resource.ResourceType == Resource {
-				//fmt.Printf("Found resource %v : %v\n", *resource.LogicalResourceId, *resource.ResourceType)
+				// fmt.Printf("Found resource %v : %v\n", *resource.PhysicalResourceId, *resource.ResourceType)
 				rootedResources[*resource.PhysicalResourceId] = true
+
 			}
 		}
 	}
@@ -90,21 +95,48 @@ func orphaned(cmd *cobra.Command, args []string) {
 	switch {
 	case Resource == "AWS::DynamoDB::Table":
 		processDynamoDB(rootedResources)
+	case Resource == "AWS::KMS::Key":
+		processKMS(rootedResources)
 	default:
 		fmt.Printf("%v is not yet supported", Resource)
 	}
 }
 
+func getSession() *session.Session {
+	return session.Must(session.NewSessionWithOptions(session.Options{
+		AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
+		SharedConfigState:       session.SharedConfigEnable,
+	}))
+}
+
+func processKMS(rootedResources map[string]bool) {
+	svc := kms.New(getSession())
+
+	keys, err := svc.ListKeys(&kms.ListKeysInput{})
+	if err != nil {
+		fmt.Printf("Error listing KMS keys: %v\n", err)
+	}
+
+	for _, key := range keys.Keys {
+		//fmt.Printf("Found key %v\n", *key.KeyId)
+		if _, ok := rootedResources[*key.KeyId]; ok {
+			// this key is owned by a cloudformation stack, skip it
+		} else {
+			fmt.Printf("\"%v\"\n", *key.KeyId)
+		}
+	}
+}
+
 func processDynamoDB(rootedResources map[string]bool) {
-	svc := dynamodb.New(
-		session.Must(session.NewSessionWithOptions(session.Options{
-			AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
-			SharedConfigState:       session.SharedConfigEnable,
-		})))
+	svc := dynamodb.New(getSession())
 	tables, err := svc.ListTables(&dynamodb.ListTablesInput{})
 	if err != nil {
 		fmt.Printf("Error listing DynamoDB tables: %v\n", err)
 	}
+
+	// TODO: handle paginated results with NextToken
+	//tables.NextToken
+
 	//fmt.Printf("Processing %v tables, %v will be excluded\n", len(tables.TableNames), len(rootedResources))
 	for _, table := range tables.TableNames {
 		if _, ok := rootedResources[*table]; ok {

@@ -36,11 +36,7 @@ var orphanedCmd = &cobra.Command{
 
 func orphaned(cmd *cobra.Command, args []string) {
 
-	svc := cloudformation.New(
-		session.Must(session.NewSessionWithOptions(session.Options{
-			AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
-			SharedConfigState:       session.SharedConfigEnable,
-		})))
+	svc := cloudformation.New(getSession())
 
 	states := []*string{
 		aws.String("CREATE_IN_PROGRESS"),
@@ -62,32 +58,34 @@ func orphaned(cmd *cobra.Command, args []string) {
 		aws.String("REVIEW_IN_PROGRESS"),
 	}
 
-	stacks, err := svc.ListStacks(&cloudformation.ListStacksInput{
-		StackStatusFilter: states,
-	})
-	if err != nil {
-		fmt.Printf("Error listing stacks: %v", err)
-	}
-
-	// TODO handle paginated results with NextToken
-	// stacks.NextToken
-	//fmt.Printf("Got %v results\n", len(stacks.StackSummaries))
 	rootedResources := make(map[string]bool)
-
-	for _, stack := range stacks.StackSummaries {
-		// fmt.Printf("Processing %v\n", *stack.StackName)
-		resources, err := svc.ListStackResources(&cloudformation.ListStackResourcesInput{
-			StackName: stack.StackName,
+	var token *string
+	for ok := true; ok; ok = (token != nil) {
+		stacks, err := svc.ListStacks(&cloudformation.ListStacksInput{
+			NextToken:         token,
+			StackStatusFilter: states,
 		})
 		if err != nil {
-			fmt.Printf("Error processing %v\n", *stack.StackName)
-			continue
+			fmt.Printf("Error listing stacks: %v", err)
+		} else {
+			token = stacks.NextToken
 		}
-		for _, resource := range resources.StackResourceSummaries {
-			if *resource.ResourceType == Resource {
-				// fmt.Printf("Found resource %v : %v\n", *resource.PhysicalResourceId, *resource.ResourceType)
-				rootedResources[*resource.PhysicalResourceId] = true
 
+		for _, stack := range stacks.StackSummaries {
+			// fmt.Printf("Processing %v\n", *stack.StackName)
+			resources, err := svc.ListStackResources(&cloudformation.ListStackResourcesInput{
+				StackName: stack.StackName,
+			})
+			if err != nil {
+				fmt.Printf("Error processing %v\n", *stack.StackName)
+				continue
+			}
+			for _, resource := range resources.StackResourceSummaries {
+				if *resource.ResourceType == Resource {
+					// fmt.Printf("Found resource %v : %v\n", *resource.PhysicalResourceId, *resource.ResourceType)
+					rootedResources[*resource.PhysicalResourceId] = true
+
+				}
 			}
 		}
 	}
@@ -112,39 +110,51 @@ func getSession() *session.Session {
 func processKMS(rootedResources map[string]bool) {
 	svc := kms.New(getSession())
 
-	keys, err := svc.ListKeys(&kms.ListKeysInput{})
-	if err != nil {
-		fmt.Printf("Error listing KMS keys: %v\n", err)
-	}
-
-	for _, key := range keys.Keys {
-		//fmt.Printf("Found key %v\n", *key.KeyId)
-		if _, ok := rootedResources[*key.KeyId]; ok {
-			// this key is owned by a cloudformation stack, skip it
+	var marker *string
+	for ok := true; ok; ok = (marker != nil) {
+		keys, err := svc.ListKeys(&kms.ListKeysInput{
+			Marker: marker,
+		})
+		if err != nil {
+			fmt.Printf("Error listing KMS keys: %v\n", err)
 		} else {
-			fmt.Printf("\"%v\"\n", *key.KeyId)
+			marker = keys.NextMarker
+		}
+
+		for _, key := range keys.Keys {
+			//fmt.Printf("Found key %v\n", *key.KeyId)
+			if _, ok := rootedResources[*key.KeyId]; ok {
+				// this key is owned by a cloudformation stack, skip it
+			} else {
+				fmt.Printf("\"%v\"\n", *key.KeyId)
+			}
 		}
 	}
 }
 
 func processDynamoDB(rootedResources map[string]bool) {
 	svc := dynamodb.New(getSession())
-	tables, err := svc.ListTables(&dynamodb.ListTablesInput{})
-	if err != nil {
-		fmt.Printf("Error listing DynamoDB tables: %v\n", err)
-	}
 
-	// TODO: handle paginated results with NextToken
-	//tables.NextToken
-
-	//fmt.Printf("Processing %v tables, %v will be excluded\n", len(tables.TableNames), len(rootedResources))
-	for _, table := range tables.TableNames {
-		if _, ok := rootedResources[*table]; ok {
-			// this table table belongs to a cloudformation stack, skip it
-			//fmt.Printf("skipping %v\n", *table)
-			continue
+	var lastTable *string
+	for ok := true; ok; ok = (lastTable != nil) {
+		tables, err := svc.ListTables(&dynamodb.ListTablesInput{
+			ExclusiveStartTableName: lastTable,
+		})
+		if err != nil {
+			fmt.Printf("Error listing DynamoDB tables: %v\n", err)
 		} else {
-			fmt.Printf("\"%v\"\n", *table)
+			lastTable = tables.LastEvaluatedTableName
+		}
+
+		//fmt.Printf("Processing %v tables, %v will be excluded\n", len(tables.TableNames), len(rootedResources))
+		for _, table := range tables.TableNames {
+			if _, ok := rootedResources[*table]; ok {
+				// this table table belongs to a cloudformation stack, skip it
+				//fmt.Printf("skipping %v\n", *table)
+				continue
+			} else {
+				fmt.Printf("\"%v\"\n", *table)
+			}
 		}
 	}
 }

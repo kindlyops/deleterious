@@ -72,7 +72,9 @@ func orphaned(cmd *cobra.Command, args []string) {
 		}
 
 		for _, stack := range stacks.StackSummaries {
-			// fmt.Printf("Processing %v\n", *stack.StackName)
+			if Debug {
+				fmt.Printf("Processing %v\n", *stack.StackName)
+			}
 			resources, err := svc.ListStackResources(&cloudformation.ListStackResourcesInput{
 				StackName: stack.StackName,
 			})
@@ -82,7 +84,9 @@ func orphaned(cmd *cobra.Command, args []string) {
 			}
 			for _, resource := range resources.StackResourceSummaries {
 				if *resource.ResourceType == Resource {
-					// fmt.Printf("Found resource %v : %v\n", *resource.PhysicalResourceId, *resource.ResourceType)
+					if Debug {
+						fmt.Printf("Found rooted resource %v : %v\n", *resource.PhysicalResourceId, *resource.ResourceType)
+					}
 					rootedResources[*resource.PhysicalResourceId] = true
 
 				}
@@ -122,7 +126,6 @@ func processKMS(rootedResources map[string]bool) {
 		}
 
 		for _, key := range keys.Keys {
-			//fmt.Printf("Found key %v\n", *key.KeyId)
 			if _, ok := rootedResources[*key.KeyId]; ok {
 				// this key is owned by a cloudformation stack, skip it
 			} else {

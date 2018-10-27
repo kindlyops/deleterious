@@ -169,7 +169,29 @@ func processKMS(rootedResources map[string]bool) {
 			if _, ok := rootedResources[*key.KeyId]; ok {
 				// this key is owned by a cloudformation stack, skip it
 			} else {
-				fmt.Printf("\"%v\"\n", *key.KeyId)
+				metadata, err := svc.DescribeKey(&kms.DescribeKeyInput{
+					KeyId: key.KeyId,
+				})
+				if err != nil {
+					// There are some strange key IDs that are returned by
+					// ListKeys but that were never successfully created.
+					// These keys don't exist, and if we can't DescribeKey,
+					// treat it as not existing. If you are running with
+					// reduced permissions you could also hit the same permission
+					// denied error. but this is still the best indicator that
+					// we have that a key is not there.
+					continue
+				}
+				mgr := metadata.KeyMetadata.KeyManager
+				if *mgr == "AWS" {
+					// don't mess with AWS managed keys
+					continue
+				}
+				state := metadata.KeyMetadata.KeyState
+				if *state == "Enabled" {
+					// candidate for cleanup
+					fmt.Printf("\"%v\"\n", *key.KeyId)
+				}
 			}
 		}
 	}

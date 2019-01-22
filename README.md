@@ -1,7 +1,10 @@
 # deleterious
-cleans up AWS resources
+Helps you clean up AWS resources. This is handy when
+retention policies on CloudFormation stacks leave lots
+of orphaned AWS resources around costing money.
 
-## Example of deleting s3 buckets
+
+## Example of deleting DynamoDB tables
 
 Once deleterious gives you a list of things to delete, and
 you have manually confirmed they are ok to delete, you

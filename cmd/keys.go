@@ -15,7 +15,9 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
@@ -24,9 +26,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// ExtendedAccessKeyMetadata extends the key metadata struct
+type ExtendedAccessKeyMetadata struct {
+	AccessKeyID string
+	CreateDate  *time.Time
+	Status      string
+	UserName    string
+	Arn         string
+	Age         int
+}
+
 // lastUsedCmd represents the lastUsed command
 var lastUsedCmd = &cobra.Command{
-	Use:   "usedkeys",
+	Use:   "apikeys",
 	Short: "Find keys based on window of time in days.",
 	Long:  `Finds all keys used given a window of time in days.`,
 	Run:   lastUsed,
@@ -35,8 +47,7 @@ var lastUsedCmd = &cobra.Command{
 func lastUsed(cmd *cobra.Command, args []string) {
 
 	svc := iam.New(getIamSession())
-	listOfKeys := []iam.AccessKeyMetadata{}
-	fmt.Printf("Checking for last used keys within %v days...\n", Days)
+	listOfKeys := []ExtendedAccessKeyMetadata{}
 	// TODO add pagination
 	var maxItems int64 = 999
 	users, err := svc.ListUsers(&iam.ListUsersInput{
@@ -69,15 +80,31 @@ func lastUsed(cmd *cobra.Command, args []string) {
 			if err != nil {
 				fmt.Println("Error parsing the time.")
 			}
+			newKey := ExtendedAccessKeyMetadata{
+				AccessKeyID: *key.AccessKeyId,
+				CreateDate:  key.CreateDate,
+				Status:      *key.Status,
+				UserName:    *key.UserName,
+				Age:         int(time.Since(*key.CreateDate).Hours() / 24),
+				Arn:         *user.Arn,
+			}
 			// dateTest is a bool which is true if the last used is after the marker time.
 			dateTest := lastUsedDate.After(dateMarkerTime)
-			if dateTest {
-				listOfKeys = append(listOfKeys, *key)
-				fmt.Printf("Key found that has been used within %d days!\n", Days)
-				fmt.Printf("%+v\n", key)
+			// if Used = false we want to know what keys have not been used within x days.
+			if !Used {
+				if !dateTest {
+					listOfKeys = append(listOfKeys, newKey)
+				}
+			} else {
+				if dateTest {
+					listOfKeys = append(listOfKeys, newKey)
+				}
 			}
+
 		}
 	}
+	output, err := json.MarshalIndent(listOfKeys, "", "  ")
+	fmt.Fprintf(os.Stdout, "%s", output)
 }
 
 func getIamSession() *session.Session {
@@ -89,6 +116,9 @@ func getIamSession() *session.Session {
 
 // Days holds the amount of days to search for.
 var Days int
+
+// Used is a bool to invert the search if needed.
+var Used bool
 
 func init() {
 	rootCmd.AddCommand(lastUsedCmd)
@@ -103,5 +133,6 @@ func init() {
 	// is called directly, e.g.:
 
 	lastUsedCmd.Flags().IntVar(&Days, "days", 30, "How many days to search for.")
+	lastUsedCmd.Flags().BoolVar(&Used, "used", false, "Display only used keys in the last X days. (Defaults to false.)")
 
 }

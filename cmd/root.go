@@ -24,6 +24,8 @@ import (
 )
 
 var cfgFile string
+
+// Debug controls whether or not debug messages should be printed
 var Debug bool
 
 // rootCmd represents the base command when called without any subcommands

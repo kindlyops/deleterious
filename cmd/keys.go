@@ -30,6 +30,7 @@ import (
 type ExtendedAccessKeyMetadata struct {
 	AccessKeyID string
 	CreateDate  *time.Time
+	LastUsed    *time.Time
 	Status      string
 	UserName    string
 	Arn         string
@@ -83,6 +84,7 @@ func lastUsed(cmd *cobra.Command, args []string) {
 			newKey := ExtendedAccessKeyMetadata{
 				AccessKeyID: *key.AccessKeyId,
 				CreateDate:  key.CreateDate,
+				LastUsed:    lastUsedDate,
 				Status:      *key.Status,
 				UserName:    *key.UserName,
 				Age:         int(time.Since(*key.CreateDate).Hours() / 24),

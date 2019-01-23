@@ -3,6 +3,11 @@ Helps you clean up AWS resources. This is handy when
 retention policies on CloudFormation stacks leave lots
 of orphaned AWS resources around costing money.
 
+## installation
+
+    go get github.com/kindlyops/deleterious
+    deleterious help
+
 
 ## Example of deleting DynamoDB tables
 

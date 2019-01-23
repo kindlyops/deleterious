@@ -91,7 +91,16 @@ func lastUsed(cmd *cobra.Command, args []string) {
 				Arn:         *user.Arn,
 			}
 			// dateTest is a bool which is true if the last used is after the marker time.
-			dateTest := lastUsedDate.After(dateMarkerTime)
+			if Debug {
+				fmt.Printf("lastUsed %v\n", lastUsedDate)
+			}
+
+			dateTest := false
+			// sometimes keys have never been used
+			if lastUsedDate != nil {
+				dateTest = lastUsedDate.After(dateMarkerTime)
+			}
+
 			// if Used = false we want to know what keys have not been used within x days.
 			if Used == dateTest {
 				listOfKeys = append(listOfKeys, newKey)

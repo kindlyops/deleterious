@@ -20,6 +20,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
@@ -28,13 +29,14 @@ import (
 
 // ExtendedAccessKeyMetadata extends the key metadata struct
 type ExtendedAccessKeyMetadata struct {
-	AccessKeyID string
-	CreateDate  *time.Time
-	LastUsed    *time.Time
-	Status      string
-	UserName    string
-	Arn         string
-	Age         int
+	AccessKeyID    string
+	CreateDate     *time.Time
+	LastUsed       *time.Time
+	Status         string
+	UserName       string
+	Arn            string
+	Age            int
+	ConsoleEnabled bool
 }
 
 // lastUsedCmd represents the lastUsed command
@@ -58,6 +60,26 @@ func lastUsed(cmd *cobra.Command, args []string) {
 		fmt.Printf("Error listing users: %v", err)
 	}
 	for _, user := range users.Users {
+		consoleEnabled := true
+		_, err := svc.GetLoginProfile(&iam.GetLoginProfileInput{
+			UserName: user.UserName,
+		})
+		if err != nil {
+			if aerr, ok := err.(awserr.Error); ok {
+				switch aerr.Code() {
+				case iam.ErrCodeNoSuchEntityException:
+					// console access is disabled by removing the login profile
+					consoleEnabled = false
+				default:
+					fmt.Printf("Error getting user login profile: %s", err.Error())
+					continue
+				}
+			}
+		}
+		if ConsoleOnly && (consoleEnabled == false) {
+			continue
+		}
+
 		keys, err := svc.ListAccessKeys(&iam.ListAccessKeysInput{
 			MaxItems: &maxItems,
 			UserName: user.UserName,
@@ -82,13 +104,14 @@ func lastUsed(cmd *cobra.Command, args []string) {
 				fmt.Println("Error parsing the time.")
 			}
 			newKey := ExtendedAccessKeyMetadata{
-				AccessKeyID: *key.AccessKeyId,
-				CreateDate:  key.CreateDate,
-				LastUsed:    lastUsedDate,
-				Status:      *key.Status,
-				UserName:    *key.UserName,
-				Age:         int(time.Since(*key.CreateDate).Hours() / 24),
-				Arn:         *user.Arn,
+				AccessKeyID:    *key.AccessKeyId,
+				CreateDate:     key.CreateDate,
+				LastUsed:       lastUsedDate,
+				Status:         *key.Status,
+				UserName:       *key.UserName,
+				Age:            int(time.Since(*key.CreateDate).Hours() / 24),
+				Arn:            *user.Arn,
+				ConsoleEnabled: consoleEnabled,
 			}
 			// dateTest is a bool which is true if the last used is after the marker time.
 			if Debug {
@@ -125,6 +148,10 @@ var Days int
 // Used is a bool to invert the search if needed.
 var Used bool
 
+// ConsoleOnly is a flag to indicate whether to filter out accounts that
+// do not have console access
+var ConsoleOnly bool
+
 func init() {
 	rootCmd.AddCommand(lastUsedCmd)
 
@@ -139,5 +166,6 @@ func init() {
 
 	lastUsedCmd.Flags().IntVar(&Days, "days", 30, "How many days to search for.")
 	lastUsedCmd.Flags().BoolVar(&Used, "used", false, "Display only used keys in the last X days. (Defaults to false.)")
+	lastUsedCmd.Flags().BoolVar(&ConsoleOnly, "consoleonly", false, "Display only accounts with console access enabled. (Defaults to false.)")
 
 }

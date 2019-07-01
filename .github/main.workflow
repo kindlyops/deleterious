@@ -9,7 +9,7 @@ action "is-tag" {
 }
 
 action "goreleaser" {
-  uses = "docker://kindlyops/deleterious"
+  uses = "kindlyops/deleterious@master"
   secrets = [
     "GITHUB_TOKEN",
   ]

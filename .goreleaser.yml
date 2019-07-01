@@ -14,7 +14,15 @@ brews:
 
     # Caveats for the user of your binary.
     # Default is empty.
-    caveats: "Verify resources before deleting."
+    caveats: |
+      Brought to you by
+      _  ___           _ _        ___
+      | |/ (_)_ __   __| | |_   _ / _ \ _ __  ___
+      | ' /| | '_ \ / _` | | | | | | | | '_ \/ __|
+      | . \| | | | | (_| | | |_| | |_| | |_) \__ \
+      |_|\_\_|_| |_|\__,_|_|\__, |\___/| .__/|___/
+                            |___/      |_|
+      use at your own risk.
 
     # Your app's homepage.
     # Default is empty.
@@ -22,7 +30,7 @@ brews:
 
     # Your app's description.
     # Default is empty.
-    description: "Deleterious helps delete resources from AWS accounts in order to reduce costs from unused items. Typically these are resources from cloudformation stacks that have a deletion policy set to retain, and iterting in a test account leaves behind many orphaned databases or other costly items."
+    description: "Deleterious helps find orphaned resources from AWS CloudFormation DeletionPolicy: Retain"
 
     # So you can `brew test` your formula.
     # Default is empty.

@@ -1,0 +1,36 @@
+# .goreleaser.yml
+brews:
+  -
+    # Repository to push the tap to.
+    github:
+      owner: kindlyops
+      name: homebrew-tap
+
+    # Git author used to commit to the repository.
+    # Defaults are shown.
+    commit_author:
+      name: support-kindlyops
+      email: support@kindlyops.com
+
+    # Caveats for the user of your binary.
+    # Default is empty.
+    caveats: "Verify resources before deleting."
+
+    # Your app's homepage.
+    # Default is empty.
+    homepage: "https://github.com/kindlyops/deleterious"
+
+    # Your app's description.
+    # Default is empty.
+    description: "Deleterious helps delete resources from AWS accounts in order to reduce costs from unused items. Typically these are resources from cloudformation stacks that have a deletion policy set to retain, and iterting in a test account leaves behind many orphaned databases or other costly items."
+
+    # So you can `brew test` your formula.
+    # Default is empty.
+    test: |
+      system "#{bin}/program --version"
+
+
+    # Custom install script for brew.
+    # Default is 'bin.install "program"'.
+    install: |
+      bin.install "program"

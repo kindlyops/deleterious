@@ -3,7 +3,11 @@ Helps you clean up AWS resources. This is handy when
 retention policies on CloudFormation stacks leave lots
 of orphaned AWS resources around costing money.
 
-## installation
+## installation for homebrew
+
+    brew tap kindlyops/tap && brew install kindlyops/tap/deleterious
+
+## installation from source
 
     go get github.com/kindlyops/deleterious
     deleterious help

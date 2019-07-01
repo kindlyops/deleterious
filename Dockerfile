@@ -24,6 +24,7 @@ COPY scripts/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENV GORELEASER_VERSION v0.111.0
+ENV CGO_ENABLED=0
 
 RUN wget https://github.com/goreleaser/goreleaser/releases/download/$GORELEASER_VERSION/goreleaser_Linux_x86_64.tar.gz \
     && tar -C /bin -xzvf goreleaser_Linux_x86_64.tar.gz \

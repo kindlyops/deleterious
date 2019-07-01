@@ -12,7 +12,6 @@ action "goreleaser" {
   uses = "docker://kindlyops/deleterious"
   secrets = [
     "GITHUB_TOKEN",
-    "GORELEASER_GITHUB_TOKEN",
   ]
   args = "release"
   needs = ["is-tag"]

@@ -15,14 +15,15 @@ brews:
     # Caveats for the user of your binary.
     # Default is empty.
     caveats: |
-      Brought to you by
-      _  ___           _ _        ___
-      | |/ (_)_ __   __| | |_   _ / _ \ _ __  ___
-      | ' /| | '_ \ / _` | | | | | | | | '_ \/ __|
-      | . \| | | | | (_| | | |_| | |_| | |_) \__ \
-      |_|\_\_|_| |_|\__,_|_|\__, |\___/| .__/|___/
-                            |___/      |_|
-      use at your own risk.
+Brought to you by
+
+_  ___           _ _        ___
+| |/ (_)_ __   __| | |_   _ / _ \ _ __  ___
+| ' /| | '_ \ / _` | | | | | | | | '_ \/ __|
+| . \| | | | | (_| | | |_| | |_| | |_) \__ \
+|_|\_\_|_| |_|\__,_|_|\__, |\___/| .__/|___/
+                      |___/      |_|
+use at your own risk.
 
     # Your app's homepage.
     # Default is empty.
@@ -35,10 +36,10 @@ brews:
     # So you can `brew test` your formula.
     # Default is empty.
     test: |
-      system "#{bin}/program --version"
+      system "#{bin}/deleterious --version"
 
 
     # Custom install script for brew.
     # Default is 'bin.install "program"'.
     install: |
-      bin.install "program"
+      bin.install "deleterious"

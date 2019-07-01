@@ -14,15 +14,16 @@ brews:
 
     # Caveats for the user of your binary.
     # Default is empty.
-    caveats: |
-Brought to you by
-_  ___           _ _        ___
-| |/ (_)_ __   __| | |_   _ / _ \ _ __  ___
-| ' /| | '_ \ / _` | | | | | | | | '_ \/ __|
-| . \| | | | | (_| | | |_| | |_| | |_) \__ \
-|_|\_\_|_| |_|\__,_|_|\__, |\___/| .__/|___/
-                      |___/      |_|
-use at your own risk.
+    caveats: |2
+      Brought to you by
+      
+      _  ___           _ _        ___
+      | |/ (_)_ __   __| | |_   _ / _ \ _ __  ___
+      | ' /| | '_ \ / _` | | | | | | | | '_ \/ __|
+      | . \| | | | | (_| | | |_| | |_| | |_) \__ \
+      |_|\_\_|_| |_|\__,_|_|\__, |\___/| .__/|___/
+                            |___/      |_|
+      use at your own risk.
 
     # Your app's homepage.
     # Default is empty.

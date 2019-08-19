@@ -31,3 +31,4 @@ for i in "${tables[@]}"; do
 	echo "deleting table: $i"
 	aws dynamodb delete-table --table-name "$i"
 done
+

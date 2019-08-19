@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-    - master
+    - releases/*
 
 name: Create Release
 jobs:
@@ -9,10 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: is-tag
-      uses: actions/bin/filter@master
-      with:
-        args: "tag v*"
     - name: goreleaser
       uses: kindlyops/deleterious@master
       env:

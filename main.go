@@ -17,5 +17,6 @@ package main
 import "github.com/kindlyops/deleterious/cmd"
 
 func main() {
+	foo := ""
 	cmd.Execute()
 }

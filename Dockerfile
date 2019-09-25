@@ -1,4 +1,4 @@
-FROM golang:1.12-alpine
+FROM golang:1.13-alpine
 
 LABEL "com.github.actions.name"="Deleterious CI Action"
 LABEL "com.github.actions.description"="Enables CI/CD for Deleterious project"
@@ -23,7 +23,7 @@ CMD [ "-h" ]
 COPY scripts/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-ENV GORELEASER_VERSION v0.111.0
+ENV GORELEASER_VERSION v0.118.1
 ENV CGO_ENABLED=0
 
 RUN wget https://github.com/goreleaser/goreleaser/releases/download/$GORELEASER_VERSION/goreleaser_Linux_x86_64.tar.gz \

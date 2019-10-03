@@ -1,7 +1,6 @@
 # .goreleaser.yml
 brews:
-  -
-    # Repository to push the tap to.
+  - # Repository to push the tap to.
     github:
       owner: kindlyops
       name: homebrew-tap
@@ -19,7 +18,7 @@ brews:
 
       _  ___           _ _        ___
       | |/ (_)_ __   __| | |_   _ / _ \\ _ __  ___
-      | ' /| | '_ \\ / _` | | | | | | | | '_ \\/ __|
+      | ' /| | '_ \\ / _| | | | | | | | | '_ \\/ __|
       | . \\| | | | | (_| | | |_| | |_| | |_) \__ \\
       |_|\\_\\_|_| |_|\\__,_|_|\\__, |\\___/| .__/|___/
                             |___/      |_|
@@ -37,7 +36,6 @@ brews:
     # Default is empty.
     test: |
       system "#{bin}/deleterious --version"
-
 
     # Custom install script for brew.
     # Default is 'bin.install "program"'.

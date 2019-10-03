@@ -23,6 +23,13 @@ import (
 	"github.com/spf13/viper"
 )
 
+// these are filled out as linker flags by goreleaser
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
+
 var cfgFile string
 
 // Debug controls whether or not debug messages should be printed
@@ -30,13 +37,23 @@ var Debug bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "deleterious",
-	Short: "Deletes stuff from AWS",
+	Version: version,
+	Use:     "deleterious",
+	Short:   "Deletes stuff from AWS",
 	Long: `Deleterious helps delete resources from AWS accounts
 in order to reduce costs from unused items. Typically these
 are resources from cloudformation stacks that have a deletion
 policy set to retain, and iterting in a test account leaves
 behind many orphaned databases or other costly items.
+Brought to you by
+
+_  ___           _ _        ___
+| |/ (_)_ __   __| | |_   _ / _ \ _ __  ___
+| ' /| | '_ \ / _| | | | | | | | | '_ \/ __|
+| . \| | | | | (_| | | |_| | |_| | |_) __ \
+|_|\_\_|_| |_|\__,_|_|\__, |\___/| .__/|___/
+                      |___/      |_|
+use at your own risk.
 `,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -46,6 +63,7 @@ behind many orphaned databases or other costly items.
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	rootCmd.SetVersionTemplate(fmt.Sprintf("%v, commit %v, built at %v\n", version, commit, date))
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

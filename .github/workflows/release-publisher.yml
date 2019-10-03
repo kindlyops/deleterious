@@ -8,10 +8,10 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@master
       - name: Set up Go
         uses: actions/setup-go@master
+      - name: Check out code
+        uses: actions/checkout@master
       - name: Run goreleaser
         uses: goreleaser/goreleaser-action@master
         env:

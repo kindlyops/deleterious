@@ -1,13 +1,14 @@
+name: GoReleaser
+
 on:
   push:
-    branches:
-      - "releases/**"
-name: GoReleaser
+    tags:
+      - v*
+
 jobs:
   release:
-    name: Release
+    name: Publish Release
     runs-on: ubuntu-latest
-    #needs: [ test ]
     steps:
       - name: Check out code
         uses: actions/checkout@master
@@ -17,4 +18,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
         with:
           args: release
-        if: success()

@@ -2,8 +2,8 @@ name: GoReleaser
 
 on:
   push:
-    branches:
-      - "releases/**"
+    tags:
+      - "v**"
 
 jobs:
   release:

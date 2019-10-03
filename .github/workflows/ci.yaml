@@ -28,10 +28,4 @@ jobs:
         run: go build -v .
       - name: Test
         run: |
-          go env
-          env | grep PATH
-          ls -lah
-          pwd
-          ls $HOME
-          ls $HOME/go/bin
-          $GOROOT/bin/gotestsum
+          $HOME/bin/gotestsum

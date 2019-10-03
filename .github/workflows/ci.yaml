@@ -3,10 +3,10 @@ name: CI
 on:
   pull_request:
     branches:
-    - master
+      - master
   push:
     branches:
-    - master
+      - master
 
 jobs:
   build:
@@ -23,7 +23,8 @@ jobs:
       - name: Get dependencies
         run: |
           go get -v -t -d ./...
+          go get gotest.tools/gotestsum
       - name: Build
         run: go build -v .
       - name: Test
-        run: go test
+        run: gotestsum

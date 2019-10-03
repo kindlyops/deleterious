@@ -11,7 +11,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@master
       - name: Set up Go
-        users: actions/setup-go@master
+        uses: actions/setup-go@master
       - name: Run goreleaser
         uses: goreleaser/goreleaser-action@master
         env:

@@ -7,14 +7,16 @@ on:
 
 jobs:
   release:
-    name: Publish Release
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@master
-      - name: goreleaser
-        uses: docker://goreleaser/goreleaser
+      - name: Set up Go
+        users: actions/setup-go@master
+      - name: Run goreleaser
+        uses: goreleaser/goreleaser-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
         with:
+          version: latest
           args: release

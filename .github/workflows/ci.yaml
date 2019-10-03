@@ -27,4 +27,6 @@ jobs:
       - name: Build
         run: go build -v .
       - name: Test
-        run: $GOROOT/bin/gotestsum
+        run: |
+          goenv
+          $GOROOT/bin/gotestsum

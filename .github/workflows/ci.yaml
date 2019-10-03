@@ -29,4 +29,6 @@ jobs:
       - name: Test
         run: |
           go env
+          env | grep PATH
+          ls -lah
           $GOROOT/bin/gotestsum

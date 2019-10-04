@@ -14,8 +14,20 @@
 
 package main
 
-import "github.com/kindlyops/deleterious/cmd"
+import (
+	"fmt"
+
+	"github.com/kindlyops/deleterious/cmd"
+)
+
+// these are filled out as linker flags by goreleaser
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
 
 func main() {
-	cmd.Execute()
+	version := fmt.Sprintf("%v, commit %v, built at %v\n", version, commit, date)
+	cmd.Execute(version)
 }

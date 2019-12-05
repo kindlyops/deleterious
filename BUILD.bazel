@@ -27,3 +27,17 @@ go_test(
     srcs = ["main_test.go"],
     embed = [":go_default_library"],
 )
+
+sh_binary(
+    name = "vendor",
+    srcs = ["vendor.sh"],
+    args = [
+        "$(location @bazel_gazelle//cmd/gazelle)",
+    ],
+    data = [
+        "@bazel_gazelle//cmd/gazelle",
+        "@go_sdk//:files",
+    ],
+    tags = ["manual"],
+    visibility = ["//visibility:public"],
+)

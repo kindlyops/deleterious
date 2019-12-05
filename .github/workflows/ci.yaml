@@ -4,28 +4,22 @@ on:
   pull_request:
     branches:
       - master
-  push:
-    branches:
-      - master
 
 jobs:
   build:
-    name: Build
+    name: CI
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Go 1.12
-        uses: actions/setup-go@v1
-        with:
-          go-version: 1.12
-        id: go
+      - name: Environment debug
+        run: |
+          env
       - name: Check out code into the Go module directory
         uses: actions/checkout@v1
-      - name: Get dependencies
-        run: |
-          go get -v -t -d ./...
-          go get -u gotest.tools/gotestsum
       - name: Build
-        run: go build -v .
+        uses: ngalaiko/bazel-action/1.2.1@master
+        with:
+          args: build //...
       - name: Test
-        run: |
-          $HOME/go/bin/gotestsum
+        uses: ngalaiko/bazel-action@0.29.0
+        with:
+          args: test //...

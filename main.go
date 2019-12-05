@@ -20,14 +20,12 @@ import (
 	"github.com/kindlyops/deleterious/cmd"
 )
 
-// these are filled out as linker flags by goreleaser
+// these are filled out as linker flags by bazel
 var (
 	version = "dev"
-	commit  = "none"
-	date    = "unknown"
 )
 
 func main() {
-	version := fmt.Sprintf("%v, commit %v, built at %v\n", version, commit, date)
+	version := fmt.Sprintf("%v", version)
 	cmd.Execute(version)
 }

@@ -1,5 +1,6 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 load("@bazel_gazelle//:def.bzl", "gazelle")
+load("//:version.bzl", "VERSION")
 
 # gazelle:prefix github.com/kindlyops/deleterious
 # gazelle:exclude dummy.go
@@ -20,6 +21,9 @@ go_binary(
     name = "deleterious",
     embed = [":go_default_library"],
     visibility = ["//visibility:public"],
+    x_defs = {
+        "version": VERSION,
+    },
 )
 
 go_test(

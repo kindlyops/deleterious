@@ -15,8 +15,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/kindlyops/deleterious/cmd"
 )
 
@@ -26,6 +24,5 @@ var (
 )
 
 func main() {
-	version := fmt.Sprintf("%v", version)
 	cmd.Execute(version)
 }

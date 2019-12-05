@@ -13,9 +13,9 @@ func TestMain(m *testing.M) {
 func TestParseVersion(t *testing.T) {
 	t.Parallel()
 
-	cmd := exec.Command("deleterious")
+	cmd := exec.Command("/usr/bin/true")
 	err := cmd.Run()
 	if err != nil {
-		t.Error("could not execute deleterious binary", err)
+		t.Error("could not execute test", err)
 	}
 }

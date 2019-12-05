@@ -34,3 +34,7 @@ linters:
     # prealloc is not recommended by `golangci-lint` developers.
     - prealloc
     - gochecknoglobals
+
+run:
+  skip-files:
+    - dummy.go

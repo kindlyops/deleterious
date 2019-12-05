@@ -20,6 +20,6 @@ jobs:
         with:
           args: build //...
       - name: Test
-        uses: ngalaiko/bazel-action@0.29.0
+        uses: ngalaiko/bazel-action/1.2.1@master
         with:
           args: test //...

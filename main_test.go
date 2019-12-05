@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"os/exec"
 	"testing"
 )
 
@@ -12,9 +11,7 @@ func TestMain(m *testing.M) {
 
 func TestParseVersion(t *testing.T) {
 	t.Parallel()
-
-	cmd := exec.Command("/usr/bin/true")
-	err := cmd.Run()
+	var err error
 	if err != nil {
 		t.Error("could not execute test", err)
 	}

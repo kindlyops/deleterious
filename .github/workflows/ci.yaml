@@ -15,28 +15,18 @@ jobs:
           env
       - name: Check out code into the Go module directory
         uses: actions/checkout@v1
-      - name: bazel build darwin
+      - name: bazel build
         uses: ngalaiko/bazel-action/1.2.1@master
         with:
-          args: --output_user_root=/github/workspace/output_base build --platforms=@io_bazel_rules_go//go/toolchain:darwin_amd64 //...
-      - name: bazel build linux
-        uses: ngalaiko/bazel-action/1.2.1@master
-        with:
-          args: --output_user_root=/github/workspace/output_base build --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 //...
+          args: run :install
       - name: Test
         uses: ngalaiko/bazel-action/1.2.1@master
         with:
-          args: --output_user_root test //...
+          args: test //...
       - name: Set up Go
         uses: actions/setup-go@master
         with:
           go-version: 1.13.1
-      - name: debugging
-        run: |
-          id
-          ls -l
-          cd bazel-bin
-          ls -l
       - name: dry run goreleaser
         uses: goreleaser/goreleaser-action@master
         env:

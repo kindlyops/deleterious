@@ -1,5 +1,6 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//:version.bzl", "VERSION")
 
 # gazelle:prefix github.com/kindlyops/deleterious
@@ -18,12 +19,41 @@ go_library(
 )
 
 go_binary(
-    name = "deleterious",
+    name = "deleterious-linux",
     embed = [":go_default_library"],
+    goos = "linux",
     visibility = ["//visibility:public"],
     x_defs = {
         "version": VERSION,
     },
+)
+
+go_binary(
+    name = "deleterious-darwin",
+    embed = [":go_default_library"],
+    goos = "darwin",
+    visibility = ["//visibility:public"],
+    x_defs = {
+        "version": VERSION,
+    },
+)
+
+pkg_tar(
+    name = "bdist",
+    srcs = [
+        "//:deleterious-darwin",
+        "//:deleterious-linux",
+    ],
+    tags = ["manual"],
+    visibility = ["//visibility:private"],
+)
+
+sh_binary(
+    name = "install",
+    srcs = ["install.sh"],
+    args = ["$(location :bdist.tar)"],
+    data = [":bdist.tar"],
+    tags = ["manual"],
 )
 
 go_test(

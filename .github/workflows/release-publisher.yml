@@ -16,15 +16,11 @@ jobs:
         uses: actions/checkout@master
       - name: stamp version
         run: |
-          echo "VERSION = '$GITHUB_REF'" >> version.bzl
+          echo "VERSION = '$GITHUB_REF'" > version.bzl
       - name: bazel build darwin
         uses: ngalaiko/bazel-action/1.2.1@master
         with:
-          args: build --platforms=@io_bazel_rules_go//go/toolchain:darwin_amd64 //...
-      - name: bazel build linux
-        uses: ngalaiko/bazel-action/1.2.1@master
-        with:
-          args: build --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 //...
+          args: run :install
       - name: Run goreleaser
         uses: goreleaser/goreleaser-action@master
         env:

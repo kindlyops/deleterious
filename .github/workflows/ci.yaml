@@ -15,11 +15,22 @@ jobs:
           env
       - name: Check out code into the Go module directory
         uses: actions/checkout@v1
-      - name: Build
+      - name: bazel build
         uses: ngalaiko/bazel-action/1.2.1@master
         with:
-          args: build //...
+          args: run :install
       - name: Test
         uses: ngalaiko/bazel-action/1.2.1@master
         with:
           args: test //...
+      - name: Set up Go
+        uses: actions/setup-go@master
+        with:
+          go-version: 1.13.1
+      - name: dry run goreleaser
+        uses: goreleaser/goreleaser-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
+        with:
+          version: latest
+          args: release --snapshot --skip-publish

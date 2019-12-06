@@ -55,3 +55,9 @@ for i in "${buckets[@]}"; do
 	aws s3api delete-bucket --bucket "$i"
 done
 ```
+
+## Testing release process
+
+To run goreleaser locally to test changes to the release process configuration:
+
+    goreleaser release --snapshot --skip-publish --rm-dist

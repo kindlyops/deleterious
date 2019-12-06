@@ -14,6 +14,13 @@ jobs:
           go-version: 1.13.1
       - name: Check out code
         uses: actions/checkout@master
+      - name: stamp version
+        run: |
+          echo "VERSION = '$GITHUB_REF'" > version.bzl
+      - name: bazel build darwin
+        uses: ngalaiko/bazel-action/1.2.1@master
+        with:
+          args: run :install
       - name: Run goreleaser
         uses: goreleaser/goreleaser-action@master
         env:

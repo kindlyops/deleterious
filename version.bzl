@@ -1,0 +1,2 @@
+VERSION = 'dev.bazel version'
+

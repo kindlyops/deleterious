@@ -3,4 +3,5 @@ bazel-bin
 bazel-deleterious
 bazel-out
 bazel-testlogs
+bazel-workspace
 bdist

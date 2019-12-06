@@ -21,6 +21,9 @@ jobs:
         uses: ngalaiko/bazel-action/1.2.1@master
         with:
           args: run :install
+      - name: clean working tree
+        run: |
+          git checkout -- version.bzl
       - name: Run goreleaser
         uses: goreleaser/goreleaser-action@master
         env:

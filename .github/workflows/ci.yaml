@@ -33,9 +33,10 @@ jobs:
           go-version: 1.13.1
       - name: debugging
         run: |
-          ls -l
-          ls -l bazel-bin/
           id
+          ls -l
+          cd bazel-bin
+          ls -l
       - name: dry run goreleaser
         uses: goreleaser/goreleaser-action@master
         env:

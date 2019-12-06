@@ -16,7 +16,8 @@ jobs:
         uses: actions/checkout@master
       - name: stamp version
         run: |
-          echo "VERSION = '$GITHUB_REF'" > version.bzl
+          export VERSION=$(echo $GITHUB_REF|sed 's/refs\/tags\/v//')
+          echo "VERSION = '$VERSION'" > version.bzl
       - name: bazel build darwin
         uses: ngalaiko/bazel-action/1.2.1@master
         with:

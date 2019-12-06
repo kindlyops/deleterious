@@ -34,7 +34,7 @@ func TestCLIVersion(t *testing.T) {
 		t.Fatalf("Could not find runfile %s: %q", *cli, err)
 	}
 
-	if _, err := os.Stat(path); os.IsNotExist(err) {
+	if _, err = os.Stat(path); os.IsNotExist(err) {
 		t.Fatalf("Missing binary %v", path)
 	}
 	file, err := filepath.EvalSymlinks(path)

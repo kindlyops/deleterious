@@ -58,8 +58,29 @@ sh_binary(
 
 go_test(
     name = "go_default_test",
+    size = "small",
     srcs = ["main_test.go"],
+    args = ["-cli"] + select({
+        "@io_bazel_rules_go//go/platform:linux_amd64": [
+            "$(location :deleterious-linux)",
+        ],
+        "@io_bazel_rules_go//go/platform:darwin_amd64": [
+            "$(location :deleterious-darwin)",
+        ],
+        "//conditions:default": [],
+    }),
+    data = select({
+        "@io_bazel_rules_go//go/platform:linux_amd64": [
+            ":deleterious-linux",
+        ],
+        "@io_bazel_rules_go//go/platform:darwin_amd64": [
+            ":deleterious-darwin",
+        ],
+        "//conditions:default": [],
+    }),
     embed = [":go_default_library"],
+    rundir = ".",
+    deps = ["//vendor/github.com/bazelbuild/rules_go/go/tools/bazel:go_default_library"],
 )
 
 sh_binary(

@@ -1,1 +1,6 @@
 deleterious
+bazel-bin
+bazel-deleterious
+bazel-out
+bazel-testlogs
+bdist

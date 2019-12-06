@@ -1,4 +1,19 @@
 # .goreleaser.yml
+project_name: deleterious
+builds:
+  -
+    main: dummy.go
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+    binary: deleterious
+    hooks:
+      post: ./goreleaser-post-hook.sh
+
+checksum:
+  name_template: 'checksums.txt'
 brews:
   - # Repository to push the tap to.
     github:

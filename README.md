@@ -5,7 +5,11 @@ of orphaned AWS resources around costing money.
 
 ## installation for homebrew
 
-    brew tap kindlyops/tap && brew install kindlyops/tap/deleterious
+    brew install kindlyops/tap/deleterious
+
+once installed, you can upgrade to a newer version using this command:
+
+    brew upgrade kindlyops/tap/deleterious
 
 ## installation from source
 
@@ -51,3 +55,9 @@ for i in "${buckets[@]}"; do
 	aws s3api delete-bucket --bucket "$i"
 done
 ```
+
+## Testing release process
+
+To run goreleaser locally to test changes to the release process configuration:
+
+    goreleaser release --snapshot --skip-publish --rm-dist

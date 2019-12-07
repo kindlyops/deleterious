@@ -1,0 +1,14 @@
+diff --git a/vendor/github.com/spf13/cobra/BUILD.bazel b/vendor/github.com/spf13/cobra/BUILD.bazel
+index e3a7110..c2e9094 100644
+--- a/vendor/github.com/spf13/cobra/BUILD.bazel
++++ b/vendor/github.com/spf13/cobra/BUILD.bazel
+@@ -22,6 +22,8 @@ go_library(
+         "@io_bazel_rules_go//go/platform:windows": [
+             "//vendor/github.com/inconshreveable/mousetrap:go_default_library",
+         ],
+-        "//conditions:default": [],
++        "//conditions:default": [
++            "//vendor/github.com/inconshreveable/mousetrap:go_default_library",
++        ],
+     }),
+ )

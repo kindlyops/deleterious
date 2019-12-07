@@ -38,11 +38,22 @@ go_binary(
     },
 )
 
+go_binary(
+    name = "deleterious-windows",
+    embed = [":go_default_library"],
+    goos = "windows",
+    visibility = ["//visibility:public"],
+    x_defs = {
+        "version": VERSION,
+    },
+)
+
 pkg_tar(
     name = "bdist",
     srcs = [
         "//:deleterious-darwin",
         "//:deleterious-linux",
+        "//:deleterious-windows",
     ],
     tags = ["manual"],
     visibility = ["//visibility:private"],

@@ -14,3 +14,6 @@ cd "$BUILD_WORKSPACE_DIRECTORY"
 go mod tidy
 go mod vendor
 $gazelle
+
+# apply patches to generated BUILD files
+patch -p1 <cobra.BUILD.patch

@@ -5,3 +5,5 @@ bazel-out
 bazel-testlogs
 bazel-workspace
 bdist
+dist
+

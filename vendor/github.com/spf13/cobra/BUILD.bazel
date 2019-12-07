@@ -22,6 +22,8 @@ go_library(
         "@io_bazel_rules_go//go/platform:windows": [
             "//vendor/github.com/inconshreveable/mousetrap:go_default_library",
         ],
-        "//conditions:default": [],
+        "//conditions:default": [
+            "//vendor/github.com/inconshreveable/mousetrap:go_default_library",
+        ],
     }),
 )

@@ -24,5 +24,7 @@ var (
 )
 
 func main() {
+	var unused = "this is a linter example"
+	var _ = unused
 	cmd.Execute(version)
 }

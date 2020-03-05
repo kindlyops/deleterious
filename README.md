@@ -3,13 +3,28 @@ Helps you clean up AWS resources. This is handy when
 retention policies on CloudFormation stacks leave lots
 of orphaned AWS resources around costing money.
 
-## installation for homebrew
+## installation for homebrew (MacOS/Linux)
 
     brew install kindlyops/tap/deleterious
 
 once installed, you can upgrade to a newer version using this command:
 
     brew upgrade kindlyops/tap/deleterious
+
+## installation for scoop (Windows Powershell)
+
+To enable the bucket for your scoop installation
+
+    scoop bucket add kindlyops https://github.com/kindlyops/kindlyops-scoop
+    
+To install deleterious
+
+    scoop install deleterious
+
+once installed, you can upgrade to a newer version using this command:
+
+    scoop status
+    scoop update deleterious
 
 ## installation from source
 

@@ -6,4 +6,4 @@ bazel-testlogs
 bazel-workspace
 bdist
 dist
-
+.vscode/

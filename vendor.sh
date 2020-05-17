@@ -16,4 +16,4 @@ go mod vendor
 $gazelle
 
 # apply patches to generated BUILD files
-patch -p1 <cobra.BUILD.patch
+# patch -p1 <cobra.BUILD.patch

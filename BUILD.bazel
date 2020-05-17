@@ -22,6 +22,7 @@ go_binary(
     name = "deleterious-linux",
     embed = [":go_default_library"],
     goos = "linux",
+    goarch = "amd64",
     visibility = ["//visibility:public"],
     x_defs = {
         "version": VERSION,
@@ -32,6 +33,7 @@ go_binary(
     name = "deleterious-darwin",
     embed = [":go_default_library"],
     goos = "darwin",
+    goarch = "amd64",
     visibility = ["//visibility:public"],
     x_defs = {
         "version": VERSION,
@@ -42,6 +44,7 @@ go_binary(
     name = "deleterious-windows",
     embed = [":go_default_library"],
     goos = "windows",
+    goarch = "amd64",
     visibility = ["//visibility:public"],
     x_defs = {
         "version": VERSION,

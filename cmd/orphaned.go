@@ -128,12 +128,14 @@ func processS3(rootedResources map[string]bool) {
 	}
 
 	var orphaned []s3.Bucket
+
 	for _, bucket := range buckets.Buckets {
 		if Debug {
 			fmt.Printf("Processing %v\n", *bucket.Name)
 		}
+
 		if _, ok := rootedResources[*bucket.Name]; ok {
-			// this stream is owned by a cloudformation stack, skip it
+			// this bucket is owned by a cloudformation stack, skip it
 			if Debug {
 				fmt.Printf("Bucket %v is owned by a cloudformation stack, skipping\n", *bucket)
 			}
@@ -143,7 +145,7 @@ func processS3(rootedResources map[string]bool) {
 	}
 	output, _ := json.MarshalIndent(orphaned, "", "  ")
 
-	fmt.Println(string(output))
+	fmt.Printf("%s\n", string(output))
 }
 
 func processKinesis(rootedResources map[string]bool) {

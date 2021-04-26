@@ -17,6 +17,8 @@ package cmd
 import (
 	"fmt"
 
+	"encoding/json"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -124,6 +126,8 @@ func processS3(rootedResources map[string]bool) {
 	if err != nil {
 		fmt.Printf("Error listing S3 Buckets: %v\n", err)
 	}
+
+	var orphaned []s3.Bucket
 	for _, bucket := range buckets.Buckets {
 		if Debug {
 			fmt.Printf("Processing %v\n", *bucket.Name)
@@ -134,9 +138,12 @@ func processS3(rootedResources map[string]bool) {
 				fmt.Printf("Bucket %v is owned by a cloudformation stack, skipping\n", *bucket)
 			}
 		} else {
-			fmt.Printf("\"%v\"\n", *bucket)
+			orphaned = append(orphaned, *bucket)
 		}
 	}
+	output, _ := json.MarshalIndent(orphaned, "", "  ")
+
+	fmt.Println(string(output))
 }
 
 func processKinesis(rootedResources map[string]bool) {

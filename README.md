@@ -53,6 +53,14 @@ done
 
 ## Example of deleting S3 buckets
 
+To list orphaned buckets, you can run
+
+    deleterious orphaned --resource "AWS::S3::Bucket"
+
+To distill the output into only the bucket names, you can use jq
+
+    deleterious orphaned --resource "AWS::S3::Bucket" | jq -r '.[].Name'
+
 Once deleterious gives you a list of things to delete, and
 you have manually confirmed they are ok to delete, you
 can make a little loop to delete the objects. Here is an example with S3 buckets

@@ -24,6 +24,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/kinesis"
 	"github.com/aws/aws-sdk-go/service/kms"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/spf13/cobra"
 )
 
@@ -102,6 +103,8 @@ func orphaned(cmd *cobra.Command, args []string) {
 		processKMS(rootedResources)
 	case Resource == "AWS::Kinesis::Stream":
 		processKinesis(rootedResources)
+	case Resource == "AWS::S3::Bucket":
+		processS3(rootedResources)
 	default:
 		fmt.Printf("%v is not yet supported", Resource)
 	}
@@ -112,6 +115,28 @@ func getSession() *session.Session {
 		AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
 		SharedConfigState:       session.SharedConfigEnable,
 	}))
+}
+
+func processS3(rootedResources map[string]bool) {
+	svc := s3.New(getSession())
+
+	buckets, err := svc.ListBuckets(&s3.ListBucketsInput{})
+	if err != nil {
+		fmt.Printf("Error listing S3 Buckets: %v\n", err)
+	}
+	for _, bucket := range buckets.Buckets {
+		if Debug {
+			fmt.Printf("Processing %v\n", *bucket.Name)
+		}
+		if _, ok := rootedResources[*bucket.Name]; ok {
+			// this stream is owned by a cloudformation stack, skip it
+			if Debug {
+				fmt.Printf("Bucket %v is owned by a cloudformation stack, skipping\n", *bucket)
+			}
+		} else {
+			fmt.Printf("\"%v\"\n", *bucket)
+		}
+	}
 }
 
 func processKinesis(rootedResources map[string]bool) {

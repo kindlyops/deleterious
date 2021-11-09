@@ -3,12 +3,11 @@ project_name: deleterious
 builds:
   -
     main: dummy.go
-    goos:
-      - linux
-      - darwin
-      - windows
-    goarch:
-      - amd64
+    targets:
+      - linux_amd64
+      - darwin_amd64
+      - darwin_arm64
+      - windows_amd64
     binary: deleterious
     hooks:
       post: ./goreleaser-post-hook.sh

@@ -21,8 +21,8 @@ go_library(
 go_binary(
     name = "deleterious-linux",
     embed = [":go_default_library"],
-    goos = "linux",
     goarch = "amd64",
+    goos = "linux",
     visibility = ["//visibility:public"],
     x_defs = {
         "version": VERSION,
@@ -32,8 +32,19 @@ go_binary(
 go_binary(
     name = "deleterious-darwin",
     embed = [":go_default_library"],
-    goos = "darwin",
     goarch = "amd64",
+    goos = "darwin",
+    visibility = ["//visibility:public"],
+    x_defs = {
+        "version": VERSION,
+    },
+)
+
+go_binary(
+    name = "deleterious-darwin-m1",
+    embed = [":go_default_library"],
+    goarch = "amd64",
+    goos = "darwin",
     visibility = ["//visibility:public"],
     x_defs = {
         "version": VERSION,
@@ -43,8 +54,8 @@ go_binary(
 go_binary(
     name = "deleterious-windows",
     embed = [":go_default_library"],
-    goos = "windows",
     goarch = "amd64",
+    goos = "windows",
     visibility = ["//visibility:public"],
     x_defs = {
         "version": VERSION,
@@ -55,6 +66,7 @@ pkg_tar(
     name = "bdist",
     srcs = [
         "//:deleterious-darwin",
+        "//:deleterious-darwin-m1",
         "//:deleterious-linux",
         "//:deleterious-windows",
     ],
@@ -81,6 +93,9 @@ go_test(
         "@io_bazel_rules_go//go/platform:darwin_amd64": [
             "$(location :deleterious-darwin)",
         ],
+        "@io_bazel_rules_go//go/platform:darwin_arm64": [
+            "$(location :deleterious-darwin-m1)",
+        ],
         "//conditions:default": [],
     }),
     data = select({
@@ -89,6 +104,9 @@ go_test(
         ],
         "@io_bazel_rules_go//go/platform:darwin_amd64": [
             ":deleterious-darwin",
+        ],
+        "@io_bazel_rules_go//go/platform:darwin_arm64": [
+            ":deleterious-darwin-m1",
         ],
         "//conditions:default": [],
     }),

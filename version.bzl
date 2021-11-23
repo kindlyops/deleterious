@@ -1,2 +1,0 @@
-VERSION = 'dev.bazel version'
-

@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
 	"encoding/json"
 
@@ -23,10 +24,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/kinesis"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/dustin/go-humanize"
 	"github.com/spf13/cobra"
 )
 
@@ -34,8 +37,9 @@ import (
 var orphanedCmd = &cobra.Command{
 	Use:   "orphaned",
 	Short: "Find orphaned resources without deleting",
-	Long:  `Finds all of the specified resources that are not referenced from an active CloudFormation stack.`,
-	Run:   orphaned,
+	Long: `Finds all of the specified resources that are not referenced from an active CloudFormation stack.
+			Supported types are AWS::DynamoDB::Table, AWS::KMS::Key, AWS::Kinesis::Stream, AWS::Logs::LogGroup, AWS::S3::Bucket`,
+	Run: orphaned,
 }
 
 func orphaned(cmd *cobra.Command, args []string) {
@@ -105,6 +109,8 @@ func orphaned(cmd *cobra.Command, args []string) {
 		processKMS(rootedResources)
 	case Resource == "AWS::Kinesis::Stream":
 		processKinesis(rootedResources)
+	case Resource == "AWS::Logs::LogGroup":
+		processLogs(rootedResources)
 	case Resource == "AWS::S3::Bucket":
 		processS3(rootedResources)
 	default:
@@ -117,6 +123,78 @@ func getSession() *session.Session {
 		AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
 		SharedConfigState:       session.SharedConfigEnable,
 	}))
+}
+
+func processLogs(rootedResources map[string]bool) {
+	svc := cloudwatchlogs.New(getSession())
+
+	fmt.Printf("GroupName, RetentionDays, StoredBytes, LastLogEntry, DaysAgo\n")
+	var nextGroup *string
+	for ok := true; ok; ok = (nextGroup != nil) {
+		groups, err := svc.DescribeLogGroups(&cloudwatchlogs.DescribeLogGroupsInput{
+			NextToken: nextGroup,
+			Limit:     aws.Int64(50),
+		})
+		if err != nil {
+			fmt.Printf("Error listing Log Groups: %v\n", err)
+		} else {
+			if groups.NextToken != nil {
+				if Debug {
+					fmt.Printf("Has more groups, setting nextGroup\n")
+				}
+				nextGroup = groups.NextToken
+			} else {
+				nextGroup = nil
+			}
+		}
+		for _, group := range groups.LogGroups {
+			if Debug {
+				fmt.Printf("Processing %v\n", *group)
+			}
+			if _, ok := rootedResources[*group.LogGroupName]; ok {
+				// this stream is owned by a cloudformation stack, skip it
+				if Debug {
+					fmt.Printf("Group %v is owned by a cloudformation stack, skipping\n", *group.LogGroupName)
+				}
+			} else {
+				// find when the last event was written
+				stream, err := svc.DescribeLogStreams(&cloudwatchlogs.DescribeLogStreamsInput{
+					LogGroupName: aws.String(*group.LogGroupName),
+					OrderBy:      aws.String("LastEventTime"),
+					Descending:   aws.Bool(true),
+					Limit:        aws.Int64(1),
+				})
+				lastEvent := "Never"
+				var daysAgo int64
+				var retentionDays int64
+				// var storedBytes int64
+				if err != nil || stream == nil {
+					fmt.Printf("Error listing Log Streams: %v\n", err)
+					lastEvent = "Unknown"
+					daysAgo = -1
+					retentionDays = -1
+				} else {
+					if stream.LogStreams != nil &&
+						len(stream.LogStreams) > 0 &&
+						stream.LogStreams[0].LastEventTimestamp != nil {
+						t := time.UnixMilli(*stream.LogStreams[0].LastEventTimestamp)
+						lastEvent = t.Format(time.RFC3339)
+						daysAgo = int64(time.Since(t).Hours() / 24)
+					}
+				}
+				if group.RetentionInDays != nil {
+					retentionDays = *group.RetentionInDays
+				}
+				if Debug {
+					fmt.Printf("processing group %v\n", *group.LogGroupName)
+					fmt.Printf("\tretention %d\n", retentionDays)
+					fmt.Printf("\tbytes %v\n", *group.StoredBytes)
+				}
+				size := humanize.Bytes(uint64(*group.StoredBytes))
+				fmt.Printf("\"%v\", %d, %v, %v, %d\n", *group.LogGroupName, retentionDays, size, lastEvent, daysAgo)
+			}
+		}
+	}
 }
 
 func processS3(rootedResources map[string]bool) {

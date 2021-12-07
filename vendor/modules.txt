@@ -41,6 +41,7 @@ github.com/aws/aws-sdk-go/private/protocol/rest
 github.com/aws/aws-sdk-go/private/protocol/restxml
 github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
 github.com/aws/aws-sdk-go/service/cloudformation
+github.com/aws/aws-sdk-go/service/cloudwatchlogs
 github.com/aws/aws-sdk-go/service/dynamodb
 github.com/aws/aws-sdk-go/service/iam
 github.com/aws/aws-sdk-go/service/kinesis
@@ -52,6 +53,9 @@ github.com/aws/aws-sdk-go/service/sts/stsiface
 # github.com/bazelbuild/rules_go v0.23.1
 ## explicit
 github.com/bazelbuild/rules_go/go/tools/bazel
+# github.com/dustin/go-humanize v1.0.0
+## explicit
+github.com/dustin/go-humanize
 # github.com/fsnotify/fsnotify v1.4.7
 ## explicit
 github.com/fsnotify/fsnotify

@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"encoding/json"
@@ -75,6 +76,7 @@ func orphaned(cmd *cobra.Command, args []string) {
 		})
 		if err != nil {
 			fmt.Printf("Error listing stacks: %v", err)
+			return
 		} else {
 			token = stacks.NextToken
 		}
@@ -87,7 +89,7 @@ func orphaned(cmd *cobra.Command, args []string) {
 				StackName: stack.StackName,
 			})
 			if err != nil {
-				fmt.Printf("Error processing %v\n", *stack.StackName)
+				fmt.Printf("Error processing %v: %v\n", *stack.StackName, err)
 				continue
 			}
 			for _, resource := range resources.StackResourceSummaries {
@@ -119,6 +121,12 @@ func orphaned(cmd *cobra.Command, args []string) {
 }
 
 func getSession() *session.Session {
+	// by default, AWS_PROFILE set in the env will control where the SDK
+	// looks for credentials. If the --profile flag is specified, use that
+	// to override the environment.
+	if awsProfile != "" {
+		os.Setenv("AWS_PROFILE", awsProfile)
+	}
 	return session.Must(session.NewSessionWithOptions(session.Options{
 		AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
 		SharedConfigState:       session.SharedConfigEnable,

@@ -24,6 +24,7 @@ import (
 )
 
 var cfgFile string
+var awsProfile string
 
 // Debug controls whether or not debug messages should be printed
 var Debug bool
@@ -70,6 +71,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.deleterious.yaml)")
+	rootCmd.PersistentFlags().StringVar(&awsProfile, "profile", "", "AWS profile to use")
 
 	rootCmd.PersistentFlags().BoolVarP(&Debug, "debug", "d", false, "Print debug messages while working")
 }

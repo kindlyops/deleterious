@@ -66,10 +66,8 @@ func (c *Kinesis) AddTagsToStreamRequest(input *AddTagsToStreamInput) (req *requ
 
 // AddTagsToStream API operation for Amazon Kinesis.
 //
-// Adds or updates tags for the specified Kinesis data stream. Each time you
-// invoke this operation, you can specify up to 10 tags. If you want to add
-// more than 10 tags to your stream, you can invoke this operation multiple
-// times. In total, each stream can have up to 50 tags.
+// Adds or updates tags for the specified Kinesis data stream. You can assign
+// up to 50 tags to a data stream.
 //
 // If tags have already been assigned to the stream, AddTagsToStream overwrites
 // any existing tags that correspond to the specified tag keys.
@@ -174,15 +172,16 @@ func (c *Kinesis) CreateStreamRequest(input *CreateStreamInput) (req *request.Re
 //
 // You specify and control the number of shards that a stream is composed of.
 // Each shard can support reads up to five transactions per second, up to a
-// maximum data read total of 2 MB per second. Each shard can support writes
-// up to 1,000 records per second, up to a maximum data write total of 1 MB
+// maximum data read total of 2 MiB per second. Each shard can support writes
+// up to 1,000 records per second, up to a maximum data write total of 1 MiB
 // per second. If the amount of data input increases or decreases, you can add
 // or remove shards.
 //
-// The stream name identifies the stream. The name is scoped to the AWS account
-// used by the application. It is also scoped by AWS Region. That is, two streams
-// in two different accounts can have the same name, and two streams in the
-// same account, but in two different Regions, can have the same name.
+// The stream name identifies the stream. The name is scoped to the Amazon Web
+// Services account used by the application. It is also scoped by Amazon Web
+// Services Region. That is, two streams in two different accounts can have
+// the same name, and two streams in the same account, but in two different
+// Regions, can have the same name.
 //
 // CreateStream is an asynchronous operation. Upon receiving a CreateStream
 // request, Kinesis Data Streams immediately returns and sets the stream status
@@ -197,12 +196,12 @@ func (c *Kinesis) CreateStreamRequest(input *CreateStreamInput) (req *request.Re
 //
 //    * Create more shards than are authorized for your account.
 //
-// For the default shard limit for an AWS account, see Amazon Kinesis Data Streams
-// Limits (http://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
+// For the default shard limit for an Amazon Web Services account, see Amazon
+// Kinesis Data Streams Limits (https://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
 // in the Amazon Kinesis Data Streams Developer Guide. To increase this limit,
-// contact AWS Support (http://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html).
+// contact Amazon Web Services Support (https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html).
 //
-// You can use DescribeStream to check the stream status, which is returned
+// You can use DescribeStreamSummary to check the stream status, which is returned
 // in StreamStatus.
 //
 // CreateStream has a limit of five transactions per second per account.
@@ -409,8 +408,8 @@ func (c *Kinesis) DeleteStreamRequest(input *DeleteStreamInput) (req *request.Re
 // When you delete a stream, any shards in that stream are also deleted, and
 // any tags are dissociated from the stream.
 //
-// You can use the DescribeStream operation to check the state of the stream,
-// which is returned in StreamStatus.
+// You can use the DescribeStreamSummary operation to check the state of the
+// stream, which is returned in StreamStatus.
 //
 // DeleteStream has a limit of five transactions per second per account.
 //
@@ -510,7 +509,7 @@ func (c *Kinesis) DeregisterStreamConsumerRequest(input *DeregisterStreamConsume
 // with a given data stream. The description of a consumer contains its name
 // and ARN.
 //
-// This operation has a limit of five transactions per second per account.
+// This operation has a limit of five transactions per second per stream.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -691,6 +690,11 @@ func (c *Kinesis) DescribeStreamRequest(input *DescribeStreamInput) (req *reques
 //
 // Describes the specified Kinesis data stream.
 //
+// This API has been revised. It's highly recommended that you use the DescribeStreamSummary
+// API to get a summarized description of the specified Kinesis data stream
+// and the ListShards API to list the shards in a specified data stream and
+// obtain information about each shard.
+//
 // The information returned includes the stream name, Amazon Resource Name (ARN),
 // creation time, enhanced metric configuration, and shard map. The shard map
 // is an array of shard objects. For each shard object, there is the hash key
@@ -700,7 +704,7 @@ func (c *Kinesis) DescribeStreamRequest(input *DescribeStreamInput) (req *reques
 // the record is put into the stream.
 //
 // You can limit the number of shards returned by each call. For more information,
-// see Retrieving Shards from a Stream (http://docs.aws.amazon.com/kinesis/latest/dev/kinesis-using-sdk-java-retrieve-shards.html)
+// see Retrieving Shards from a Stream (https://docs.aws.amazon.com/kinesis/latest/dev/kinesis-using-sdk-java-retrieve-shards.html)
 // in the Amazon Kinesis Data Streams Developer Guide.
 //
 // There are no guarantees about the chronological order shards returned. To
@@ -851,7 +855,7 @@ func (c *Kinesis) DescribeStreamConsumerRequest(input *DescribeStreamConsumerInp
 // the ListStreamConsumers operation to get a list of the descriptions of all
 // the consumers that are currently registered with a given data stream.
 //
-// This operation has a limit of 20 transactions per second per account.
+// This operation has a limit of 20 transactions per second per stream.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -945,6 +949,8 @@ func (c *Kinesis) DescribeStreamSummaryRequest(input *DescribeStreamSummaryInput
 // The information returned includes the stream name, Amazon Resource Name (ARN),
 // status, record retention period, approximate creation time, monitoring, encryption
 // details, and open shard count.
+//
+// DescribeStreamSummary has a limit of 20 transactions per second per account.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -1223,7 +1229,7 @@ func (c *Kinesis) GetRecordsRequest(input *GetRecordsInput) (req *request.Reques
 //
 // You can scale by provisioning multiple shards per stream while considering
 // service limits (for more information, see Amazon Kinesis Data Streams Limits
-// (http://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
+// (https://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
 // in the Amazon Kinesis Data Streams Developer Guide). Your application should
 // have one thread per shard, each reading continuously from its stream. To
 // read from a stream continually, call GetRecords in a loop. Use GetShardIterator
@@ -1243,18 +1249,21 @@ func (c *Kinesis) GetRecordsRequest(input *GetRecordsInput) (req *request.Reques
 // can be returned per call is 10,000.
 //
 // The size of the data returned by GetRecords varies depending on the utilization
-// of the shard. The maximum size of data that GetRecords can return is 10 MiB.
-// If a call returns this amount of data, subsequent calls made within the next
-// 5 seconds throw ProvisionedThroughputExceededException. If there is insufficient
-// provisioned throughput on the stream, subsequent calls made within the next
-// 1 second throw ProvisionedThroughputExceededException. GetRecords doesn't
-// return any data when it throws an exception. For this reason, we recommend
-// that you wait 1 second between calls to GetRecords. However, it's possible
-// that the application will get exceptions for longer than 1 second.
+// of the shard. It is recommended that consumer applications retrieve records
+// via the GetRecords command using the 5 TPS limit to remain caught up. Retrieving
+// records less frequently can lead to consumer applications falling behind.
+// The maximum size of data that GetRecords can return is 10 MiB. If a call
+// returns this amount of data, subsequent calls made within the next 5 seconds
+// throw ProvisionedThroughputExceededException. If there is insufficient provisioned
+// throughput on the stream, subsequent calls made within the next 1 second
+// throw ProvisionedThroughputExceededException. GetRecords doesn't return any
+// data when it throws an exception. For this reason, we recommend that you
+// wait 1 second between calls to GetRecords. However, it's possible that the
+// application will get exceptions for longer than 1 second.
 //
 // To detect whether the application is falling behind in processing, you can
 // use the MillisBehindLatest response attribute. You can also monitor the stream
-// using CloudWatch metrics and other mechanisms (see Monitoring (http://docs.aws.amazon.com/kinesis/latest/dev/monitoring.html)
+// using CloudWatch metrics and other mechanisms (see Monitoring (https://docs.aws.amazon.com/kinesis/latest/dev/monitoring.html)
 // in the Amazon Kinesis Data Streams Developer Guide).
 //
 // Each Amazon Kinesis record includes a value, ApproximateArrivalTimestamp,
@@ -1267,7 +1276,7 @@ func (c *Kinesis) GetRecordsRequest(input *GetRecordsInput) (req *request.Reques
 // always increasing. For example, records in a shard or across a stream might
 // have time stamps that are out of order.
 //
-// This operation has a limit of five transactions per second per account.
+// This operation has a limit of five transactions per second per shard.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -1288,10 +1297,10 @@ func (c *Kinesis) GetRecordsRequest(input *GetRecordsInput) (req *request.Reques
 //   * ProvisionedThroughputExceededException
 //   The request rate for the stream is too high, or the requested data is too
 //   large for the available throughput. Reduce the frequency or size of your
-//   requests. For more information, see Streams Limits (http://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
+//   requests. For more information, see Streams Limits (https://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
 //   in the Amazon Kinesis Data Streams Developer Guide, and Error Retries and
-//   Exponential Backoff in AWS (http://docs.aws.amazon.com/general/latest/gr/api-retries.html)
-//   in the AWS General Reference.
+//   Exponential Backoff in Amazon Web Services (https://docs.aws.amazon.com/general/latest/gr/api-retries.html)
+//   in the Amazon Web Services General Reference.
 //
 //   * ExpiredIteratorException
 //   The provided iterator exceeds the maximum age allowed.
@@ -1303,8 +1312,8 @@ func (c *Kinesis) GetRecordsRequest(input *GetRecordsInput) (req *request.Reques
 //   * KMSInvalidStateException
 //   The request was rejected because the state of the specified resource isn't
 //   valid for this request. For more information, see How Key State Affects Use
-//   of a Customer Master Key (http://docs.aws.amazon.com/kms/latest/developerguide/key-state.html)
-//   in the AWS Key Management Service Developer Guide.
+//   of a Customer Master Key (https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html)
+//   in the Amazon Web Services Key Management Service Developer Guide.
 //
 //   * KMSAccessDeniedException
 //   The ciphertext references a key that doesn't exist or that you don't have
@@ -1315,12 +1324,12 @@ func (c *Kinesis) GetRecordsRequest(input *GetRecordsInput) (req *request.Reques
 //   found.
 //
 //   * KMSOptInRequired
-//   The AWS access key ID needs a subscription for the service.
+//   The Amazon Web Services access key ID needs a subscription for the service.
 //
 //   * KMSThrottlingException
 //   The request was denied due to request throttling. For more information about
-//   throttling, see Limits (http://docs.aws.amazon.com/kms/latest/developerguide/limits.html#requests-per-second)
-//   in the AWS Key Management Service Developer Guide.
+//   throttling, see Limits (https://docs.aws.amazon.com/kms/latest/developerguide/limits.html#requests-per-second)
+//   in the Amazon Web Services Key Management Service Developer Guide.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/kinesis-2013-12-02/GetRecords
 func (c *Kinesis) GetRecords(input *GetRecordsInput) (*GetRecordsOutput, error) {
@@ -1418,7 +1427,7 @@ func (c *Kinesis) GetShardIteratorRequest(input *GetShardIteratorInput) (req *re
 //
 // If a GetShardIterator request is made too often, you receive a ProvisionedThroughputExceededException.
 // For more information about throughput limits, see GetRecords, and Streams
-// Limits (http://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
+// Limits (https://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
 // in the Amazon Kinesis Data Streams Developer Guide.
 //
 // If the shard is closed, GetShardIterator returns a valid iterator for the
@@ -1447,10 +1456,10 @@ func (c *Kinesis) GetShardIteratorRequest(input *GetShardIteratorInput) (req *re
 //   * ProvisionedThroughputExceededException
 //   The request rate for the stream is too high, or the requested data is too
 //   large for the available throughput. Reduce the frequency or size of your
-//   requests. For more information, see Streams Limits (http://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
+//   requests. For more information, see Streams Limits (https://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
 //   in the Amazon Kinesis Data Streams Developer Guide, and Error Retries and
-//   Exponential Backoff in AWS (http://docs.aws.amazon.com/general/latest/gr/api-retries.html)
-//   in the AWS General Reference.
+//   Exponential Backoff in Amazon Web Services (https://docs.aws.amazon.com/general/latest/gr/api-retries.html)
+//   in the Amazon Web Services General Reference.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/kinesis-2013-12-02/GetShardIterator
 func (c *Kinesis) GetShardIterator(input *GetShardIteratorInput) (*GetShardIteratorOutput, error) {
@@ -1521,7 +1530,7 @@ func (c *Kinesis) IncreaseStreamRetentionPeriodRequest(input *IncreaseStreamRete
 //
 // Increases the Kinesis data stream's retention period, which is the length
 // of time data records are accessible after they are added to the stream. The
-// maximum value of a stream's retention period is 168 hours (7 days).
+// maximum value of a stream's retention period is 8760 hours (365 days).
 //
 // If you choose a longer stream retention period, this operation increases
 // the time period during which records that have not yet expired are accessible.
@@ -1622,7 +1631,10 @@ func (c *Kinesis) ListShardsRequest(input *ListShardsInput) (req *request.Reques
 // ListShards API operation for Amazon Kinesis.
 //
 // Lists the shards in a stream and provides information about each shard. This
-// operation has a limit of 100 transactions per second per data stream.
+// operation has a limit of 1000 transactions per second per data stream.
+//
+// This action does not list expired shards. For information about expired shards,
+// see Data Routing, Data Persistence, and Shard State after a Reshard (https://docs.aws.amazon.com/streams/latest/dev/kinesis-using-sdk-java-after-resharding.html#kinesis-using-sdk-java-resharding-data-routing).
 //
 // This API is a new operation that is used by the Amazon Kinesis Client Library
 // (KCL). If you have a fine-grained IAM policy that only allows specific operations,
@@ -1732,7 +1744,7 @@ func (c *Kinesis) ListStreamConsumersRequest(input *ListStreamConsumersInput) (r
 // Lists the consumers registered to receive data from a stream using enhanced
 // fan-out, and provides information about each consumer.
 //
-// This operation has a limit of 10 transactions per second per account.
+// This operation has a limit of 5 transactions per second per stream.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -1890,7 +1902,7 @@ func (c *Kinesis) ListStreamsRequest(input *ListStreamsInput) (req *request.Requ
 // The number of streams may be too large to return from a single call to ListStreams.
 // You can limit the number of returned streams using the Limit parameter. If
 // you do not specify a value for the Limit parameter, Kinesis Data Streams
-// uses the default limit, which is currently 10.
+// uses the default limit, which is currently 100.
 //
 // You can detect if there are more streams available to list by using the HasMoreStreams
 // flag from the returned output. If there are more streams available, you can
@@ -2135,15 +2147,15 @@ func (c *Kinesis) MergeShardsRequest(input *MergeShardsInput) (req *request.Requ
 // MergeShards is called when there is a need to reduce the overall capacity
 // of a stream because of excess capacity that is not being used. You must specify
 // the shard to be merged and the adjacent shard for a stream. For more information
-// about merging shards, see Merge Two Shards (http://docs.aws.amazon.com/kinesis/latest/dev/kinesis-using-sdk-java-resharding-merge.html)
+// about merging shards, see Merge Two Shards (https://docs.aws.amazon.com/kinesis/latest/dev/kinesis-using-sdk-java-resharding-merge.html)
 // in the Amazon Kinesis Data Streams Developer Guide.
 //
 // If the stream is in the ACTIVE state, you can call MergeShards. If a stream
 // is in the CREATING, UPDATING, or DELETING state, MergeShards returns a ResourceInUseException.
 // If the specified stream does not exist, MergeShards returns a ResourceNotFoundException.
 //
-// You can use DescribeStream to check the state of the stream, which is returned
-// in StreamStatus.
+// You can use DescribeStreamSummary to check the state of the stream, which
+// is returned in StreamStatus.
 //
 // MergeShards is an asynchronous operation. Upon receiving a MergeShards request,
 // Amazon Kinesis Data Streams immediately returns a response and sets the StreamStatus
@@ -2151,8 +2163,8 @@ func (c *Kinesis) MergeShardsRequest(input *MergeShardsInput) (req *request.Requ
 // the StreamStatus to ACTIVE. Read and write operations continue to work while
 // the stream is in the UPDATING state.
 //
-// You use DescribeStream to determine the shard IDs that are specified in the
-// MergeShards request.
+// You use DescribeStreamSummary and the ListShards APIs to determine the shard
+// IDs that are specified in the MergeShards request.
 //
 // If you try to operate on too many streams in parallel using CreateStream,
 // DeleteStream, MergeShards, or SplitShard, you receive a LimitExceededException.
@@ -2182,6 +2194,8 @@ func (c *Kinesis) MergeShardsRequest(input *MergeShardsInput) (req *request.Requ
 //   * LimitExceededException
 //   The requested resource exceeds the maximum number allowed, or the number
 //   of concurrent stream requests exceeds the maximum number allowed.
+//
+//   * ValidationException
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/kinesis-2013-12-02/MergeShards
 func (c *Kinesis) MergeShards(input *MergeShardsInput) (*MergeShardsOutput, error) {
@@ -2252,7 +2266,7 @@ func (c *Kinesis) PutRecordRequest(input *PutRecordInput) (req *request.Request,
 // Writes a single data record into an Amazon Kinesis data stream. Call PutRecord
 // to send data into the stream for real-time ingestion and subsequent processing,
 // one record at a time. Each shard can support writes up to 1,000 records per
-// second, up to a maximum data write total of 1 MB per second.
+// second, up to a maximum data write total of 1 MiB per second.
 //
 // You must specify the name of the stream that captures, stores, and transports
 // the data; a partition key; and the data blob itself.
@@ -2270,7 +2284,7 @@ func (c *Kinesis) PutRecordRequest(input *PutRecordInput) (req *request.Request,
 // integer values and to map associated data records to shards using the hash
 // key ranges of the shards. You can override hashing the partition key to determine
 // the shard by explicitly specifying a hash value using the ExplicitHashKey
-// parameter. For more information, see Adding Data to a Stream (http://docs.aws.amazon.com/kinesis/latest/dev/developing-producers-with-sdk.html#kinesis-using-sdk-java-add-data-to-stream)
+// parameter. For more information, see Adding Data to a Stream (https://docs.aws.amazon.com/kinesis/latest/dev/developing-producers-with-sdk.html#kinesis-using-sdk-java-add-data-to-stream)
 // in the Amazon Kinesis Data Streams Developer Guide.
 //
 // PutRecord returns the shard ID of where the data record was placed and the
@@ -2279,8 +2293,11 @@ func (c *Kinesis) PutRecordRequest(input *PutRecordInput) (req *request.Request,
 // Sequence numbers increase over time and are specific to a shard within a
 // stream, not across all shards within a stream. To guarantee strictly increasing
 // ordering, write serially to a shard and use the SequenceNumberForOrdering
-// parameter. For more information, see Adding Data to a Stream (http://docs.aws.amazon.com/kinesis/latest/dev/developing-producers-with-sdk.html#kinesis-using-sdk-java-add-data-to-stream)
+// parameter. For more information, see Adding Data to a Stream (https://docs.aws.amazon.com/kinesis/latest/dev/developing-producers-with-sdk.html#kinesis-using-sdk-java-add-data-to-stream)
 // in the Amazon Kinesis Data Streams Developer Guide.
+//
+// After you write a record to a stream, you cannot modify that record or its
+// order within the stream.
 //
 // If a PutRecord request cannot be processed because of insufficient provisioned
 // throughput on the shard involved in the request, PutRecord throws ProvisionedThroughputExceededException.
@@ -2308,10 +2325,10 @@ func (c *Kinesis) PutRecordRequest(input *PutRecordInput) (req *request.Request,
 //   * ProvisionedThroughputExceededException
 //   The request rate for the stream is too high, or the requested data is too
 //   large for the available throughput. Reduce the frequency or size of your
-//   requests. For more information, see Streams Limits (http://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
+//   requests. For more information, see Streams Limits (https://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
 //   in the Amazon Kinesis Data Streams Developer Guide, and Error Retries and
-//   Exponential Backoff in AWS (http://docs.aws.amazon.com/general/latest/gr/api-retries.html)
-//   in the AWS General Reference.
+//   Exponential Backoff in Amazon Web Services (https://docs.aws.amazon.com/general/latest/gr/api-retries.html)
+//   in the Amazon Web Services General Reference.
 //
 //   * KMSDisabledException
 //   The request was rejected because the specified customer master key (CMK)
@@ -2320,8 +2337,8 @@ func (c *Kinesis) PutRecordRequest(input *PutRecordInput) (req *request.Request,
 //   * KMSInvalidStateException
 //   The request was rejected because the state of the specified resource isn't
 //   valid for this request. For more information, see How Key State Affects Use
-//   of a Customer Master Key (http://docs.aws.amazon.com/kms/latest/developerguide/key-state.html)
-//   in the AWS Key Management Service Developer Guide.
+//   of a Customer Master Key (https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html)
+//   in the Amazon Web Services Key Management Service Developer Guide.
 //
 //   * KMSAccessDeniedException
 //   The ciphertext references a key that doesn't exist or that you don't have
@@ -2332,12 +2349,12 @@ func (c *Kinesis) PutRecordRequest(input *PutRecordInput) (req *request.Request,
 //   found.
 //
 //   * KMSOptInRequired
-//   The AWS access key ID needs a subscription for the service.
+//   The Amazon Web Services access key ID needs a subscription for the service.
 //
 //   * KMSThrottlingException
 //   The request was denied due to request throttling. For more information about
-//   throttling, see Limits (http://docs.aws.amazon.com/kms/latest/developerguide/limits.html#requests-per-second)
-//   in the AWS Key Management Service Developer Guide.
+//   throttling, see Limits (https://docs.aws.amazon.com/kms/latest/developerguide/limits.html#requests-per-second)
+//   in the Amazon Web Services Key Management Service Developer Guide.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/kinesis-2013-12-02/PutRecord
 func (c *Kinesis) PutRecord(input *PutRecordInput) (*PutRecordOutput, error) {
@@ -2410,9 +2427,9 @@ func (c *Kinesis) PutRecordsRequest(input *PutRecordsInput) (req *request.Reques
 // into the stream for data ingestion and processing.
 //
 // Each PutRecords request can support up to 500 records. Each record in the
-// request can be as large as 1 MB, up to a limit of 5 MB for the entire request,
+// request can be as large as 1 MiB, up to a limit of 5 MiB for the entire request,
 // including partition keys. Each shard can support writes up to 1,000 records
-// per second, up to a maximum data write total of 1 MB per second.
+// per second, up to a maximum data write total of 1 MiB per second.
 //
 // You must specify the name of the stream that captures, stores, and transports
 // the data; and an array of request Records, with each record in the array
@@ -2427,13 +2444,13 @@ func (c *Kinesis) PutRecordsRequest(input *PutRecordsInput) (req *request.Reques
 // hash function is used to map partition keys to 128-bit integer values and
 // to map associated data records to shards. As a result of this hashing mechanism,
 // all data records with the same partition key map to the same shard within
-// the stream. For more information, see Adding Data to a Stream (http://docs.aws.amazon.com/kinesis/latest/dev/developing-producers-with-sdk.html#kinesis-using-sdk-java-add-data-to-stream)
+// the stream. For more information, see Adding Data to a Stream (https://docs.aws.amazon.com/kinesis/latest/dev/developing-producers-with-sdk.html#kinesis-using-sdk-java-add-data-to-stream)
 // in the Amazon Kinesis Data Streams Developer Guide.
 //
 // Each record in the Records array may include an optional parameter, ExplicitHashKey,
 // which overrides the partition key to shard mapping. This parameter allows
 // a data producer to determine explicitly the shard where the record is stored.
-// For more information, see Adding Multiple Records with PutRecords (http://docs.aws.amazon.com/kinesis/latest/dev/developing-producers-with-sdk.html#kinesis-using-sdk-java-putrecords)
+// For more information, see Adding Multiple Records with PutRecords (https://docs.aws.amazon.com/kinesis/latest/dev/developing-producers-with-sdk.html#kinesis-using-sdk-java-putrecords)
 // in the Amazon Kinesis Data Streams Developer Guide.
 //
 // The PutRecords response includes an array of response Records. Each record
@@ -2445,7 +2462,10 @@ func (c *Kinesis) PutRecordsRequest(input *PutRecordsInput) (req *request.Reques
 // The response Records array includes both successfully and unsuccessfully
 // processed records. Kinesis Data Streams attempts to process all records in
 // each PutRecords request. A single record failure does not stop the processing
-// of subsequent records.
+// of subsequent records. As a result, PutRecords doesn't guarantee the ordering
+// of records. If you need to read records in the same order they are written
+// to the stream, use PutRecord instead of PutRecords, and write to the same
+// shard.
 //
 // A successfully processed record includes ShardId and SequenceNumber values.
 // The ShardId parameter identifies the shard in the stream where the record
@@ -2458,8 +2478,11 @@ func (c *Kinesis) PutRecordsRequest(input *PutRecordsInput) (req *request.Reques
 // more detailed information about the ProvisionedThroughputExceededException
 // exception including the account ID, stream name, and shard ID of the record
 // that was throttled. For more information about partially successful responses,
-// see Adding Multiple Records with PutRecords (http://docs.aws.amazon.com/kinesis/latest/dev/kinesis-using-sdk-java-add-data-to-stream.html#kinesis-using-sdk-java-putrecords)
+// see Adding Multiple Records with PutRecords (https://docs.aws.amazon.com/kinesis/latest/dev/kinesis-using-sdk-java-add-data-to-stream.html#kinesis-using-sdk-java-putrecords)
 // in the Amazon Kinesis Data Streams Developer Guide.
+//
+// After you write a record to a stream, you cannot modify that record or its
+// order within the stream.
 //
 // By default, data records are accessible for 24 hours from the time that they
 // are added to a stream. You can use IncreaseStreamRetentionPeriod or DecreaseStreamRetentionPeriod
@@ -2484,10 +2507,10 @@ func (c *Kinesis) PutRecordsRequest(input *PutRecordsInput) (req *request.Reques
 //   * ProvisionedThroughputExceededException
 //   The request rate for the stream is too high, or the requested data is too
 //   large for the available throughput. Reduce the frequency or size of your
-//   requests. For more information, see Streams Limits (http://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
+//   requests. For more information, see Streams Limits (https://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
 //   in the Amazon Kinesis Data Streams Developer Guide, and Error Retries and
-//   Exponential Backoff in AWS (http://docs.aws.amazon.com/general/latest/gr/api-retries.html)
-//   in the AWS General Reference.
+//   Exponential Backoff in Amazon Web Services (https://docs.aws.amazon.com/general/latest/gr/api-retries.html)
+//   in the Amazon Web Services General Reference.
 //
 //   * KMSDisabledException
 //   The request was rejected because the specified customer master key (CMK)
@@ -2496,8 +2519,8 @@ func (c *Kinesis) PutRecordsRequest(input *PutRecordsInput) (req *request.Reques
 //   * KMSInvalidStateException
 //   The request was rejected because the state of the specified resource isn't
 //   valid for this request. For more information, see How Key State Affects Use
-//   of a Customer Master Key (http://docs.aws.amazon.com/kms/latest/developerguide/key-state.html)
-//   in the AWS Key Management Service Developer Guide.
+//   of a Customer Master Key (https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html)
+//   in the Amazon Web Services Key Management Service Developer Guide.
 //
 //   * KMSAccessDeniedException
 //   The ciphertext references a key that doesn't exist or that you don't have
@@ -2508,12 +2531,12 @@ func (c *Kinesis) PutRecordsRequest(input *PutRecordsInput) (req *request.Reques
 //   found.
 //
 //   * KMSOptInRequired
-//   The AWS access key ID needs a subscription for the service.
+//   The Amazon Web Services access key ID needs a subscription for the service.
 //
 //   * KMSThrottlingException
 //   The request was denied due to request throttling. For more information about
-//   throttling, see Limits (http://docs.aws.amazon.com/kms/latest/developerguide/limits.html#requests-per-second)
-//   in the AWS Key Management Service Developer Guide.
+//   throttling, see Limits (https://docs.aws.amazon.com/kms/latest/developerguide/limits.html#requests-per-second)
+//   in the Amazon Web Services Key Management Service Developer Guide.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/kinesis-2013-12-02/PutRecords
 func (c *Kinesis) PutRecords(input *PutRecordsInput) (*PutRecordsOutput, error) {
@@ -2582,14 +2605,22 @@ func (c *Kinesis) RegisterStreamConsumerRequest(input *RegisterStreamConsumerInp
 // RegisterStreamConsumer API operation for Amazon Kinesis.
 //
 // Registers a consumer with a Kinesis data stream. When you use this operation,
-// the consumer you register can read data from the stream at a rate of up to
-// 2 MiB per second. This rate is unaffected by the total number of consumers
-// that read from the same stream.
+// the consumer you register can then call SubscribeToShard to receive data
+// from the stream using enhanced fan-out, at a rate of up to 2 MiB per second
+// for every shard you subscribe to. This rate is unaffected by the total number
+// of consumers that read from the same stream.
 //
-// You can register up to 5 consumers per stream. A given consumer can only
-// be registered with one stream.
+// You can register up to 20 consumers per stream. A given consumer can only
+// be registered with one stream at a time.
 //
-// This operation has a limit of five transactions per second per account.
+// For an example of how to use this operations, see Enhanced Fan-Out Using
+// the Kinesis Data Streams API (/streams/latest/dev/building-enhanced-consumers-api.html).
+//
+// The use of this operation has a limit of five transactions per second per
+// account. Also, only 5 consumers can be created simultaneously. In other words,
+// you cannot have more than 5 consumers in a CREATING status at the same time.
+// Registering a 6th consumer while there are 5 in a CREATING status results
+// in a LimitExceededException.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -2795,12 +2826,12 @@ func (c *Kinesis) SplitShardRequest(input *SplitShardInput) (req *request.Reques
 // position in the shard where the shard gets split in two. In many cases, the
 // new hash key might be the average of the beginning and ending hash key, but
 // it can be any hash key value in the range being mapped into the shard. For
-// more information, see Split a Shard (http://docs.aws.amazon.com/kinesis/latest/dev/kinesis-using-sdk-java-resharding-split.html)
+// more information, see Split a Shard (https://docs.aws.amazon.com/kinesis/latest/dev/kinesis-using-sdk-java-resharding-split.html)
 // in the Amazon Kinesis Data Streams Developer Guide.
 //
-// You can use DescribeStream to determine the shard ID and hash key values
-// for the ShardToSplit and NewStartingHashKey parameters that are specified
-// in the SplitShard request.
+// You can use DescribeStreamSummary and the ListShards APIs to determine the
+// shard ID and hash key values for the ShardToSplit and NewStartingHashKey
+// parameters that are specified in the SplitShard request.
 //
 // SplitShard is an asynchronous operation. Upon receiving a SplitShard request,
 // Kinesis Data Streams immediately returns a response and sets the stream status
@@ -2808,19 +2839,18 @@ func (c *Kinesis) SplitShardRequest(input *SplitShardInput) (req *request.Reques
 // the stream status to ACTIVE. Read and write operations continue to work while
 // the stream is in the UPDATING state.
 //
-// You can use DescribeStream to check the status of the stream, which is returned
-// in StreamStatus. If the stream is in the ACTIVE state, you can call SplitShard.
-// If a stream is in CREATING or UPDATING or DELETING states, DescribeStream
-// returns a ResourceInUseException.
+// You can use DescribeStreamSummary to check the status of the stream, which
+// is returned in StreamStatus. If the stream is in the ACTIVE state, you can
+// call SplitShard.
 //
-// If the specified stream does not exist, DescribeStream returns a ResourceNotFoundException.
+// If the specified stream does not exist, DescribeStreamSummary returns a ResourceNotFoundException.
 // If you try to create more shards than are authorized for your account, you
 // receive a LimitExceededException.
 //
-// For the default shard limit for an AWS account, see Kinesis Data Streams
-// Limits (http://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
+// For the default shard limit for an Amazon Web Services account, see Kinesis
+// Data Streams Limits (https://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
 // in the Amazon Kinesis Data Streams Developer Guide. To increase this limit,
-// contact AWS Support (http://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html).
+// contact Amazon Web Services Support (https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html).
 //
 // If you try to operate on too many streams simultaneously using CreateStream,
 // DeleteStream, MergeShards, and/or SplitShard, you receive a LimitExceededException.
@@ -2850,6 +2880,8 @@ func (c *Kinesis) SplitShardRequest(input *SplitShardInput) (req *request.Reques
 //   * LimitExceededException
 //   The requested resource exceeds the maximum number allowed, or the number
 //   of concurrent stream requests exceeds the maximum number allowed.
+//
+//   * ValidationException
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/kinesis-2013-12-02/SplitShard
 func (c *Kinesis) SplitShard(input *SplitShardInput) (*SplitShardOutput, error) {
@@ -2918,8 +2950,8 @@ func (c *Kinesis) StartStreamEncryptionRequest(input *StartStreamEncryptionInput
 
 // StartStreamEncryption API operation for Amazon Kinesis.
 //
-// Enables or updates server-side encryption using an AWS KMS key for a specified
-// stream.
+// Enables or updates server-side encryption using an Amazon Web Services KMS
+// key for a specified stream.
 //
 // Starting encryption is an asynchronous operation. Upon receiving the request,
 // Kinesis Data Streams returns immediately and sets the status of the stream
@@ -2930,8 +2962,8 @@ func (c *Kinesis) StartStreamEncryptionRequest(input *StartStreamEncryptionInput
 // the status of the stream is ACTIVE, encryption begins for records written
 // to the stream.
 //
-// API Limits: You can successfully apply a new AWS KMS key for server-side
-// encryption 25 times in a rolling 24-hour period.
+// API Limits: You can successfully apply a new Amazon Web Services KMS key
+// for server-side encryption 25 times in a rolling 24-hour period.
 //
 // Note: It can take up to 5 seconds after the stream is in an ACTIVE status
 // before all records written to the stream are encrypted. After you enable
@@ -2969,8 +3001,8 @@ func (c *Kinesis) StartStreamEncryptionRequest(input *StartStreamEncryptionInput
 //   * KMSInvalidStateException
 //   The request was rejected because the state of the specified resource isn't
 //   valid for this request. For more information, see How Key State Affects Use
-//   of a Customer Master Key (http://docs.aws.amazon.com/kms/latest/developerguide/key-state.html)
-//   in the AWS Key Management Service Developer Guide.
+//   of a Customer Master Key (https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html)
+//   in the Amazon Web Services Key Management Service Developer Guide.
 //
 //   * KMSAccessDeniedException
 //   The ciphertext references a key that doesn't exist or that you don't have
@@ -2981,12 +3013,12 @@ func (c *Kinesis) StartStreamEncryptionRequest(input *StartStreamEncryptionInput
 //   found.
 //
 //   * KMSOptInRequired
-//   The AWS access key ID needs a subscription for the service.
+//   The Amazon Web Services access key ID needs a subscription for the service.
 //
 //   * KMSThrottlingException
 //   The request was denied due to request throttling. For more information about
-//   throttling, see Limits (http://docs.aws.amazon.com/kms/latest/developerguide/limits.html#requests-per-second)
-//   in the AWS Key Management Service Developer Guide.
+//   throttling, see Limits (https://docs.aws.amazon.com/kms/latest/developerguide/limits.html#requests-per-second)
+//   in the Amazon Web Services Key Management Service Developer Guide.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/kinesis-2013-12-02/StartStreamEncryption
 func (c *Kinesis) StartStreamEncryption(input *StartStreamEncryptionInput) (*StartStreamEncryptionOutput, error) {
@@ -3160,7 +3192,7 @@ func (c *Kinesis) SubscribeToShardRequest(input *SubscribeToShardInput) (req *re
 	output = &SubscribeToShardOutput{}
 	req = c.newRequest(op, input, output)
 
-	es := newSubscribeToShardEventStream()
+	es := NewSubscribeToShardEventStream()
 	req.Handlers.Unmarshal.PushBack(es.setStreamCloser)
 	output.EventStream = es
 
@@ -3175,17 +3207,32 @@ func (c *Kinesis) SubscribeToShardRequest(input *SubscribeToShardInput) (req *re
 
 // SubscribeToShard API operation for Amazon Kinesis.
 //
-// Call this operation from your consumer after you call RegisterStreamConsumer
-// to register the consumer with Kinesis Data Streams. If the call succeeds,
-// your consumer starts receiving events of type SubscribeToShardEvent for up
-// to 5 minutes, after which time you need to call SubscribeToShard again to
-// renew the subscription if you want to continue to receive records.
+// This operation establishes an HTTP/2 connection between the consumer you
+// specify in the ConsumerARN parameter and the shard you specify in the ShardId
+// parameter. After the connection is successfully established, Kinesis Data
+// Streams pushes records from the shard to the consumer over this connection.
+// Before you call this operation, call RegisterStreamConsumer to register the
+// consumer with Kinesis Data Streams.
 //
-// You can make one call to SubscribeToShard per second per ConsumerARN. If
-// your call succeeds, and then you call the operation again less than 5 seconds
-// later, the second call generates a ResourceInUseException. If you call the
-// operation a second time more than 5 seconds after the first call succeeds,
-// the second call succeeds and the first connection gets shut down.
+// When the SubscribeToShard call succeeds, your consumer starts receiving events
+// of type SubscribeToShardEvent over the HTTP/2 connection for up to 5 minutes,
+// after which time you need to call SubscribeToShard again to renew the subscription
+// if you want to continue to receive records.
+//
+// You can make one call to SubscribeToShard per second per registered consumer
+// per shard. For example, if you have a 4000 shard stream and two registered
+// stream consumers, you can make one SubscribeToShard request per second for
+// each combination of shard and registered consumer, allowing you to subscribe
+// both consumers to all 4000 shards in one second.
+//
+// If you call SubscribeToShard again with the same ConsumerARN and ShardId
+// within 5 seconds of a successful call, you'll get a ResourceInUseException.
+// If you call SubscribeToShard 5 seconds or more after a successful call, the
+// second call takes over the subscription and the previous connection expires
+// or fails with a ResourceInUseException.
+//
+// For an example of how to use this operations, see Enhanced Fan-Out Using
+// the Kinesis Data Streams API (/streams/latest/dev/building-enhanced-consumers-api.html).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -3233,7 +3280,13 @@ func (c *Kinesis) SubscribeToShardWithContext(ctx aws.Context, input *SubscribeT
 	return out, req.Send()
 }
 
+var _ awserr.Error
+
 // SubscribeToShardEventStream provides the event stream handling for the SubscribeToShard.
+//
+// For testing and mocking the event stream this type should be initialized via
+// the NewSubscribeToShardEventStream constructor function. Using the functional options
+// to pass in nested mock behavior.
 type SubscribeToShardEventStream struct {
 
 	// Reader is the EventStream reader for the SubscribeToShardEventStream
@@ -3257,11 +3310,31 @@ type SubscribeToShardEventStream struct {
 	err       *eventstreamapi.OnceError
 }
 
-func newSubscribeToShardEventStream() *SubscribeToShardEventStream {
-	return &SubscribeToShardEventStream{
+// NewSubscribeToShardEventStream initializes an SubscribeToShardEventStream.
+// This function should only be used for testing and mocking the SubscribeToShardEventStream
+// stream within your application.
+//
+// The Reader member must be set before reading events from the stream.
+//
+// The StreamCloser member should be set to the underlying io.Closer,
+// (e.g. http.Response.Body), that will be closed when the stream Close method
+// is called.
+//
+//   es := NewSubscribeToShardEventStream(func(o *SubscribeToShardEventStream{
+//       es.Reader = myMockStreamReader
+//       es.StreamCloser = myMockStreamCloser
+//   })
+func NewSubscribeToShardEventStream(opts ...func(*SubscribeToShardEventStream)) *SubscribeToShardEventStream {
+	es := &SubscribeToShardEventStream{
 		done: make(chan struct{}),
 		err:  eventstreamapi.NewOnceError(),
 	}
+
+	for _, fn := range opts {
+		fn(es)
+	}
+
+	return es
 }
 
 func (es *SubscribeToShardEventStream) setStreamCloser(r *request.Request) {
@@ -3316,6 +3389,7 @@ func (e eventTypeForSubscribeToShardEventStreamOutputEvent) UnmarshalerForEventN
 // These events are:
 //
 //     * SubscribeToShardEvent
+//     * SubscribeToShardEventStreamUnknownEvent
 func (es *SubscribeToShardEventStream) Events() <-chan SubscribeToShardEventStreamEvent {
 	return es.Reader.Events()
 }
@@ -3467,26 +3541,32 @@ func (c *Kinesis) UpdateShardCountRequest(input *UpdateShardCountInput) (req *re
 //
 // To update the shard count, Kinesis Data Streams performs splits or merges
 // on individual shards. This can cause short-lived shards to be created, in
-// addition to the final shards. We recommend that you double or halve the shard
-// count, as this results in the fewest number of splits or merges.
+// addition to the final shards. These short-lived shards count towards your
+// total shard limit for your account in the Region.
+//
+// When using this operation, we recommend that you specify a target shard count
+// that is a multiple of 25% (25%, 50%, 75%, 100%). You can specify any target
+// value within your shard limit. However, if you specify a target that isn't
+// a multiple of 25%, the scaling action might take longer to complete.
 //
 // This operation has the following default limits. By default, you cannot do
 // the following:
 //
-//    * Scale more than twice per rolling 24-hour period per stream
+//    * Scale more than ten times per rolling 24-hour period per stream
 //
 //    * Scale up to more than double your current shard count for a stream
 //
 //    * Scale down below half your current shard count for a stream
 //
-//    * Scale up to more than 500 shards in a stream
+//    * Scale up to more than 10000 shards in a stream
 //
-//    * Scale a stream with more than 500 shards down unless the result is less
-//    than 500 shards
+//    * Scale a stream with more than 10000 shards down unless the result is
+//    less than 10000 shards
 //
 //    * Scale up to more than the shard limit for your account
 //
-// For the default limits for an AWS account, see Streams Limits (http://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
+// For the default limits for an Amazon Web Services account, see Streams Limits
+// (https://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
 // in the Amazon Kinesis Data Streams Developer Guide. To request an increase
 // in the call rate limit, the shard limit for this API, or your overall shard
 // limit, use the limits form (https://console.aws.amazon.com/support/v1#/case/create?issueType=service-limit-increase&limitType=service-code-kinesis).
@@ -3515,6 +3595,8 @@ func (c *Kinesis) UpdateShardCountRequest(input *UpdateShardCountInput) (req *re
 //   The requested resource could not be found. The stream might not be specified
 //   correctly.
 //
+//   * ValidationException
+//
 // See also, https://docs.aws.amazon.com/goto/WebAPI/kinesis-2013-12-02/UpdateShardCount
 func (c *Kinesis) UpdateShardCount(input *UpdateShardCountInput) (*UpdateShardCountOutput, error) {
 	req, out := c.UpdateShardCountRequest(input)
@@ -3537,6 +3619,101 @@ func (c *Kinesis) UpdateShardCountWithContext(ctx aws.Context, input *UpdateShar
 	return out, req.Send()
 }
 
+const opUpdateStreamMode = "UpdateStreamMode"
+
+// UpdateStreamModeRequest generates a "aws/request.Request" representing the
+// client's request for the UpdateStreamMode operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See UpdateStreamMode for more information on using the UpdateStreamMode
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the UpdateStreamModeRequest method.
+//    req, resp := client.UpdateStreamModeRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/kinesis-2013-12-02/UpdateStreamMode
+func (c *Kinesis) UpdateStreamModeRequest(input *UpdateStreamModeInput) (req *request.Request, output *UpdateStreamModeOutput) {
+	op := &request.Operation{
+		Name:       opUpdateStreamMode,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+	}
+
+	if input == nil {
+		input = &UpdateStreamModeInput{}
+	}
+
+	output = &UpdateStreamModeOutput{}
+	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(jsonrpc.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
+	return
+}
+
+// UpdateStreamMode API operation for Amazon Kinesis.
+//
+// Updates the capacity mode of the data stream. Currently, in Kinesis Data
+// Streams, you can choose between an on-demand capacity mode and a provisioned
+// capacity mode for your data stream.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Kinesis's
+// API operation UpdateStreamMode for usage and error information.
+//
+// Returned Error Types:
+//   * InvalidArgumentException
+//   A specified parameter exceeds its restrictions, is not supported, or can't
+//   be used. For more information, see the returned message.
+//
+//   * LimitExceededException
+//   The requested resource exceeds the maximum number allowed, or the number
+//   of concurrent stream requests exceeds the maximum number allowed.
+//
+//   * ResourceInUseException
+//   The resource is not available for this operation. For successful operation,
+//   the resource must be in the ACTIVE state.
+//
+//   * ResourceNotFoundException
+//   The requested resource could not be found. The stream might not be specified
+//   correctly.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/kinesis-2013-12-02/UpdateStreamMode
+func (c *Kinesis) UpdateStreamMode(input *UpdateStreamModeInput) (*UpdateStreamModeOutput, error) {
+	req, out := c.UpdateStreamModeRequest(input)
+	return out, req.Send()
+}
+
+// UpdateStreamModeWithContext is the same as UpdateStreamMode with the addition of
+// the ability to pass a context and additional request options.
+//
+// See UpdateStreamMode for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *Kinesis) UpdateStreamModeWithContext(ctx aws.Context, input *UpdateStreamModeInput, opts ...request.Option) (*UpdateStreamModeOutput, error) {
+	req, out := c.UpdateStreamModeRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
 // Represents the input for AddTagsToStream.
 type AddTagsToStreamInput struct {
 	_ struct{} `type:"structure"`
@@ -3552,12 +3729,20 @@ type AddTagsToStreamInput struct {
 	Tags map[string]*string `min:"1" type:"map" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s AddTagsToStreamInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s AddTagsToStreamInput) GoString() string {
 	return s.String()
 }
@@ -3600,17 +3785,84 @@ type AddTagsToStreamOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s AddTagsToStreamOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s AddTagsToStreamOutput) GoString() string {
 	return s.String()
 }
 
-// An object that represents the details of the consumer you registered.
+// Output parameter of the GetRecords API. The existing child shard of the current
+// shard.
+type ChildShard struct {
+	_ struct{} `type:"structure"`
+
+	// The range of possible hash key values for the shard, which is a set of ordered
+	// contiguous positive integers.
+	//
+	// HashKeyRange is a required field
+	HashKeyRange *HashKeyRange `type:"structure" required:"true"`
+
+	// The current shard that is the parent of the existing child shard.
+	//
+	// ParentShards is a required field
+	ParentShards []*string `type:"list" required:"true"`
+
+	// The shard ID of the existing child shard of the current shard.
+	//
+	// ShardId is a required field
+	ShardId *string `min:"1" type:"string" required:"true"`
+}
+
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
+func (s ChildShard) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
+func (s ChildShard) GoString() string {
+	return s.String()
+}
+
+// SetHashKeyRange sets the HashKeyRange field's value.
+func (s *ChildShard) SetHashKeyRange(v *HashKeyRange) *ChildShard {
+	s.HashKeyRange = v
+	return s
+}
+
+// SetParentShards sets the ParentShards field's value.
+func (s *ChildShard) SetParentShards(v []*string) *ChildShard {
+	s.ParentShards = v
+	return s
+}
+
+// SetShardId sets the ShardId field's value.
+func (s *ChildShard) SetShardId(v string) *ChildShard {
+	s.ShardId = &v
+	return s
+}
+
+// An object that represents the details of the consumer you registered. This
+// type of object is returned by RegisterStreamConsumer.
 type Consumer struct {
 	_ struct{} `type:"structure"`
 
@@ -3639,12 +3891,20 @@ type Consumer struct {
 	ConsumerStatus *string `type:"string" required:"true" enum:"ConsumerStatus"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s Consumer) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s Consumer) GoString() string {
 	return s.String()
 }
@@ -3673,7 +3933,8 @@ func (s *Consumer) SetConsumerStatus(v string) *Consumer {
 	return s
 }
 
-// An object that represents the details of a registered consumer.
+// An object that represents the details of a registered consumer. This type
+// of object is returned by DescribeStreamConsumer.
 type ConsumerDescription struct {
 	_ struct{} `type:"structure"`
 
@@ -3707,12 +3968,20 @@ type ConsumerDescription struct {
 	StreamARN *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ConsumerDescription) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ConsumerDescription) GoString() string {
 	return s.String()
 }
@@ -3754,28 +4023,38 @@ type CreateStreamInput struct {
 	// The number of shards that the stream will use. The throughput of the stream
 	// is a function of the number of shards; more shards are required for greater
 	// provisioned throughput.
-	//
-	// DefaultShardLimit;
-	//
-	// ShardCount is a required field
-	ShardCount *int64 `min:"1" type:"integer" required:"true"`
+	ShardCount *int64 `min:"1" type:"integer"`
 
-	// A name to identify the stream. The stream name is scoped to the AWS account
-	// used by the application that creates the stream. It is also scoped by AWS
-	// Region. That is, two streams in two different AWS accounts can have the same
-	// name. Two streams in the same AWS account but in two different Regions can
-	// also have the same name.
+	// Indicates the capacity mode of the data stream. Currently, in Kinesis Data
+	// Streams, you can choose between an on-demand capacity mode and a provisioned
+	// capacity mode for your data streams.
+	StreamModeDetails *StreamModeDetails `type:"structure"`
+
+	// A name to identify the stream. The stream name is scoped to the Amazon Web
+	// Services account used by the application that creates the stream. It is also
+	// scoped by Amazon Web Services Region. That is, two streams in two different
+	// Amazon Web Services accounts can have the same name. Two streams in the same
+	// Amazon Web Services account but in two different Regions can also have the
+	// same name.
 	//
 	// StreamName is a required field
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s CreateStreamInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s CreateStreamInput) GoString() string {
 	return s.String()
 }
@@ -3783,9 +4062,6 @@ func (s CreateStreamInput) GoString() string {
 // Validate inspects the fields of the type to determine if they are valid.
 func (s *CreateStreamInput) Validate() error {
 	invalidParams := request.ErrInvalidParams{Context: "CreateStreamInput"}
-	if s.ShardCount == nil {
-		invalidParams.Add(request.NewErrParamRequired("ShardCount"))
-	}
 	if s.ShardCount != nil && *s.ShardCount < 1 {
 		invalidParams.Add(request.NewErrParamMinValue("ShardCount", 1))
 	}
@@ -3794,6 +4070,11 @@ func (s *CreateStreamInput) Validate() error {
 	}
 	if s.StreamName != nil && len(*s.StreamName) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("StreamName", 1))
+	}
+	if s.StreamModeDetails != nil {
+		if err := s.StreamModeDetails.Validate(); err != nil {
+			invalidParams.AddNested("StreamModeDetails", err.(request.ErrInvalidParams))
+		}
 	}
 
 	if invalidParams.Len() > 0 {
@@ -3808,6 +4089,12 @@ func (s *CreateStreamInput) SetShardCount(v int64) *CreateStreamInput {
 	return s
 }
 
+// SetStreamModeDetails sets the StreamModeDetails field's value.
+func (s *CreateStreamInput) SetStreamModeDetails(v *StreamModeDetails) *CreateStreamInput {
+	s.StreamModeDetails = v
+	return s
+}
+
 // SetStreamName sets the StreamName field's value.
 func (s *CreateStreamInput) SetStreamName(v string) *CreateStreamInput {
 	s.StreamName = &v
@@ -3818,12 +4105,20 @@ type CreateStreamOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s CreateStreamOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s CreateStreamOutput) GoString() string {
 	return s.String()
 }
@@ -3836,7 +4131,7 @@ type DecreaseStreamRetentionPeriodInput struct {
 	// retention period.
 	//
 	// RetentionPeriodHours is a required field
-	RetentionPeriodHours *int64 `min:"1" type:"integer" required:"true"`
+	RetentionPeriodHours *int64 `type:"integer" required:"true"`
 
 	// The name of the stream to modify.
 	//
@@ -3844,12 +4139,20 @@ type DecreaseStreamRetentionPeriodInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DecreaseStreamRetentionPeriodInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DecreaseStreamRetentionPeriodInput) GoString() string {
 	return s.String()
 }
@@ -3859,9 +4162,6 @@ func (s *DecreaseStreamRetentionPeriodInput) Validate() error {
 	invalidParams := request.ErrInvalidParams{Context: "DecreaseStreamRetentionPeriodInput"}
 	if s.RetentionPeriodHours == nil {
 		invalidParams.Add(request.NewErrParamRequired("RetentionPeriodHours"))
-	}
-	if s.RetentionPeriodHours != nil && *s.RetentionPeriodHours < 1 {
-		invalidParams.Add(request.NewErrParamMinValue("RetentionPeriodHours", 1))
 	}
 	if s.StreamName == nil {
 		invalidParams.Add(request.NewErrParamRequired("StreamName"))
@@ -3892,12 +4192,20 @@ type DecreaseStreamRetentionPeriodOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DecreaseStreamRetentionPeriodOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DecreaseStreamRetentionPeriodOutput) GoString() string {
 	return s.String()
 }
@@ -3916,12 +4224,20 @@ type DeleteStreamInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteStreamInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteStreamInput) GoString() string {
 	return s.String()
 }
@@ -3958,12 +4274,20 @@ type DeleteStreamOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteStreamOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteStreamOutput) GoString() string {
 	return s.String()
 }
@@ -3982,17 +4306,25 @@ type DeregisterStreamConsumerInput struct {
 	ConsumerName *string `min:"1" type:"string"`
 
 	// The ARN of the Kinesis data stream that the consumer is registered with.
-	// For more information, see Amazon Resource Names (ARNs) and AWS Service Namespaces
-	// (https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#arn-syntax-kinesis-streams).
+	// For more information, see Amazon Resource Names (ARNs) and Amazon Web Services
+	// Service Namespaces (https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#arn-syntax-kinesis-streams).
 	StreamARN *string `min:"1" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeregisterStreamConsumerInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeregisterStreamConsumerInput) GoString() string {
 	return s.String()
 }
@@ -4038,12 +4370,20 @@ type DeregisterStreamConsumerOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeregisterStreamConsumerOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeregisterStreamConsumerOutput) GoString() string {
 	return s.String()
 }
@@ -4052,18 +4392,36 @@ type DescribeLimitsInput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeLimitsInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeLimitsInput) GoString() string {
 	return s.String()
 }
 
 type DescribeLimitsOutput struct {
 	_ struct{} `type:"structure"`
+
+	// Indicates the number of data streams with the on-demand capacity mode.
+	//
+	// OnDemandStreamCount is a required field
+	OnDemandStreamCount *int64 `type:"integer" required:"true"`
+
+	// The maximum number of data streams with the on-demand capacity mode.
+	//
+	// OnDemandStreamCountLimit is a required field
+	OnDemandStreamCountLimit *int64 `type:"integer" required:"true"`
 
 	// The number of open shards.
 	//
@@ -4076,14 +4434,34 @@ type DescribeLimitsOutput struct {
 	ShardLimit *int64 `type:"integer" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeLimitsOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeLimitsOutput) GoString() string {
 	return s.String()
+}
+
+// SetOnDemandStreamCount sets the OnDemandStreamCount field's value.
+func (s *DescribeLimitsOutput) SetOnDemandStreamCount(v int64) *DescribeLimitsOutput {
+	s.OnDemandStreamCount = &v
+	return s
+}
+
+// SetOnDemandStreamCountLimit sets the OnDemandStreamCountLimit field's value.
+func (s *DescribeLimitsOutput) SetOnDemandStreamCountLimit(v int64) *DescribeLimitsOutput {
+	s.OnDemandStreamCountLimit = &v
+	return s
 }
 
 // SetOpenShardCount sets the OpenShardCount field's value.
@@ -4108,17 +4486,25 @@ type DescribeStreamConsumerInput struct {
 	ConsumerName *string `min:"1" type:"string"`
 
 	// The ARN of the Kinesis data stream that the consumer is registered with.
-	// For more information, see Amazon Resource Names (ARNs) and AWS Service Namespaces
-	// (https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#arn-syntax-kinesis-streams).
+	// For more information, see Amazon Resource Names (ARNs) and Amazon Web Services
+	// Service Namespaces (https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#arn-syntax-kinesis-streams).
 	StreamARN *string `min:"1" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeStreamConsumerInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeStreamConsumerInput) GoString() string {
 	return s.String()
 }
@@ -4169,12 +4555,20 @@ type DescribeStreamConsumerOutput struct {
 	ConsumerDescription *ConsumerDescription `type:"structure" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeStreamConsumerOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeStreamConsumerOutput) GoString() string {
 	return s.String()
 }
@@ -4190,10 +4584,17 @@ type DescribeStreamInput struct {
 	_ struct{} `type:"structure"`
 
 	// The shard ID of the shard to start with.
+	//
+	// Specify this parameter to indicate that you want to describe the stream starting
+	// with the shard whose ID immediately follows ExclusiveStartShardId.
+	//
+	// If you don't specify this parameter, the default behavior for DescribeStream
+	// is to describe the stream starting with the first shard in the stream.
 	ExclusiveStartShardId *string `min:"1" type:"string"`
 
 	// The maximum number of shards to return in a single call. The default value
-	// is 100. If you specify a value greater than 100, at most 100 shards are returned.
+	// is 100. If you specify a value greater than 100, at most 100 results are
+	// returned.
 	Limit *int64 `min:"1" type:"integer"`
 
 	// The name of the stream to describe.
@@ -4202,12 +4603,20 @@ type DescribeStreamInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeStreamInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeStreamInput) GoString() string {
 	return s.String()
 }
@@ -4264,12 +4673,20 @@ type DescribeStreamOutput struct {
 	StreamDescription *StreamDescription `type:"structure" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeStreamOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeStreamOutput) GoString() string {
 	return s.String()
 }
@@ -4289,12 +4706,20 @@ type DescribeStreamSummaryInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeStreamSummaryInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeStreamSummaryInput) GoString() string {
 	return s.String()
 }
@@ -4330,12 +4755,20 @@ type DescribeStreamSummaryOutput struct {
 	StreamDescriptionSummary *StreamDescriptionSummary `type:"structure" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeStreamSummaryOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DescribeStreamSummaryOutput) GoString() string {
 	return s.String()
 }
@@ -4372,7 +4805,7 @@ type DisableEnhancedMonitoringInput struct {
 	//    * ALL
 	//
 	// For more information, see Monitoring the Amazon Kinesis Data Streams Service
-	// with Amazon CloudWatch (http://docs.aws.amazon.com/kinesis/latest/dev/monitoring-with-cloudwatch.html)
+	// with Amazon CloudWatch (https://docs.aws.amazon.com/kinesis/latest/dev/monitoring-with-cloudwatch.html)
 	// in the Amazon Kinesis Data Streams Developer Guide.
 	//
 	// ShardLevelMetrics is a required field
@@ -4384,12 +4817,20 @@ type DisableEnhancedMonitoringInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DisableEnhancedMonitoringInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DisableEnhancedMonitoringInput) GoString() string {
 	return s.String()
 }
@@ -4454,7 +4895,7 @@ type EnableEnhancedMonitoringInput struct {
 	//    * ALL
 	//
 	// For more information, see Monitoring the Amazon Kinesis Data Streams Service
-	// with Amazon CloudWatch (http://docs.aws.amazon.com/kinesis/latest/dev/monitoring-with-cloudwatch.html)
+	// with Amazon CloudWatch (https://docs.aws.amazon.com/kinesis/latest/dev/monitoring-with-cloudwatch.html)
 	// in the Amazon Kinesis Data Streams Developer Guide.
 	//
 	// ShardLevelMetrics is a required field
@@ -4466,12 +4907,20 @@ type EnableEnhancedMonitoringInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s EnableEnhancedMonitoringInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s EnableEnhancedMonitoringInput) GoString() string {
 	return s.String()
 }
@@ -4536,17 +4985,25 @@ type EnhancedMetrics struct {
 	//    * ALL
 	//
 	// For more information, see Monitoring the Amazon Kinesis Data Streams Service
-	// with Amazon CloudWatch (http://docs.aws.amazon.com/kinesis/latest/dev/monitoring-with-cloudwatch.html)
+	// with Amazon CloudWatch (https://docs.aws.amazon.com/kinesis/latest/dev/monitoring-with-cloudwatch.html)
 	// in the Amazon Kinesis Data Streams Developer Guide.
 	ShardLevelMetrics []*string `min:"1" type:"list"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s EnhancedMetrics) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s EnhancedMetrics) GoString() string {
 	return s.String()
 }
@@ -4573,12 +5030,20 @@ type EnhancedMonitoringOutput struct {
 	StreamName *string `min:"1" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s EnhancedMonitoringOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s EnhancedMonitoringOutput) GoString() string {
 	return s.String()
 }
@@ -4610,12 +5075,20 @@ type ExpiredIteratorException struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ExpiredIteratorException) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ExpiredIteratorException) GoString() string {
 	return s.String()
 }
@@ -4666,12 +5139,20 @@ type ExpiredNextTokenException struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ExpiredNextTokenException) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ExpiredNextTokenException) GoString() string {
 	return s.String()
 }
@@ -4720,6 +5201,7 @@ type GetRecordsInput struct {
 
 	// The maximum number of records to return. Specify a value of up to 10,000.
 	// If you specify a value that is greater than 10,000, GetRecords throws InvalidArgumentException.
+	// The default value is 10,000.
 	Limit *int64 `min:"1" type:"integer"`
 
 	// The position in the shard from which you want to start sequentially reading
@@ -4730,12 +5212,20 @@ type GetRecordsInput struct {
 	ShardIterator *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetRecordsInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetRecordsInput) GoString() string {
 	return s.String()
 }
@@ -4775,6 +5265,10 @@ func (s *GetRecordsInput) SetShardIterator(v string) *GetRecordsInput {
 type GetRecordsOutput struct {
 	_ struct{} `type:"structure"`
 
+	// The list of the current shard's child shards, returned in the GetRecords
+	// API's response only when the end of the current shard is reached.
+	ChildShards []*ChildShard `type:"list"`
+
 	// The number of milliseconds the GetRecords response is from the tip of the
 	// stream, indicating how far behind current time the consumer is. A value of
 	// zero indicates that record processing is caught up, and there are no new
@@ -4792,14 +5286,28 @@ type GetRecordsOutput struct {
 	Records []*Record `type:"list" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetRecordsOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetRecordsOutput) GoString() string {
 	return s.String()
+}
+
+// SetChildShards sets the ChildShards field's value.
+func (s *GetRecordsOutput) SetChildShards(v []*ChildShard) *GetRecordsOutput {
+	s.ChildShards = v
+	return s
 }
 
 // SetMillisBehindLatest sets the MillisBehindLatest field's value.
@@ -4871,12 +5379,20 @@ type GetShardIteratorInput struct {
 	Timestamp *time.Time `type:"timestamp"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetShardIteratorInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetShardIteratorInput) GoString() string {
 	return s.String()
 }
@@ -4946,12 +5462,20 @@ type GetShardIteratorOutput struct {
 	ShardIterator *string `min:"1" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetShardIteratorOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetShardIteratorOutput) GoString() string {
 	return s.String()
 }
@@ -4978,12 +5502,20 @@ type HashKeyRange struct {
 	StartingHashKey *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s HashKeyRange) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s HashKeyRange) GoString() string {
 	return s.String()
 }
@@ -5008,7 +5540,7 @@ type IncreaseStreamRetentionPeriodInput struct {
 	// retention period.
 	//
 	// RetentionPeriodHours is a required field
-	RetentionPeriodHours *int64 `min:"1" type:"integer" required:"true"`
+	RetentionPeriodHours *int64 `type:"integer" required:"true"`
 
 	// The name of the stream to modify.
 	//
@@ -5016,12 +5548,20 @@ type IncreaseStreamRetentionPeriodInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s IncreaseStreamRetentionPeriodInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s IncreaseStreamRetentionPeriodInput) GoString() string {
 	return s.String()
 }
@@ -5031,9 +5571,6 @@ func (s *IncreaseStreamRetentionPeriodInput) Validate() error {
 	invalidParams := request.ErrInvalidParams{Context: "IncreaseStreamRetentionPeriodInput"}
 	if s.RetentionPeriodHours == nil {
 		invalidParams.Add(request.NewErrParamRequired("RetentionPeriodHours"))
-	}
-	if s.RetentionPeriodHours != nil && *s.RetentionPeriodHours < 1 {
-		invalidParams.Add(request.NewErrParamMinValue("RetentionPeriodHours", 1))
 	}
 	if s.StreamName == nil {
 		invalidParams.Add(request.NewErrParamRequired("StreamName"))
@@ -5064,16 +5601,26 @@ type IncreaseStreamRetentionPeriodOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s IncreaseStreamRetentionPeriodOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s IncreaseStreamRetentionPeriodOutput) GoString() string {
 	return s.String()
 }
 
+// The processing of the request failed because of an unknown error, exception,
+// or failure.
 type InternalFailureException struct {
 	_            struct{}                  `type:"structure"`
 	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
@@ -5081,12 +5628,20 @@ type InternalFailureException struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s InternalFailureException) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s InternalFailureException) GoString() string {
 	return s.String()
 }
@@ -5108,6 +5663,8 @@ func (s *InternalFailureException) UnmarshalEvent(
 	return nil
 }
 
+// MarshalEvent marshals the type into an stream event value. This method
+// should only used internally within the SDK's EventStream handling.
 func (s *InternalFailureException) MarshalEvent(pm protocol.PayloadMarshaler) (msg eventstream.Message, err error) {
 	msg.Headers.Set(eventstreamapi.MessageTypeHeader, eventstream.StringValue(eventstreamapi.ExceptionMessageType))
 	var buf bytes.Buffer
@@ -5166,12 +5723,20 @@ type InvalidArgumentException struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s InvalidArgumentException) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s InvalidArgumentException) GoString() string {
 	return s.String()
 }
@@ -5224,12 +5789,20 @@ type KMSAccessDeniedException struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s KMSAccessDeniedException) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s KMSAccessDeniedException) GoString() string {
 	return s.String()
 }
@@ -5251,6 +5824,8 @@ func (s *KMSAccessDeniedException) UnmarshalEvent(
 	return nil
 }
 
+// MarshalEvent marshals the type into an stream event value. This method
+// should only used internally within the SDK's EventStream handling.
 func (s *KMSAccessDeniedException) MarshalEvent(pm protocol.PayloadMarshaler) (msg eventstream.Message, err error) {
 	msg.Headers.Set(eventstreamapi.MessageTypeHeader, eventstream.StringValue(eventstreamapi.ExceptionMessageType))
 	var buf bytes.Buffer
@@ -5309,12 +5884,20 @@ type KMSDisabledException struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s KMSDisabledException) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s KMSDisabledException) GoString() string {
 	return s.String()
 }
@@ -5336,6 +5919,8 @@ func (s *KMSDisabledException) UnmarshalEvent(
 	return nil
 }
 
+// MarshalEvent marshals the type into an stream event value. This method
+// should only used internally within the SDK's EventStream handling.
 func (s *KMSDisabledException) MarshalEvent(pm protocol.PayloadMarshaler) (msg eventstream.Message, err error) {
 	msg.Headers.Set(eventstreamapi.MessageTypeHeader, eventstream.StringValue(eventstreamapi.ExceptionMessageType))
 	var buf bytes.Buffer
@@ -5386,8 +5971,8 @@ func (s *KMSDisabledException) RequestID() string {
 
 // The request was rejected because the state of the specified resource isn't
 // valid for this request. For more information, see How Key State Affects Use
-// of a Customer Master Key (http://docs.aws.amazon.com/kms/latest/developerguide/key-state.html)
-// in the AWS Key Management Service Developer Guide.
+// of a Customer Master Key (https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html)
+// in the Amazon Web Services Key Management Service Developer Guide.
 type KMSInvalidStateException struct {
 	_            struct{}                  `type:"structure"`
 	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
@@ -5396,12 +5981,20 @@ type KMSInvalidStateException struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s KMSInvalidStateException) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s KMSInvalidStateException) GoString() string {
 	return s.String()
 }
@@ -5423,6 +6016,8 @@ func (s *KMSInvalidStateException) UnmarshalEvent(
 	return nil
 }
 
+// MarshalEvent marshals the type into an stream event value. This method
+// should only used internally within the SDK's EventStream handling.
 func (s *KMSInvalidStateException) MarshalEvent(pm protocol.PayloadMarshaler) (msg eventstream.Message, err error) {
 	msg.Headers.Set(eventstreamapi.MessageTypeHeader, eventstream.StringValue(eventstreamapi.ExceptionMessageType))
 	var buf bytes.Buffer
@@ -5481,12 +6076,20 @@ type KMSNotFoundException struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s KMSNotFoundException) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s KMSNotFoundException) GoString() string {
 	return s.String()
 }
@@ -5508,6 +6111,8 @@ func (s *KMSNotFoundException) UnmarshalEvent(
 	return nil
 }
 
+// MarshalEvent marshals the type into an stream event value. This method
+// should only used internally within the SDK's EventStream handling.
 func (s *KMSNotFoundException) MarshalEvent(pm protocol.PayloadMarshaler) (msg eventstream.Message, err error) {
 	msg.Headers.Set(eventstreamapi.MessageTypeHeader, eventstream.StringValue(eventstreamapi.ExceptionMessageType))
 	var buf bytes.Buffer
@@ -5556,7 +6161,7 @@ func (s *KMSNotFoundException) RequestID() string {
 	return s.RespMetadata.RequestID
 }
 
-// The AWS access key ID needs a subscription for the service.
+// The Amazon Web Services access key ID needs a subscription for the service.
 type KMSOptInRequired struct {
 	_            struct{}                  `type:"structure"`
 	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
@@ -5565,12 +6170,20 @@ type KMSOptInRequired struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s KMSOptInRequired) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s KMSOptInRequired) GoString() string {
 	return s.String()
 }
@@ -5592,6 +6205,8 @@ func (s *KMSOptInRequired) UnmarshalEvent(
 	return nil
 }
 
+// MarshalEvent marshals the type into an stream event value. This method
+// should only used internally within the SDK's EventStream handling.
 func (s *KMSOptInRequired) MarshalEvent(pm protocol.PayloadMarshaler) (msg eventstream.Message, err error) {
 	msg.Headers.Set(eventstreamapi.MessageTypeHeader, eventstream.StringValue(eventstreamapi.ExceptionMessageType))
 	var buf bytes.Buffer
@@ -5641,8 +6256,8 @@ func (s *KMSOptInRequired) RequestID() string {
 }
 
 // The request was denied due to request throttling. For more information about
-// throttling, see Limits (http://docs.aws.amazon.com/kms/latest/developerguide/limits.html#requests-per-second)
-// in the AWS Key Management Service Developer Guide.
+// throttling, see Limits (https://docs.aws.amazon.com/kms/latest/developerguide/limits.html#requests-per-second)
+// in the Amazon Web Services Key Management Service Developer Guide.
 type KMSThrottlingException struct {
 	_            struct{}                  `type:"structure"`
 	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
@@ -5651,12 +6266,20 @@ type KMSThrottlingException struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s KMSThrottlingException) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s KMSThrottlingException) GoString() string {
 	return s.String()
 }
@@ -5678,6 +6301,8 @@ func (s *KMSThrottlingException) UnmarshalEvent(
 	return nil
 }
 
+// MarshalEvent marshals the type into an stream event value. This method
+// should only used internally within the SDK's EventStream handling.
 func (s *KMSThrottlingException) MarshalEvent(pm protocol.PayloadMarshaler) (msg eventstream.Message, err error) {
 	msg.Headers.Set(eventstreamapi.MessageTypeHeader, eventstream.StringValue(eventstreamapi.ExceptionMessageType))
 	var buf bytes.Buffer
@@ -5736,12 +6361,20 @@ type LimitExceededException struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s LimitExceededException) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s LimitExceededException) GoString() string {
 	return s.String()
 }
@@ -5797,8 +6430,9 @@ type ListShardsInput struct {
 	ExclusiveStartShardId *string `min:"1" type:"string"`
 
 	// The maximum number of shards to return in a single call to ListShards. The
-	// minimum value you can specify for this parameter is 1, and the maximum is
-	// 1,000, which is also the default.
+	// maximum number of shards to return in a single call. The default value is
+	// 1000. If you specify a value greater than 1000, at most 1000 results are
+	// returned.
 	//
 	// When the number of shards to be listed is greater than the value of MaxResults,
 	// the response contains a NextToken value that you can use in a subsequent
@@ -5826,6 +6460,27 @@ type ListShardsInput struct {
 	// If you specify an expired token in a call to ListShards, you get ExpiredNextTokenException.
 	NextToken *string `min:"1" type:"string"`
 
+	// Enables you to filter out the response of the ListShards API. You can only
+	// specify one filter at a time.
+	//
+	// If you use the ShardFilter parameter when invoking the ListShards API, the
+	// Type is the required property and must be specified. If you specify the AT_TRIM_HORIZON,
+	// FROM_TRIM_HORIZON, or AT_LATEST types, you do not need to specify either
+	// the ShardId or the Timestamp optional properties.
+	//
+	// If you specify the AFTER_SHARD_ID type, you must also provide the value for
+	// the optional ShardId property. The ShardId property is identical in fuctionality
+	// to the ExclusiveStartShardId parameter of the ListShards API. When ShardId
+	// property is specified, the response includes the shards starting with the
+	// shard whose ID immediately follows the ShardId that you provided.
+	//
+	// If you specify the AT_TIMESTAMP or FROM_TIMESTAMP_ID type, you must also
+	// provide the value for the optional Timestamp property. If you specify the
+	// AT_TIMESTAMP type, then all shards that were open at the provided timestamp
+	// are returned. If you specify the FROM_TIMESTAMP type, then all shards starting
+	// from the provided timestamp to TIP are returned.
+	ShardFilter *ShardFilter `type:"structure"`
+
 	// Specify this input parameter to distinguish data streams that have the same
 	// name. For example, if you create a data stream and then delete it, and you
 	// later create another data stream with the same name, you can use this input
@@ -5841,12 +6496,20 @@ type ListShardsInput struct {
 	StreamName *string `min:"1" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListShardsInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListShardsInput) GoString() string {
 	return s.String()
 }
@@ -5865,6 +6528,11 @@ func (s *ListShardsInput) Validate() error {
 	}
 	if s.StreamName != nil && len(*s.StreamName) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("StreamName", 1))
+	}
+	if s.ShardFilter != nil {
+		if err := s.ShardFilter.Validate(); err != nil {
+			invalidParams.AddNested("ShardFilter", err.(request.ErrInvalidParams))
+		}
 	}
 
 	if invalidParams.Len() > 0 {
@@ -5888,6 +6556,12 @@ func (s *ListShardsInput) SetMaxResults(v int64) *ListShardsInput {
 // SetNextToken sets the NextToken field's value.
 func (s *ListShardsInput) SetNextToken(v string) *ListShardsInput {
 	s.NextToken = &v
+	return s
+}
+
+// SetShardFilter sets the ShardFilter field's value.
+func (s *ListShardsInput) SetShardFilter(v *ShardFilter) *ListShardsInput {
+	s.ShardFilter = v
 	return s
 }
 
@@ -5926,12 +6600,20 @@ type ListShardsOutput struct {
 	Shards []*Shard `type:"list"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListShardsOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListShardsOutput) GoString() string {
 	return s.String()
 }
@@ -5952,7 +6634,8 @@ type ListStreamConsumersInput struct {
 	_ struct{} `type:"structure"`
 
 	// The maximum number of consumers that you want a single call of ListStreamConsumers
-	// to return.
+	// to return. The default value is 100. If you specify a value greater than
+	// 100, at most 100 results are returned.
 	MaxResults *int64 `min:"1" type:"integer"`
 
 	// When the number of consumers that are registered with the data stream is
@@ -5979,8 +6662,8 @@ type ListStreamConsumersInput struct {
 	NextToken *string `min:"1" type:"string"`
 
 	// The ARN of the Kinesis data stream for which you want to list the registered
-	// consumers. For more information, see Amazon Resource Names (ARNs) and AWS
-	// Service Namespaces (https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#arn-syntax-kinesis-streams).
+	// consumers. For more information, see Amazon Resource Names (ARNs) and Amazon
+	// Web Services Service Namespaces (https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#arn-syntax-kinesis-streams).
 	//
 	// StreamARN is a required field
 	StreamARN *string `min:"1" type:"string" required:"true"`
@@ -5995,12 +6678,20 @@ type ListStreamConsumersInput struct {
 	StreamCreationTimestamp *time.Time `type:"timestamp"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListStreamConsumersInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListStreamConsumersInput) GoString() string {
 	return s.String()
 }
@@ -6073,12 +6764,20 @@ type ListStreamConsumersOutput struct {
 	NextToken *string `min:"1" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListStreamConsumersOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListStreamConsumersOutput) GoString() string {
 	return s.String()
 }
@@ -6102,16 +6801,25 @@ type ListStreamsInput struct {
 	// The name of the stream to start the list with.
 	ExclusiveStartStreamName *string `min:"1" type:"string"`
 
-	// The maximum number of streams to list.
+	// The maximum number of streams to list. The default value is 100. If you specify
+	// a value greater than 100, at most 100 results are returned.
 	Limit *int64 `min:"1" type:"integer"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListStreamsInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListStreamsInput) GoString() string {
 	return s.String()
 }
@@ -6153,19 +6861,27 @@ type ListStreamsOutput struct {
 	// HasMoreStreams is a required field
 	HasMoreStreams *bool `type:"boolean" required:"true"`
 
-	// The names of the streams that are associated with the AWS account making
-	// the ListStreams request.
+	// The names of the streams that are associated with the Amazon Web Services
+	// account making the ListStreams request.
 	//
 	// StreamNames is a required field
 	StreamNames []*string `type:"list" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListStreamsOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListStreamsOutput) GoString() string {
 	return s.String()
 }
@@ -6201,12 +6917,20 @@ type ListTagsForStreamInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListTagsForStreamInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListTagsForStreamInput) GoString() string {
 	return s.String()
 }
@@ -6268,12 +6992,20 @@ type ListTagsForStreamOutput struct {
 	Tags []*Tag `type:"list" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListTagsForStreamOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListTagsForStreamOutput) GoString() string {
 	return s.String()
 }
@@ -6310,12 +7042,20 @@ type MergeShardsInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s MergeShardsInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s MergeShardsInput) GoString() string {
 	return s.String()
 }
@@ -6370,22 +7110,30 @@ type MergeShardsOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s MergeShardsOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s MergeShardsOutput) GoString() string {
 	return s.String()
 }
 
 // The request rate for the stream is too high, or the requested data is too
 // large for the available throughput. Reduce the frequency or size of your
-// requests. For more information, see Streams Limits (http://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
+// requests. For more information, see Streams Limits (https://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html)
 // in the Amazon Kinesis Data Streams Developer Guide, and Error Retries and
-// Exponential Backoff in AWS (http://docs.aws.amazon.com/general/latest/gr/api-retries.html)
-// in the AWS General Reference.
+// Exponential Backoff in Amazon Web Services (https://docs.aws.amazon.com/general/latest/gr/api-retries.html)
+// in the Amazon Web Services General Reference.
 type ProvisionedThroughputExceededException struct {
 	_            struct{}                  `type:"structure"`
 	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
@@ -6394,12 +7142,20 @@ type ProvisionedThroughputExceededException struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ProvisionedThroughputExceededException) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ProvisionedThroughputExceededException) GoString() string {
 	return s.String()
 }
@@ -6449,8 +7205,7 @@ type PutRecordInput struct {
 	// The data blob to put into the record, which is base64-encoded when the blob
 	// is serialized. When the data blob (the payload before base64-encoding) is
 	// added to the partition key size, the total size must not exceed the maximum
-	// record size (1 MB).
-	//
+	// record size (1 MiB).
 	// Data is automatically base64 encoded/decoded by the SDK.
 	//
 	// Data is a required field
@@ -6485,12 +7240,20 @@ type PutRecordInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PutRecordInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PutRecordInput) GoString() string {
 	return s.String()
 }
@@ -6560,7 +7323,7 @@ type PutRecordOutput struct {
 	//    * NONE: Do not encrypt the records in the stream.
 	//
 	//    * KMS: Use server-side encryption on the records in the stream using a
-	//    customer-managed AWS KMS key.
+	//    customer-managed Amazon Web Services KMS key.
 	EncryptionType *string `type:"string" enum:"EncryptionType"`
 
 	// The sequence number identifier that was assigned to the put data record.
@@ -6577,12 +7340,20 @@ type PutRecordOutput struct {
 	ShardId *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PutRecordOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PutRecordOutput) GoString() string {
 	return s.String()
 }
@@ -6620,12 +7391,20 @@ type PutRecordsInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PutRecordsInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PutRecordsInput) GoString() string {
 	return s.String()
 }
@@ -6684,28 +7463,35 @@ type PutRecordsOutput struct {
 	//    * NONE: Do not encrypt the records.
 	//
 	//    * KMS: Use server-side encryption on the records using a customer-managed
-	//    AWS KMS key.
+	//    Amazon Web Services KMS key.
 	EncryptionType *string `type:"string" enum:"EncryptionType"`
 
 	// The number of unsuccessfully processed records in a PutRecords request.
 	FailedRecordCount *int64 `min:"1" type:"integer"`
 
-	// An array of successfully and unsuccessfully processed record results, correlated
-	// with the request by natural ordering. A record that is successfully added
-	// to a stream includes SequenceNumber and ShardId in the result. A record that
-	// fails to be added to a stream includes ErrorCode and ErrorMessage in the
-	// result.
+	// An array of successfully and unsuccessfully processed record results. A record
+	// that is successfully added to a stream includes SequenceNumber and ShardId
+	// in the result. A record that fails to be added to a stream includes ErrorCode
+	// and ErrorMessage in the result.
 	//
 	// Records is a required field
 	Records []*PutRecordsResultEntry `min:"1" type:"list" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PutRecordsOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PutRecordsOutput) GoString() string {
 	return s.String()
 }
@@ -6735,8 +7521,7 @@ type PutRecordsRequestEntry struct {
 	// The data blob to put into the record, which is base64-encoded when the blob
 	// is serialized. When the data blob (the payload before base64-encoding) is
 	// added to the partition key size, the total size must not exceed the maximum
-	// record size (1 MB).
-	//
+	// record size (1 MiB).
 	// Data is automatically base64 encoded/decoded by the SDK.
 	//
 	// Data is a required field
@@ -6759,12 +7544,20 @@ type PutRecordsRequestEntry struct {
 	PartitionKey *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PutRecordsRequestEntry) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PutRecordsRequestEntry) GoString() string {
 	return s.String()
 }
@@ -6830,12 +7623,20 @@ type PutRecordsResultEntry struct {
 	ShardId *string `min:"1" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PutRecordsResultEntry) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PutRecordsResultEntry) GoString() string {
 	return s.String()
 }
@@ -6876,8 +7677,7 @@ type Record struct {
 	// Data Streams, which does not inspect, interpret, or change the data in the
 	// blob in any way. When the data blob (the payload before base64-encoding)
 	// is added to the partition key size, the total size must not exceed the maximum
-	// record size (1 MB).
-	//
+	// record size (1 MiB).
 	// Data is automatically base64 encoded/decoded by the SDK.
 	//
 	// Data is a required field
@@ -6889,7 +7689,7 @@ type Record struct {
 	//    * NONE: Do not encrypt the records in the stream.
 	//
 	//    * KMS: Use server-side encryption on the records in the stream using a
-	//    customer-managed AWS KMS key.
+	//    customer-managed Amazon Web Services KMS key.
 	EncryptionType *string `type:"string" enum:"EncryptionType"`
 
 	// Identifies which shard in the stream the data record is assigned to.
@@ -6903,12 +7703,20 @@ type Record struct {
 	SequenceNumber *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s Record) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s Record) GoString() string {
 	return s.String()
 }
@@ -6953,19 +7761,27 @@ type RegisterStreamConsumerInput struct {
 	ConsumerName *string `min:"1" type:"string" required:"true"`
 
 	// The ARN of the Kinesis data stream that you want to register the consumer
-	// with. For more info, see Amazon Resource Names (ARNs) and AWS Service Namespaces
-	// (https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#arn-syntax-kinesis-streams).
+	// with. For more info, see Amazon Resource Names (ARNs) and Amazon Web Services
+	// Service Namespaces (https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#arn-syntax-kinesis-streams).
 	//
 	// StreamARN is a required field
 	StreamARN *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s RegisterStreamConsumerInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s RegisterStreamConsumerInput) GoString() string {
 	return s.String()
 }
@@ -7015,12 +7831,20 @@ type RegisterStreamConsumerOutput struct {
 	Consumer *Consumer `type:"structure" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s RegisterStreamConsumerOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s RegisterStreamConsumerOutput) GoString() string {
 	return s.String()
 }
@@ -7046,12 +7870,20 @@ type RemoveTagsFromStreamInput struct {
 	TagKeys []*string `min:"1" type:"list" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s RemoveTagsFromStreamInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s RemoveTagsFromStreamInput) GoString() string {
 	return s.String()
 }
@@ -7094,12 +7926,20 @@ type RemoveTagsFromStreamOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s RemoveTagsFromStreamOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s RemoveTagsFromStreamOutput) GoString() string {
 	return s.String()
 }
@@ -7114,12 +7954,20 @@ type ResourceInUseException struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ResourceInUseException) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ResourceInUseException) GoString() string {
 	return s.String()
 }
@@ -7141,6 +7989,8 @@ func (s *ResourceInUseException) UnmarshalEvent(
 	return nil
 }
 
+// MarshalEvent marshals the type into an stream event value. This method
+// should only used internally within the SDK's EventStream handling.
 func (s *ResourceInUseException) MarshalEvent(pm protocol.PayloadMarshaler) (msg eventstream.Message, err error) {
 	msg.Headers.Set(eventstreamapi.MessageTypeHeader, eventstream.StringValue(eventstreamapi.ExceptionMessageType))
 	var buf bytes.Buffer
@@ -7199,12 +8049,20 @@ type ResourceNotFoundException struct {
 	Message_ *string `locationName:"message" type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ResourceNotFoundException) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ResourceNotFoundException) GoString() string {
 	return s.String()
 }
@@ -7226,6 +8084,8 @@ func (s *ResourceNotFoundException) UnmarshalEvent(
 	return nil
 }
 
+// MarshalEvent marshals the type into an stream event value. This method
+// should only used internally within the SDK's EventStream handling.
 func (s *ResourceNotFoundException) MarshalEvent(pm protocol.PayloadMarshaler) (msg eventstream.Message, err error) {
 	msg.Headers.Set(eventstreamapi.MessageTypeHeader, eventstream.StringValue(eventstreamapi.ExceptionMessageType))
 	var buf bytes.Buffer
@@ -7288,12 +8148,20 @@ type SequenceNumberRange struct {
 	StartingSequenceNumber *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SequenceNumberRange) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SequenceNumberRange) GoString() string {
 	return s.String()
 }
@@ -7337,12 +8205,20 @@ type Shard struct {
 	ShardId *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s Shard) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s Shard) GoString() string {
 	return s.String()
 }
@@ -7377,6 +8253,102 @@ func (s *Shard) SetShardId(v string) *Shard {
 	return s
 }
 
+// The request parameter used to filter out the response of the ListShards API.
+type ShardFilter struct {
+	_ struct{} `type:"structure"`
+
+	// The exclusive start shardID speified in the ShardFilter parameter. This property
+	// can only be used if the AFTER_SHARD_ID shard type is specified.
+	ShardId *string `min:"1" type:"string"`
+
+	// The timestamps specified in the ShardFilter parameter. A timestamp is a Unix
+	// epoch date with precision in milliseconds. For example, 2016-04-04T19:58:46.480-00:00
+	// or 1459799926.480. This property can only be used if FROM_TIMESTAMP or AT_TIMESTAMP
+	// shard types are specified.
+	Timestamp *time.Time `type:"timestamp"`
+
+	// The shard type specified in the ShardFilter parameter. This is a required
+	// property of the ShardFilter parameter.
+	//
+	// You can specify the following valid values:
+	//
+	//    * AFTER_SHARD_ID - the response includes all the shards, starting with
+	//    the shard whose ID immediately follows the ShardId that you provided.
+	//
+	//    * AT_TRIM_HORIZON - the response includes all the shards that were open
+	//    at TRIM_HORIZON.
+	//
+	//    * FROM_TRIM_HORIZON - (default), the response includes all the shards
+	//    within the retention period of the data stream (trim to tip).
+	//
+	//    * AT_LATEST - the response includes only the currently open shards of
+	//    the data stream.
+	//
+	//    * AT_TIMESTAMP - the response includes all shards whose start timestamp
+	//    is less than or equal to the given timestamp and end timestamp is greater
+	//    than or equal to the given timestamp or still open.
+	//
+	//    * FROM_TIMESTAMP - the response incldues all closed shards whose end timestamp
+	//    is greater than or equal to the given timestamp and also all open shards.
+	//    Corrected to TRIM_HORIZON of the data stream if FROM_TIMESTAMP is less
+	//    than the TRIM_HORIZON value.
+	//
+	// Type is a required field
+	Type *string `type:"string" required:"true" enum:"ShardFilterType"`
+}
+
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
+func (s ShardFilter) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
+func (s ShardFilter) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *ShardFilter) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "ShardFilter"}
+	if s.ShardId != nil && len(*s.ShardId) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("ShardId", 1))
+	}
+	if s.Type == nil {
+		invalidParams.Add(request.NewErrParamRequired("Type"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetShardId sets the ShardId field's value.
+func (s *ShardFilter) SetShardId(v string) *ShardFilter {
+	s.ShardId = &v
+	return s
+}
+
+// SetTimestamp sets the Timestamp field's value.
+func (s *ShardFilter) SetTimestamp(v time.Time) *ShardFilter {
+	s.Timestamp = &v
+	return s
+}
+
+// SetType sets the Type field's value.
+func (s *ShardFilter) SetType(v string) *ShardFilter {
+	s.Type = &v
+	return s
+}
+
 // Represents the input for SplitShard.
 type SplitShardInput struct {
 	_ struct{} `type:"structure"`
@@ -7403,12 +8375,20 @@ type SplitShardInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SplitShardInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SplitShardInput) GoString() string {
 	return s.String()
 }
@@ -7460,12 +8440,20 @@ type SplitShardOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SplitShardOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SplitShardOutput) GoString() string {
 	return s.String()
 }
@@ -7478,11 +8466,11 @@ type StartStreamEncryptionInput struct {
 	// EncryptionType is a required field
 	EncryptionType *string `type:"string" required:"true" enum:"EncryptionType"`
 
-	// The GUID for the customer-managed AWS KMS key to use for encryption. This
-	// value can be a globally unique identifier, a fully specified Amazon Resource
-	// Name (ARN) to either an alias or a key, or an alias name prefixed by "alias/".You
-	// can also use a master key owned by Kinesis Data Streams by specifying the
-	// alias aws/kinesis.
+	// The GUID for the customer-managed Amazon Web Services KMS key to use for
+	// encryption. This value can be a globally unique identifier, a fully specified
+	// Amazon Resource Name (ARN) to either an alias or a key, or an alias name
+	// prefixed by "alias/".You can also use a master key owned by Kinesis Data
+	// Streams by specifying the alias aws/kinesis.
 	//
 	//    * Key ARN example: arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 	//
@@ -7503,12 +8491,20 @@ type StartStreamEncryptionInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StartStreamEncryptionInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StartStreamEncryptionInput) GoString() string {
 	return s.String()
 }
@@ -7560,33 +8556,77 @@ type StartStreamEncryptionOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StartStreamEncryptionOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StartStreamEncryptionOutput) GoString() string {
 	return s.String()
 }
 
+// The starting position in the data stream from which to start streaming.
 type StartingPosition struct {
 	_ struct{} `type:"structure"`
 
+	// The sequence number of the data record in the shard from which to start streaming.
+	// To specify a sequence number, set StartingPosition to AT_SEQUENCE_NUMBER
+	// or AFTER_SEQUENCE_NUMBER.
 	SequenceNumber *string `type:"string"`
 
+	// The time stamp of the data record from which to start reading. To specify
+	// a time stamp, set StartingPosition to Type AT_TIMESTAMP. A time stamp is
+	// the Unix epoch date with precision in milliseconds. For example, 2016-04-04T19:58:46.480-00:00
+	// or 1459799926.480. If a record with this exact time stamp does not exist,
+	// records will be streamed from the next (later) record. If the time stamp
+	// is older than the current trim horizon, records will be streamed from the
+	// oldest untrimmed data record (TRIM_HORIZON).
 	Timestamp *time.Time `type:"timestamp"`
 
+	// You can set the starting position to one of the following values:
+	//
+	// AT_SEQUENCE_NUMBER: Start streaming from the position denoted by the sequence
+	// number specified in the SequenceNumber field.
+	//
+	// AFTER_SEQUENCE_NUMBER: Start streaming right after the position denoted by
+	// the sequence number specified in the SequenceNumber field.
+	//
+	// AT_TIMESTAMP: Start streaming from the position denoted by the time stamp
+	// specified in the Timestamp field.
+	//
+	// TRIM_HORIZON: Start streaming at the last untrimmed record in the shard,
+	// which is the oldest data record in the shard.
+	//
+	// LATEST: Start streaming just after the most recent record in the shard, so
+	// that you always read the most recent data in the shard.
+	//
 	// Type is a required field
 	Type *string `type:"string" required:"true" enum:"ShardIteratorType"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StartingPosition) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StartingPosition) GoString() string {
 	return s.String()
 }
@@ -7630,11 +8670,11 @@ type StopStreamEncryptionInput struct {
 	// EncryptionType is a required field
 	EncryptionType *string `type:"string" required:"true" enum:"EncryptionType"`
 
-	// The GUID for the customer-managed AWS KMS key to use for encryption. This
-	// value can be a globally unique identifier, a fully specified Amazon Resource
-	// Name (ARN) to either an alias or a key, or an alias name prefixed by "alias/".You
-	// can also use a master key owned by Kinesis Data Streams by specifying the
-	// alias aws/kinesis.
+	// The GUID for the customer-managed Amazon Web Services KMS key to use for
+	// encryption. This value can be a globally unique identifier, a fully specified
+	// Amazon Resource Name (ARN) to either an alias or a key, or an alias name
+	// prefixed by "alias/".You can also use a master key owned by Kinesis Data
+	// Streams by specifying the alias aws/kinesis.
 	//
 	//    * Key ARN example: arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 	//
@@ -7655,12 +8695,20 @@ type StopStreamEncryptionInput struct {
 	StreamName *string `min:"1" type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StopStreamEncryptionInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StopStreamEncryptionInput) GoString() string {
 	return s.String()
 }
@@ -7712,12 +8760,20 @@ type StopStreamEncryptionOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StopStreamEncryptionOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StopStreamEncryptionOutput) GoString() string {
 	return s.String()
 }
@@ -7732,7 +8788,7 @@ type StreamDescription struct {
 	//    * NONE: Do not encrypt the records in the stream.
 	//
 	//    * KMS: Use server-side encryption on the records in the stream using a
-	//    customer-managed AWS KMS key.
+	//    customer-managed Amazon Web Services KMS key.
 	EncryptionType *string `type:"string" enum:"EncryptionType"`
 
 	// Represents the current enhanced monitoring settings of the stream.
@@ -7745,10 +8801,11 @@ type StreamDescription struct {
 	// HasMoreShards is a required field
 	HasMoreShards *bool `type:"boolean" required:"true"`
 
-	// The GUID for the customer-managed AWS KMS key to use for encryption. This
-	// value can be a globally unique identifier, a fully specified ARN to either
-	// an alias or a key, or an alias name prefixed by "alias/".You can also use
-	// a master key owned by Kinesis Data Streams by specifying the alias aws/kinesis.
+	// The GUID for the customer-managed Amazon Web Services KMS key to use for
+	// encryption. This value can be a globally unique identifier, a fully specified
+	// ARN to either an alias or a key, or an alias name prefixed by "alias/".You
+	// can also use a master key owned by Kinesis Data Streams by specifying the
+	// alias aws/kinesis.
 	//
 	//    * Key ARN example: arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 	//
@@ -7761,10 +8818,11 @@ type StreamDescription struct {
 	//    * Master key owned by Kinesis Data Streams: alias/aws/kinesis
 	KeyId *string `min:"1" type:"string"`
 
-	// The current retention period, in hours.
+	// The current retention period, in hours. Minimum value of 24. Maximum value
+	// of 168.
 	//
 	// RetentionPeriodHours is a required field
-	RetentionPeriodHours *int64 `min:"1" type:"integer" required:"true"`
+	RetentionPeriodHours *int64 `type:"integer" required:"true"`
 
 	// The shards that comprise the stream.
 	//
@@ -7780,6 +8838,11 @@ type StreamDescription struct {
 	//
 	// StreamCreationTimestamp is a required field
 	StreamCreationTimestamp *time.Time `type:"timestamp" required:"true"`
+
+	// Specifies the capacity mode to which you want to set your data stream. Currently,
+	// in Kinesis Data Streams, you can choose between an on-demand capacity mode
+	// and a provisioned capacity mode for your data streams.
+	StreamModeDetails *StreamModeDetails `type:"structure"`
 
 	// The name of the stream being described.
 	//
@@ -7807,12 +8870,20 @@ type StreamDescription struct {
 	StreamStatus *string `type:"string" required:"true" enum:"StreamStatus"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StreamDescription) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StreamDescription) GoString() string {
 	return s.String()
 }
@@ -7865,6 +8936,12 @@ func (s *StreamDescription) SetStreamCreationTimestamp(v time.Time) *StreamDescr
 	return s
 }
 
+// SetStreamModeDetails sets the StreamModeDetails field's value.
+func (s *StreamDescription) SetStreamModeDetails(v *StreamModeDetails) *StreamDescription {
+	s.StreamModeDetails = v
+	return s
+}
+
 // SetStreamName sets the StreamName field's value.
 func (s *StreamDescription) SetStreamName(v string) *StreamDescription {
 	s.StreamName = &v
@@ -7896,10 +8973,11 @@ type StreamDescriptionSummary struct {
 	// EnhancedMonitoring is a required field
 	EnhancedMonitoring []*EnhancedMetrics `type:"list" required:"true"`
 
-	// The GUID for the customer-managed AWS KMS key to use for encryption. This
-	// value can be a globally unique identifier, a fully specified ARN to either
-	// an alias or a key, or an alias name prefixed by "alias/".You can also use
-	// a master key owned by Kinesis Data Streams by specifying the alias aws/kinesis.
+	// The GUID for the customer-managed Amazon Web Services KMS key to use for
+	// encryption. This value can be a globally unique identifier, a fully specified
+	// ARN to either an alias or a key, or an alias name prefixed by "alias/".You
+	// can also use a master key owned by Kinesis Data Streams by specifying the
+	// alias aws/kinesis.
 	//
 	//    * Key ARN example: arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 	//
@@ -7920,7 +8998,7 @@ type StreamDescriptionSummary struct {
 	// The current retention period, in hours.
 	//
 	// RetentionPeriodHours is a required field
-	RetentionPeriodHours *int64 `min:"1" type:"integer" required:"true"`
+	RetentionPeriodHours *int64 `type:"integer" required:"true"`
 
 	// The Amazon Resource Name (ARN) for the stream being described.
 	//
@@ -7931,6 +9009,11 @@ type StreamDescriptionSummary struct {
 	//
 	// StreamCreationTimestamp is a required field
 	StreamCreationTimestamp *time.Time `type:"timestamp" required:"true"`
+
+	// Specifies the capacity mode to which you want to set your data stream. Currently,
+	// in Kinesis Data Streams, you can choose between an on-demand ycapacity mode
+	// and a provisioned capacity mode for your data streams.
+	StreamModeDetails *StreamModeDetails `type:"structure"`
 
 	// The name of the stream being described.
 	//
@@ -7958,12 +9041,20 @@ type StreamDescriptionSummary struct {
 	StreamStatus *string `type:"string" required:"true" enum:"StreamStatus"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StreamDescriptionSummary) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s StreamDescriptionSummary) GoString() string {
 	return s.String()
 }
@@ -8016,6 +9107,12 @@ func (s *StreamDescriptionSummary) SetStreamCreationTimestamp(v time.Time) *Stre
 	return s
 }
 
+// SetStreamModeDetails sets the StreamModeDetails field's value.
+func (s *StreamDescriptionSummary) SetStreamModeDetails(v *StreamModeDetails) *StreamDescriptionSummary {
+	s.StreamModeDetails = v
+	return s
+}
+
 // SetStreamName sets the StreamName field's value.
 func (s *StreamDescriptionSummary) SetStreamName(v string) *StreamDescriptionSummary {
 	s.StreamName = &v
@@ -8028,12 +9125,70 @@ func (s *StreamDescriptionSummary) SetStreamStatus(v string) *StreamDescriptionS
 	return s
 }
 
+// Specifies the capacity mode to which you want to set your data stream. Currently,
+// in Kinesis Data Streams, you can choose between an on-demand capacity mode
+// and a provisioned capacity mode for your data streams.
+type StreamModeDetails struct {
+	_ struct{} `type:"structure"`
+
+	// Specifies the capacity mode to which you want to set your data stream. Currently,
+	// in Kinesis Data Streams, you can choose between an on-demand capacity mode
+	// and a provisioned capacity mode for your data streams.
+	//
+	// StreamMode is a required field
+	StreamMode *string `type:"string" required:"true" enum:"StreamMode"`
+}
+
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
+func (s StreamModeDetails) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
+func (s StreamModeDetails) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *StreamModeDetails) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "StreamModeDetails"}
+	if s.StreamMode == nil {
+		invalidParams.Add(request.NewErrParamRequired("StreamMode"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetStreamMode sets the StreamMode field's value.
+func (s *StreamModeDetails) SetStreamMode(v string) *StreamModeDetails {
+	s.StreamMode = &v
+	return s
+}
+
 // After you call SubscribeToShard, Kinesis Data Streams sends events of this
-// type to your consumer.
+// type over an HTTP/2 connection to your consumer.
 type SubscribeToShardEvent struct {
 	_ struct{} `type:"structure"`
 
-	// Use this as StartingSequenceNumber in the next call to SubscribeToShard.
+	// The list of the child shards of the current shard, returned only at the end
+	// of the current shard.
+	ChildShards []*ChildShard `type:"list"`
+
+	// Use this as SequenceNumber in the next call to SubscribeToShard, with StartingPosition
+	// set to AT_SEQUENCE_NUMBER or AFTER_SEQUENCE_NUMBER. Use ContinuationSequenceNumber
+	// for checkpointing because it captures your shard progress even when no data
+	// is written to the shard.
 	//
 	// ContinuationSequenceNumber is a required field
 	ContinuationSequenceNumber *string `type:"string" required:"true"`
@@ -8050,14 +9205,28 @@ type SubscribeToShardEvent struct {
 	Records []*Record `type:"list" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SubscribeToShardEvent) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SubscribeToShardEvent) GoString() string {
 	return s.String()
+}
+
+// SetChildShards sets the ChildShards field's value.
+func (s *SubscribeToShardEvent) SetChildShards(v []*ChildShard) *SubscribeToShardEvent {
+	s.ChildShards = v
+	return s
 }
 
 // SetContinuationSequenceNumber sets the ContinuationSequenceNumber field's value.
@@ -8095,6 +9264,8 @@ func (s *SubscribeToShardEvent) UnmarshalEvent(
 	return nil
 }
 
+// MarshalEvent marshals the type into an stream event value. This method
+// should only used internally within the SDK's EventStream handling.
 func (s *SubscribeToShardEvent) MarshalEvent(pm protocol.PayloadMarshaler) (msg eventstream.Message, err error) {
 	msg.Headers.Set(eventstreamapi.MessageTypeHeader, eventstream.StringValue(eventstreamapi.EventMessageType))
 	var buf bytes.Buffer
@@ -8125,6 +9296,7 @@ type SubscribeToShardEventStreamEvent interface {
 // These events are:
 //
 //     * SubscribeToShardEvent
+//     * SubscribeToShardEventStreamUnknownEvent
 type SubscribeToShardEventStreamReader interface {
 	// Returns a channel of events as they are read from the event stream.
 	Events() <-chan SubscribeToShardEventStreamEvent
@@ -8199,6 +9371,9 @@ func (r *readSubscribeToShardEventStream) readEventStream() {
 				return
 			default:
 			}
+			if _, ok := err.(*eventstreamapi.UnknownMessageTypeError); ok {
+				continue
+			}
 			r.err.SetError(err)
 			return
 		}
@@ -8238,12 +9413,37 @@ func (u unmarshalerForSubscribeToShardEventStreamEvent) UnmarshalerForEventName(
 	case "ResourceNotFoundException":
 		return newErrorResourceNotFoundException(u.metadata).(eventstreamapi.Unmarshaler), nil
 	default:
-		return nil, awserr.New(
-			request.ErrCodeSerialization,
-			fmt.Sprintf("unknown event type name, %s, for SubscribeToShardEventStream", eventType),
-			nil,
-		)
+		return &SubscribeToShardEventStreamUnknownEvent{Type: eventType}, nil
 	}
+}
+
+// SubscribeToShardEventStreamUnknownEvent provides a failsafe event for the
+// SubscribeToShardEventStream group of events when an unknown event is received.
+type SubscribeToShardEventStreamUnknownEvent struct {
+	Type    string
+	Message eventstream.Message
+}
+
+// The SubscribeToShardEventStreamUnknownEvent is and event in the SubscribeToShardEventStream
+// group of events.
+func (s *SubscribeToShardEventStreamUnknownEvent) eventSubscribeToShardEventStream() {}
+
+// MarshalEvent marshals the type into an stream event value. This method
+// should only used internally within the SDK's EventStream handling.
+func (e *SubscribeToShardEventStreamUnknownEvent) MarshalEvent(pm protocol.PayloadMarshaler) (
+	msg eventstream.Message, err error,
+) {
+	return e.Message.Clone(), nil
+}
+
+// UnmarshalEvent unmarshals the EventStream Message into the SubscribeToShardEventStreamData value.
+// This method is only used internally within the SDK's EventStream handling.
+func (e *SubscribeToShardEventStreamUnknownEvent) UnmarshalEvent(
+	payloadUnmarshaler protocol.PayloadUnmarshaler,
+	msg eventstream.Message,
+) error {
+	e.Message = msg.Clone()
+	return nil
 }
 
 type SubscribeToShardInput struct {
@@ -8260,16 +9460,26 @@ type SubscribeToShardInput struct {
 	// ShardId is a required field
 	ShardId *string `min:"1" type:"string" required:"true"`
 
+	// The starting position in the data stream from which to start streaming.
+	//
 	// StartingPosition is a required field
 	StartingPosition *StartingPosition `type:"structure" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SubscribeToShardInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SubscribeToShardInput) GoString() string {
 	return s.String()
 }
@@ -8328,12 +9538,20 @@ type SubscribeToShardOutput struct {
 	EventStream *SubscribeToShardEventStream
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SubscribeToShardOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SubscribeToShardOutput) GoString() string {
 	return s.String()
 }
@@ -8368,6 +9586,8 @@ func (s *SubscribeToShardOutput) UnmarshalEvent(
 	return nil
 }
 
+// MarshalEvent marshals the type into an stream event value. This method
+// should only used internally within the SDK's EventStream handling.
 func (s *SubscribeToShardOutput) MarshalEvent(pm protocol.PayloadMarshaler) (msg eventstream.Message, err error) {
 	msg.Headers.Set(eventstreamapi.MessageTypeHeader, eventstream.StringValue(eventstreamapi.EventMessageType))
 	var buf bytes.Buffer
@@ -8394,12 +9614,20 @@ type Tag struct {
 	Value *string `type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s Tag) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s Tag) GoString() string {
 	return s.String()
 }
@@ -8429,18 +9657,38 @@ type UpdateShardCountInput struct {
 	// StreamName is a required field
 	StreamName *string `min:"1" type:"string" required:"true"`
 
-	// The new number of shards.
+	// The new number of shards. This value has the following default limits. By
+	// default, you cannot do the following:
+	//
+	//    * Set this value to more than double your current shard count for a stream.
+	//
+	//    * Set this value below half your current shard count for a stream.
+	//
+	//    * Set this value to more than 10000 shards in a stream (the default limit
+	//    for shard count per stream is 10000 per account per region), unless you
+	//    request a limit increase.
+	//
+	//    * Scale a stream with more than 10000 shards down unless you set this
+	//    value to less than 10000 shards.
 	//
 	// TargetShardCount is a required field
 	TargetShardCount *int64 `min:"1" type:"integer" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s UpdateShardCountInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s UpdateShardCountInput) GoString() string {
 	return s.String()
 }
@@ -8501,12 +9749,20 @@ type UpdateShardCountOutput struct {
 	TargetShardCount *int64 `min:"1" type:"integer"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s UpdateShardCountOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s UpdateShardCountOutput) GoString() string {
 	return s.String()
 }
@@ -8529,6 +9785,161 @@ func (s *UpdateShardCountOutput) SetTargetShardCount(v int64) *UpdateShardCountO
 	return s
 }
 
+type UpdateStreamModeInput struct {
+	_ struct{} `type:"structure"`
+
+	// Specifies the ARN of the data stream whose capacity mode you want to update.
+	//
+	// StreamARN is a required field
+	StreamARN *string `min:"1" type:"string" required:"true"`
+
+	// Specifies the capacity mode to which you want to set your data stream. Currently,
+	// in Kinesis Data Streams, you can choose between an on-demand capacity mode
+	// and a provisioned capacity mode for your data streams.
+	//
+	// StreamModeDetails is a required field
+	StreamModeDetails *StreamModeDetails `type:"structure" required:"true"`
+}
+
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
+func (s UpdateStreamModeInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
+func (s UpdateStreamModeInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *UpdateStreamModeInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "UpdateStreamModeInput"}
+	if s.StreamARN == nil {
+		invalidParams.Add(request.NewErrParamRequired("StreamARN"))
+	}
+	if s.StreamARN != nil && len(*s.StreamARN) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("StreamARN", 1))
+	}
+	if s.StreamModeDetails == nil {
+		invalidParams.Add(request.NewErrParamRequired("StreamModeDetails"))
+	}
+	if s.StreamModeDetails != nil {
+		if err := s.StreamModeDetails.Validate(); err != nil {
+			invalidParams.AddNested("StreamModeDetails", err.(request.ErrInvalidParams))
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetStreamARN sets the StreamARN field's value.
+func (s *UpdateStreamModeInput) SetStreamARN(v string) *UpdateStreamModeInput {
+	s.StreamARN = &v
+	return s
+}
+
+// SetStreamModeDetails sets the StreamModeDetails field's value.
+func (s *UpdateStreamModeInput) SetStreamModeDetails(v *StreamModeDetails) *UpdateStreamModeInput {
+	s.StreamModeDetails = v
+	return s
+}
+
+type UpdateStreamModeOutput struct {
+	_ struct{} `type:"structure"`
+}
+
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
+func (s UpdateStreamModeOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
+func (s UpdateStreamModeOutput) GoString() string {
+	return s.String()
+}
+
+type ValidationException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
+func (s ValidationException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
+func (s ValidationException) GoString() string {
+	return s.String()
+}
+
+func newErrorValidationException(v protocol.ResponseMetadata) error {
+	return &ValidationException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ValidationException) Code() string {
+	return "ValidationException"
+}
+
+// Message returns the exception's message.
+func (s *ValidationException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ValidationException) OrigErr() error {
+	return nil
+}
+
+func (s *ValidationException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ValidationException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ValidationException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 const (
 	// ConsumerStatusCreating is a ConsumerStatus enum value
 	ConsumerStatusCreating = "CREATING"
@@ -8540,6 +9951,15 @@ const (
 	ConsumerStatusActive = "ACTIVE"
 )
 
+// ConsumerStatus_Values returns all elements of the ConsumerStatus enum
+func ConsumerStatus_Values() []string {
+	return []string{
+		ConsumerStatusCreating,
+		ConsumerStatusDeleting,
+		ConsumerStatusActive,
+	}
+}
+
 const (
 	// EncryptionTypeNone is a EncryptionType enum value
 	EncryptionTypeNone = "NONE"
@@ -8547,6 +9967,14 @@ const (
 	// EncryptionTypeKms is a EncryptionType enum value
 	EncryptionTypeKms = "KMS"
 )
+
+// EncryptionType_Values returns all elements of the EncryptionType enum
+func EncryptionType_Values() []string {
+	return []string{
+		EncryptionTypeNone,
+		EncryptionTypeKms,
+	}
+}
 
 const (
 	// MetricsNameIncomingBytes is a MetricsName enum value
@@ -8574,10 +10002,63 @@ const (
 	MetricsNameAll = "ALL"
 )
 
+// MetricsName_Values returns all elements of the MetricsName enum
+func MetricsName_Values() []string {
+	return []string{
+		MetricsNameIncomingBytes,
+		MetricsNameIncomingRecords,
+		MetricsNameOutgoingBytes,
+		MetricsNameOutgoingRecords,
+		MetricsNameWriteProvisionedThroughputExceeded,
+		MetricsNameReadProvisionedThroughputExceeded,
+		MetricsNameIteratorAgeMilliseconds,
+		MetricsNameAll,
+	}
+}
+
 const (
 	// ScalingTypeUniformScaling is a ScalingType enum value
 	ScalingTypeUniformScaling = "UNIFORM_SCALING"
 )
+
+// ScalingType_Values returns all elements of the ScalingType enum
+func ScalingType_Values() []string {
+	return []string{
+		ScalingTypeUniformScaling,
+	}
+}
+
+const (
+	// ShardFilterTypeAfterShardId is a ShardFilterType enum value
+	ShardFilterTypeAfterShardId = "AFTER_SHARD_ID"
+
+	// ShardFilterTypeAtTrimHorizon is a ShardFilterType enum value
+	ShardFilterTypeAtTrimHorizon = "AT_TRIM_HORIZON"
+
+	// ShardFilterTypeFromTrimHorizon is a ShardFilterType enum value
+	ShardFilterTypeFromTrimHorizon = "FROM_TRIM_HORIZON"
+
+	// ShardFilterTypeAtLatest is a ShardFilterType enum value
+	ShardFilterTypeAtLatest = "AT_LATEST"
+
+	// ShardFilterTypeAtTimestamp is a ShardFilterType enum value
+	ShardFilterTypeAtTimestamp = "AT_TIMESTAMP"
+
+	// ShardFilterTypeFromTimestamp is a ShardFilterType enum value
+	ShardFilterTypeFromTimestamp = "FROM_TIMESTAMP"
+)
+
+// ShardFilterType_Values returns all elements of the ShardFilterType enum
+func ShardFilterType_Values() []string {
+	return []string{
+		ShardFilterTypeAfterShardId,
+		ShardFilterTypeAtTrimHorizon,
+		ShardFilterTypeFromTrimHorizon,
+		ShardFilterTypeAtLatest,
+		ShardFilterTypeAtTimestamp,
+		ShardFilterTypeFromTimestamp,
+	}
+}
 
 const (
 	// ShardIteratorTypeAtSequenceNumber is a ShardIteratorType enum value
@@ -8596,6 +10077,33 @@ const (
 	ShardIteratorTypeAtTimestamp = "AT_TIMESTAMP"
 )
 
+// ShardIteratorType_Values returns all elements of the ShardIteratorType enum
+func ShardIteratorType_Values() []string {
+	return []string{
+		ShardIteratorTypeAtSequenceNumber,
+		ShardIteratorTypeAfterSequenceNumber,
+		ShardIteratorTypeTrimHorizon,
+		ShardIteratorTypeLatest,
+		ShardIteratorTypeAtTimestamp,
+	}
+}
+
+const (
+	// StreamModeProvisioned is a StreamMode enum value
+	StreamModeProvisioned = "PROVISIONED"
+
+	// StreamModeOnDemand is a StreamMode enum value
+	StreamModeOnDemand = "ON_DEMAND"
+)
+
+// StreamMode_Values returns all elements of the StreamMode enum
+func StreamMode_Values() []string {
+	return []string{
+		StreamModeProvisioned,
+		StreamModeOnDemand,
+	}
+}
+
 const (
 	// StreamStatusCreating is a StreamStatus enum value
 	StreamStatusCreating = "CREATING"
@@ -8609,3 +10117,13 @@ const (
 	// StreamStatusUpdating is a StreamStatus enum value
 	StreamStatusUpdating = "UPDATING"
 )
+
+// StreamStatus_Values returns all elements of the StreamStatus enum
+func StreamStatus_Values() []string {
+	return []string{
+		StreamStatusCreating,
+		StreamStatusDeleting,
+		StreamStatusActive,
+		StreamStatusUpdating,
+	}
+}

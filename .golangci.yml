@@ -36,5 +36,7 @@ linters:
     - gochecknoglobals
 
 run:
+  skip-dirs:
+    - vendor
   skip-files:
     - dummy.go

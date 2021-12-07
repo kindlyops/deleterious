@@ -30,6 +30,17 @@ go_binary(
 )
 
 go_binary(
+    name = "deleterious-linux-arm",
+    embed = [":go_default_library"],
+    goarch = "arm64",
+    goos = "linux",
+    visibility = ["//visibility:public"],
+    x_defs = {
+        "version": VERSION,
+    },
+)
+
+go_binary(
     name = "deleterious-darwin",
     embed = [":go_default_library"],
     goarch = "amd64",
@@ -62,12 +73,25 @@ go_binary(
     },
 )
 
+alias(
+    name = "deleterious",
+    actual = select({
+        "@io_bazel_rules_go//go/platform:linux_amd64": ":deleterious-linux",
+        "@io_bazel_rules_go//go/platform:linux_arm64": ":deleterious-linux-arm",
+        "@io_bazel_rules_go//go/platform:darwin_amd64": ":deleterious-darwin",
+        "@io_bazel_rules_go//go/platform:darwin_arm64": ":deleterious-darwin-m1",
+        "@io_bazel_rules_go//go/platform:windows_amd64": ":deleterious-windows",
+        "//conditions:default": ":vbs-linux",
+    }),
+)
+
 pkg_tar(
     name = "bdist",
     srcs = [
         "//:deleterious-darwin",
         "//:deleterious-darwin-m1",
         "//:deleterious-linux",
+        "//:deleterious-linux-arm",
         "//:deleterious-windows",
     ],
     tags = ["manual"],
@@ -90,6 +114,9 @@ go_test(
         "@io_bazel_rules_go//go/platform:linux_amd64": [
             "$(location :deleterious-linux)",
         ],
+        "@io_bazel_rules_go//go/platform:linux_arm64": [
+            "$(location :deleterious-linux-arm)",
+        ],
         "@io_bazel_rules_go//go/platform:darwin_amd64": [
             "$(location :deleterious-darwin)",
         ],
@@ -101,6 +128,9 @@ go_test(
     data = select({
         "@io_bazel_rules_go//go/platform:linux_amd64": [
             ":deleterious-linux",
+        ],
+        "@io_bazel_rules_go//go/platform:linux_arm64": [
+            ":deleterious-linux-arm",
         ],
         "@io_bazel_rules_go//go/platform:darwin_amd64": [
             ":deleterious-darwin",

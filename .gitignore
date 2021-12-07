@@ -7,3 +7,4 @@ bazel-workspace
 bdist
 dist
 .vscode/
+!vendor/

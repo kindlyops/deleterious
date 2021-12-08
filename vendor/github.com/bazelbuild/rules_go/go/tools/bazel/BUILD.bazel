@@ -1,12 +1,11 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "bazel",
     srcs = [
         "bazel.go",
         "runfiles.go",
     ],
-    importmap = "github.com/kindlyops/deleterious/vendor/github.com/bazelbuild/rules_go/go/tools/bazel",
     importpath = "github.com/bazelbuild/rules_go/go/tools/bazel",
     visibility = ["//visibility:public"],
 )
@@ -17,5 +16,11 @@ filegroup(
     name = "all_files",
     testonly = True,
     srcs = glob(["**"]),
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "go_default_library",
+    actual = ":bazel",
     visibility = ["//visibility:public"],
 )

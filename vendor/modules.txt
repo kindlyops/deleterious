@@ -56,7 +56,7 @@ github.com/aws/aws-sdk-go/service/sso
 github.com/aws/aws-sdk-go/service/sso/ssoiface
 github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
-# github.com/bazelbuild/rules_go v0.23.1
+# github.com/bazelbuild/rules_go v0.29.0
 ## explicit
 github.com/bazelbuild/rules_go/go/tools/bazel
 # github.com/dustin/go-humanize v1.0.0

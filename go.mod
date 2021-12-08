@@ -8,7 +8,7 @@ require (
 	github.com/bazelbuild/rules_go v0.23.1
 	github.com/dustin/go-humanize v1.0.0
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/spf13/cobra v0.0.7
+	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 )
 

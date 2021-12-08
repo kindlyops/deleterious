@@ -26,7 +26,7 @@ jobs:
         run: bazel run :install
       - name: Sync Dependencies
         run: bazel run //:vendor
-        if: github.actor == 'dependabot-preview[bot]'
+        if: (github.actor == 'dependabot-preview[bot]') || (github.actor == 'renovate[bot]')
       - name: Test
         run: bazel test //...
       - name: autocommit

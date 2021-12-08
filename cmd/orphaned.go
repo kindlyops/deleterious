@@ -38,9 +38,8 @@ import (
 var orphanedCmd = &cobra.Command{
 	Use:   "orphaned",
 	Short: "Find orphaned resources without deleting",
-	Long: `Finds all of the specified resources that are not referenced from an active CloudFormation stack.
-			Supported types are AWS::DynamoDB::Table, AWS::KMS::Key, AWS::Kinesis::Stream, AWS::Logs::LogGroup, AWS::S3::Bucket`,
-	Run: orphaned,
+	Long:  `Finds all of the specified resources that are not referenced from an active CloudFormation stack.`,
+	Run:   orphaned,
 }
 
 func orphaned(cmd *cobra.Command, args []string) {
@@ -136,7 +135,7 @@ func getSession() *session.Session {
 func processLogs(rootedResources map[string]bool) {
 	svc := cloudwatchlogs.New(getSession())
 
-	fmt.Printf("GroupName, RetentionDays, StoredBytes, LastLogEntry, DaysAgo\n")
+	fmt.Printf("GroupName, RetentionDays, StoredBytesRaw, StoredBytesHuman, LastLogEntry, DaysAgo\n")
 	var nextGroup *string
 	for ok := true; ok; ok = (nextGroup != nil) {
 		groups, err := svc.DescribeLogGroups(&cloudwatchlogs.DescribeLogGroupsInput{
@@ -198,8 +197,9 @@ func processLogs(rootedResources map[string]bool) {
 					fmt.Printf("\tretention %d\n", retentionDays)
 					fmt.Printf("\tbytes %v\n", *group.StoredBytes)
 				}
-				size := humanize.Bytes(uint64(*group.StoredBytes))
-				fmt.Printf("\"%v\", %d, %v, %v, %d\n", *group.LogGroupName, retentionDays, size, lastEvent, daysAgo)
+				sizeHuman := humanize.Bytes(uint64(*group.StoredBytes))
+				sizeRaw := uint64(*group.StoredBytes)
+				fmt.Printf("\"%v\", %d, %v, %v, %v, %d\n", *group.LogGroupName, retentionDays, sizeRaw, sizeHuman, lastEvent, daysAgo)
 			}
 		}
 	}
@@ -358,6 +358,9 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	orphanedCmd.Flags().StringVarP(&Resource, "resource", "r", "AWS::DynamoDB::Table", "Which type of resource to enumerate")
+	orphanedCmd.Flags().StringVarP(&Resource, "resource", "r", "",
+		`Which type of resource to enumerate
+Supported types are AWS::DynamoDB::Table, AWS::KMS::Key, AWS::Kinesis::Stream,
+AWS::Logs::LogGroup, AWS::S3::Bucket`)
 
 }

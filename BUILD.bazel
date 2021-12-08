@@ -142,7 +142,7 @@ go_test(
     }),
     embed = [":go_default_library"],
     rundir = ".",
-    deps = ["//vendor/github.com/bazelbuild/rules_go/go/tools/bazel:go_default_library"],
+    deps = ["//vendor/github.com/bazelbuild/rules_go/go/tools/bazel"],
 )
 
 sh_binary(

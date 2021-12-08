@@ -38,9 +38,8 @@ import (
 var orphanedCmd = &cobra.Command{
 	Use:   "orphaned",
 	Short: "Find orphaned resources without deleting",
-	Long: `Finds all of the specified resources that are not referenced from an active CloudFormation stack.
-			Supported types are AWS::DynamoDB::Table, AWS::KMS::Key, AWS::Kinesis::Stream, AWS::Logs::LogGroup, AWS::S3::Bucket`,
-	Run: orphaned,
+	Long:  `Finds all of the specified resources that are not referenced from an active CloudFormation stack.`,
+	Run:   orphaned,
 }
 
 func orphaned(cmd *cobra.Command, args []string) {
@@ -359,6 +358,9 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	orphanedCmd.Flags().StringVarP(&Resource, "resource", "r", "AWS::DynamoDB::Table", "Which type of resource to enumerate")
+	orphanedCmd.Flags().StringVarP(&Resource, "resource", "r", "",
+		`Which type of resource to enumerate
+Supported types are AWS::DynamoDB::Table, AWS::KMS::Key, AWS::Kinesis::Stream,
+AWS::Logs::LogGroup, AWS::S3::Bucket`)
 
 }

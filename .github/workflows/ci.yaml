@@ -25,10 +25,6 @@ jobs:
       - name: Sync Dependencies
         run: bazel run //:vendor
         if: (github.actor == 'dependabot-preview[bot]') || (github.actor == 'renovate[bot]')
-      - name: bazel build
-        run: bazel run :install
-      - name: Test
-        run: bazel test //...
       - name: autocommit
         uses: stefanzweifel/git-auto-commit-action@v4.12.0
         with:
@@ -36,7 +32,11 @@ jobs:
           branch: ${{ github.head_ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
-        if: github.actor == 'dependabot-preview[bot]'
+        if: (github.actor == 'dependabot-preview[bot]') || (github.actor == 'renovate[bot]')
+      - name: bazel build
+        run: bazel run :install
+      - name: Test
+        run: bazel test //...
       - name: Set up Go
         uses: actions/setup-go@master
         with:

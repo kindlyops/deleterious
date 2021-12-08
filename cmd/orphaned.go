@@ -136,7 +136,7 @@ func getSession() *session.Session {
 func processLogs(rootedResources map[string]bool) {
 	svc := cloudwatchlogs.New(getSession())
 
-	fmt.Printf("GroupName, RetentionDays, StoredBytes, LastLogEntry, DaysAgo\n")
+	fmt.Printf("GroupName, RetentionDays, StoredBytesRaw, StoredBytesHuman, LastLogEntry, DaysAgo\n")
 	var nextGroup *string
 	for ok := true; ok; ok = (nextGroup != nil) {
 		groups, err := svc.DescribeLogGroups(&cloudwatchlogs.DescribeLogGroupsInput{
@@ -198,8 +198,9 @@ func processLogs(rootedResources map[string]bool) {
 					fmt.Printf("\tretention %d\n", retentionDays)
 					fmt.Printf("\tbytes %v\n", *group.StoredBytes)
 				}
-				size := humanize.Bytes(uint64(*group.StoredBytes))
-				fmt.Printf("\"%v\", %d, %v, %v, %d\n", *group.LogGroupName, retentionDays, size, lastEvent, daysAgo)
+				sizeHuman := humanize.Bytes(uint64(*group.StoredBytes))
+				sizeRaw := uint64(*group.StoredBytes)
+				fmt.Printf("\"%v\", %d, %v, %v, %v, %d\n", *group.LogGroupName, retentionDays, sizeRaw, sizeHuman, lastEvent, daysAgo)
 			}
 		}
 	}

@@ -17,6 +17,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"encoding/json"
@@ -29,6 +30,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/kinesis"
 	"github.com/aws/aws-sdk-go/service/kms"
+	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/dustin/go-humanize"
 	"github.com/spf13/cobra"
@@ -134,6 +136,7 @@ func getSession() *session.Session {
 
 func processLogs(rootedResources map[string]bool) {
 	svc := cloudwatchlogs.New(getSession())
+	l := lambda.New(getSession())
 
 	fmt.Printf("GroupName, RetentionDays, StoredBytesRaw, StoredBytesHuman, LastLogEntry, DaysAgo\n")
 	var nextGroup *string
@@ -158,9 +161,29 @@ func processLogs(rootedResources map[string]bool) {
 			if Debug {
 				fmt.Printf("Processing %v\n", *group)
 			}
-			if _, ok := rootedResources[*group.LogGroupName]; ok {
-				// this stream is owned by a cloudformation stack, skip it
+			_, ownedByCfn := rootedResources[*group.LogGroupName]
+			ownedByLambda := false
+			if strings.HasPrefix(*group.LogGroupName, "/aws/lambda") {
+				// check whether there is a lambda function with a matching name
+				// we do this because log groups are freqently created by the
+				// lambda, not by the cloudformation stack that created the lambda
+				lambdaName := strings.Split(*group.LogGroupName, "/aws/lambda/")[1]
 				if Debug {
+					fmt.Printf("Checking lambda %v\n", lambdaName)
+				}
+				_, err := l.GetFunction(&lambda.GetFunctionInput{
+					FunctionName: aws.String(lambdaName),
+				})
+				if err == nil {
+					ownedByLambda = true
+					if Debug {
+						fmt.Printf("Group %v is owned by a lambda function, skipping\n", *group.LogGroupName)
+					}
+				}
+			}
+			if ownedByCfn || ownedByLambda {
+				// this stream is owned by a cloudformation stack, skip it
+				if Debug && ownedByCfn {
 					fmt.Printf("Group %v is owned by a cloudformation stack, skipping\n", *group.LogGroupName)
 				}
 			} else {
@@ -191,11 +214,6 @@ func processLogs(rootedResources map[string]bool) {
 				}
 				if group.RetentionInDays != nil {
 					retentionDays = *group.RetentionInDays
-				}
-				if Debug {
-					fmt.Printf("processing group %v\n", *group.LogGroupName)
-					fmt.Printf("\tretention %d\n", retentionDays)
-					fmt.Printf("\tbytes %v\n", *group.StoredBytes)
 				}
 				sizeHuman := humanize.Bytes(uint64(*group.StoredBytes))
 				sizeRaw := uint64(*group.StoredBytes)

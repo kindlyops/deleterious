@@ -20,6 +20,7 @@ go_library(
         "//vendor/github.com/aws/aws-sdk-go/service/iam:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/kinesis:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/kms:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/service/lambda:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/s3:go_default_library",
         "//vendor/github.com/dustin/go-humanize:go_default_library",
         "//vendor/github.com/mitchellh/go-homedir:go_default_library",

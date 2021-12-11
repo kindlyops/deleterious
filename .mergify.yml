@@ -1,7 +1,19 @@
 pull_request_rules:
-  - name: Automatic merge on approval
+  - name: Automatic merge once requested reviews are complete
     conditions:
-      - "#approved-reviews-by>=1"
+      - and:
+        - "#approved-reviews-by>=1"
+        - "#review-requested=0"
+        - "#changes-requested-reviews-by=0"
+        - check-success=CI
+    actions:
+      merge:
+        method: merge
+  - name: automatic merge for Renovate pull requests
+    conditions:
+      - and:
+        - author=renovate[bot]
+        - check-success=CI
     actions:
       merge:
         method: merge

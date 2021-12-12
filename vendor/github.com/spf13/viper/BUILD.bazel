@@ -4,8 +4,10 @@ go_library(
     name = "go_default_library",
     srcs = [
         "flags.go",
+        "logger.go",
         "util.go",
         "viper.go",
+        "viper_go1_15.go",
         "watch.go",
         "watch_wasm.go",
     ],

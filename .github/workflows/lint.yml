@@ -13,7 +13,9 @@ jobs:
           reporter: github-pr-review # Change reporter.
           path: "." # Optional.
           pattern: "*.sh" # Optional.
-          exclude: "./.git/*" # Optional.
+          exclude: |
+            */.git/*
+            ./vendor/*
   golangci-lint:
     name: runner / golangci-lint
     runs-on: ubuntu-latest

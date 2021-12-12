@@ -25,24 +25,26 @@ import (
 
 func Test_getRootedResources(t *testing.T) {
 	t.Parallel()
-	mockSvc := &mocks.CloudformationAPI{}
 	type args struct {
 		svc  *mocks.CloudformationAPI
 		kind string
 	}
+
+	mockSvc := &mocks.CloudformationAPI{}
 	tests := []struct {
 		name string
 		args args
 		want map[string]bool
 	}{
-		// TODO: Add test cases.
-		{name: "test",
+		{
+			name: "test",
 			args: args{svc: mockSvc, kind: "AWS::S3::Bucket"},
 			want: map[string]bool{
 				"FirstBucket": true,
 			},
 		},
 	}
+
 	mockSvc.On("ListStacks",
 		&cloudformation.ListStacksInput{
 			StackStatusFilter: getStackStates(),
@@ -81,7 +83,9 @@ func Test_getRootedResources(t *testing.T) {
 		}}, nil).Once()
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			if got := getRootedResources(tt.args.svc, tt.args.kind); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("getRootedResources() = %v, want %v", got, tt.want)
 			}

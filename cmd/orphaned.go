@@ -14,6 +14,8 @@
 
 package cmd
 
+//go:generate mockery --name ".*API"
+
 import (
 	"fmt"
 	"log"
@@ -81,7 +83,7 @@ func orphaned(cmd *cobra.Command, args []string) {
 	}
 
 	cfn := cloudformation.New(getSession())
-	rootedResources := getRootedResources(cfn)
+	rootedResources := getRootedResources(cfn, Resource)
 	handler(rootedResources)
 }
 
@@ -90,10 +92,8 @@ type CloudformationAPI interface {
 	ListStackResources(params *cloudformation.ListStackResourcesInput) (*cloudformation.ListStackResourcesOutput, error)
 }
 
-func getRootedResources(svc CloudformationAPI) map[string]bool {
-	rootedResources := make(map[string]bool)
-
-	states := []*string{
+func getStackStates() []*string {
+	stackStates := []*string{
 		aws.String("CREATE_IN_PROGRESS"),
 		aws.String("CREATE_FAILED"),
 		aws.String("CREATE_COMPLETE"),
@@ -112,11 +112,17 @@ func getRootedResources(svc CloudformationAPI) map[string]bool {
 		aws.String("UPDATE_ROLLBACK_COMPLETE"),
 		aws.String("REVIEW_IN_PROGRESS"),
 	}
+	return stackStates
+}
+
+func getRootedResources(svc CloudformationAPI, kind string) map[string]bool {
+	rootedResources := make(map[string]bool)
+
 	var token *string
 	for ok := true; ok; ok = (token != nil) {
 		stacks, err := svc.ListStacks(&cloudformation.ListStacksInput{
 			NextToken:         token,
-			StackStatusFilter: states,
+			StackStatusFilter: getStackStates(),
 		})
 		if err != nil {
 			log.Fatalf("Error listing stacks: %v", err)
@@ -136,7 +142,7 @@ func getRootedResources(svc CloudformationAPI) map[string]bool {
 				continue
 			}
 			for _, resource := range resources.StackResourceSummaries {
-				if *resource.ResourceType == Resource {
+				if *resource.ResourceType == kind {
 					if Debug {
 						fmt.Printf("Found rooted resource %v : %v\n", *resource.PhysicalResourceId, *resource.ResourceType)
 					}

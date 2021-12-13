@@ -18,7 +18,7 @@ jobs:
           sudo wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.3.0/bazelisk-linux-amd64
           sudo chmod +x /usr/local/bin/bazel
       # this is tibdex/github-app-token v1.5.1, pinned to the commit SHA for security
-      - uses: tibdex/github-app-token@7ce9ffdcdeb2ba82b01b51d6584a6a85872336d4
+      - uses: tibdex/github-app-token@cd81e4cb40c3672f41b30a21758d6298e821691b
         id: generate-token
         with:
           app_id: ${{ secrets.AUTH_FOR_GITHUB_APP_ID }}

@@ -1,0 +1,26 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "CloudformationAPI.go",
+        "DynamoDBAPI.go",
+        "KinesisAPI.go",
+        "KmsAPI.go",
+        "LambdaAPI.go",
+        "LogsAPI.go",
+        "S3API.go",
+    ],
+    importpath = "github.com/kindlyops/deleterious/cmd/mocks",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/aws/aws-sdk-go/service/cloudformation:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/service/cloudwatchlogs:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/service/dynamodb:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/service/kinesis:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/service/kms:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/service/lambda:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/service/s3:go_default_library",
+        "//vendor/github.com/stretchr/testify/mock:go_default_library",
+    ],
+)

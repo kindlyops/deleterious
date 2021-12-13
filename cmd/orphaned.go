@@ -14,8 +14,11 @@
 
 package cmd
 
+//go:generate mockery --name ".*API"
+
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -46,9 +49,51 @@ var orphanedCmd = &cobra.Command{
 
 func orphaned(cmd *cobra.Command, args []string) {
 
-	svc := cloudformation.New(getSession())
+	handler := func(rootedResources map[string]bool) {
+		log.Fatalf("'%v' is not yet supported, supported types are %s", Resource, supportedTypes)
+	}
 
-	states := []*string{
+	switch {
+	case Resource == "AWS::DynamoDB::Table":
+		handler = func(rootedResources map[string]bool) {
+			svc := dynamodb.New(getSession())
+			processDynamoDB(rootedResources, svc)
+		}
+	case Resource == "AWS::KMS::Key":
+		handler = func(rootedResources map[string]bool) {
+			svc := kms.New(getSession())
+			processKMS(rootedResources, svc)
+		}
+	case Resource == "AWS::Kinesis::Stream":
+		handler = func(rootedResources map[string]bool) {
+			svc := kinesis.New(getSession())
+			processKinesis(rootedResources, svc)
+		}
+	case Resource == "AWS::Logs::LogGroup":
+		handler = func(rootedResources map[string]bool) {
+			svc := cloudwatchlogs.New(getSession())
+			l := lambda.New(getSession())
+			processLogs(rootedResources, svc, l)
+		}
+	case Resource == "AWS::S3::Bucket":
+		handler = func(rootedResources map[string]bool) {
+			svc := s3.New(getSession())
+			processS3(rootedResources, svc)
+		}
+	}
+
+	cfn := cloudformation.New(getSession())
+	rootedResources := getRootedResources(cfn, Resource)
+	handler(rootedResources)
+}
+
+type CloudformationAPI interface {
+	ListStacks(params *cloudformation.ListStacksInput) (*cloudformation.ListStacksOutput, error)
+	ListStackResources(params *cloudformation.ListStackResourcesInput) (*cloudformation.ListStackResourcesOutput, error)
+}
+
+func getStackStates() []*string {
+	stackStates := []*string{
 		aws.String("CREATE_IN_PROGRESS"),
 		aws.String("CREATE_FAILED"),
 		aws.String("CREATE_COMPLETE"),
@@ -67,17 +112,20 @@ func orphaned(cmd *cobra.Command, args []string) {
 		aws.String("UPDATE_ROLLBACK_COMPLETE"),
 		aws.String("REVIEW_IN_PROGRESS"),
 	}
+	return stackStates
+}
 
+func getRootedResources(svc CloudformationAPI, kind string) map[string]bool {
 	rootedResources := make(map[string]bool)
+
 	var token *string
 	for ok := true; ok; ok = (token != nil) {
 		stacks, err := svc.ListStacks(&cloudformation.ListStacksInput{
 			NextToken:         token,
-			StackStatusFilter: states,
+			StackStatusFilter: getStackStates(),
 		})
 		if err != nil {
-			fmt.Printf("Error listing stacks: %v", err)
-			return
+			log.Fatalf("Error listing stacks: %v", err)
 		} else {
 			token = stacks.NextToken
 		}
@@ -94,7 +142,7 @@ func orphaned(cmd *cobra.Command, args []string) {
 				continue
 			}
 			for _, resource := range resources.StackResourceSummaries {
-				if *resource.ResourceType == Resource {
+				if *resource.ResourceType == kind {
 					if Debug {
 						fmt.Printf("Found rooted resource %v : %v\n", *resource.PhysicalResourceId, *resource.ResourceType)
 					}
@@ -104,21 +152,7 @@ func orphaned(cmd *cobra.Command, args []string) {
 			}
 		}
 	}
-
-	switch {
-	case Resource == "AWS::DynamoDB::Table":
-		processDynamoDB(rootedResources)
-	case Resource == "AWS::KMS::Key":
-		processKMS(rootedResources)
-	case Resource == "AWS::Kinesis::Stream":
-		processKinesis(rootedResources)
-	case Resource == "AWS::Logs::LogGroup":
-		processLogs(rootedResources)
-	case Resource == "AWS::S3::Bucket":
-		processS3(rootedResources)
-	default:
-		fmt.Printf("%v is not yet supported", Resource)
-	}
+	return rootedResources
 }
 
 func getSession() *session.Session {
@@ -134,10 +168,16 @@ func getSession() *session.Session {
 	}))
 }
 
-func processLogs(rootedResources map[string]bool) {
-	svc := cloudwatchlogs.New(getSession())
-	l := lambda.New(getSession())
+type LogsAPI interface {
+	DescribeLogGroups(params *cloudwatchlogs.DescribeLogGroupsInput) (*cloudwatchlogs.DescribeLogGroupsOutput, error)
+	DescribeLogStreams(params *cloudwatchlogs.DescribeLogStreamsInput) (*cloudwatchlogs.DescribeLogStreamsOutput, error)
+}
 
+type LambdaAPI interface {
+	GetFunction(params *lambda.GetFunctionInput) (*lambda.GetFunctionOutput, error)
+}
+
+func processLogs(rootedResources map[string]bool, svc LogsAPI, l LambdaAPI) {
 	fmt.Printf("GroupName, RetentionDays, StoredBytesRaw, StoredBytesHuman, LastLogEntry, DaysAgo\n")
 	var nextGroup *string
 	for ok := true; ok; ok = (nextGroup != nil) {
@@ -223,9 +263,11 @@ func processLogs(rootedResources map[string]bool) {
 	}
 }
 
-func processS3(rootedResources map[string]bool) {
-	svc := s3.New(getSession())
+type S3API interface {
+	ListBuckets(params *s3.ListBucketsInput) (*s3.ListBucketsOutput, error)
+}
 
+func processS3(rootedResources map[string]bool, svc S3API) {
 	buckets, err := svc.ListBuckets(&s3.ListBucketsInput{})
 	if err != nil {
 		fmt.Printf("Error listing S3 Buckets: %v\n", err)
@@ -252,9 +294,11 @@ func processS3(rootedResources map[string]bool) {
 	fmt.Printf("%s\n", string(output))
 }
 
-func processKinesis(rootedResources map[string]bool) {
-	svc := kinesis.New(getSession())
+type KinesisAPI interface {
+	ListStreams(params *kinesis.ListStreamsInput) (*kinesis.ListStreamsOutput, error)
+}
 
+func processKinesis(rootedResources map[string]bool, svc KinesisAPI) {
 	var startStream *string
 	for ok := true; ok; ok = (startStream != nil) {
 		streams, err := svc.ListStreams(&kinesis.ListStreamsInput{
@@ -289,9 +333,12 @@ func processKinesis(rootedResources map[string]bool) {
 	}
 }
 
-func processKMS(rootedResources map[string]bool) {
-	svc := kms.New(getSession())
+type KmsAPI interface {
+	ListKeys(params *kms.ListKeysInput) (*kms.ListKeysOutput, error)
+	DescribeKey(params *kms.DescribeKeyInput) (*kms.DescribeKeyOutput, error)
+}
 
+func processKMS(rootedResources map[string]bool, svc KmsAPI) {
 	var marker *string
 	for ok := true; ok; ok = (marker != nil) {
 		keys, err := svc.ListKeys(&kms.ListKeysInput{
@@ -335,9 +382,11 @@ func processKMS(rootedResources map[string]bool) {
 	}
 }
 
-func processDynamoDB(rootedResources map[string]bool) {
-	svc := dynamodb.New(getSession())
+type DynamoDBAPI interface {
+	ListTables(params *dynamodb.ListTablesInput) (*dynamodb.ListTablesOutput, error)
+}
 
+func processDynamoDB(rootedResources map[string]bool, svc DynamoDBAPI) {
 	var lastTable *string
 	for ok := true; ok; ok = (lastTable != nil) {
 		tables, err := svc.ListTables(&dynamodb.ListTablesInput{
@@ -364,6 +413,7 @@ func processDynamoDB(rootedResources map[string]bool) {
 
 // Resource holds the type of AWS resource we are going to look for
 var Resource string
+var supportedTypes string = "AWS::DynamoDB::Table, AWS::KMS::Key, AWS::Kinesis::Stream, AWS::Logs::LogGroup, AWS::S3::Bucket"
 
 func init() {
 	rootCmd.AddCommand(orphanedCmd)
@@ -377,8 +427,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	orphanedCmd.Flags().StringVarP(&Resource, "resource", "r", "",
-		`Which type of resource to enumerate
-Supported types are AWS::DynamoDB::Table, AWS::KMS::Key, AWS::Kinesis::Stream,
-AWS::Logs::LogGroup, AWS::S3::Bucket`)
+		fmt.Sprintf("Which type of resource to enumerate\nSupported types are %s", supportedTypes))
+	orphanedCmd.MarkFlagRequired("resource")
 
 }

@@ -17,10 +17,16 @@ jobs:
         run: |
           sudo wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.3.0/bazelisk-linux-amd64
           sudo chmod +x /usr/local/bin/bazel
+      # this is tibdex/github-app-token v1.5.1, pinned to the commit SHA for security
+      - uses: tibdex/github-app-token@7ce9ffdcdeb2ba82b01b51d6584a6a85872336d4
+        id: generate-token
+        with:
+          app_id: ${{ secrets.AUTH_FOR_GITHUB_APP_ID }}
+          private_key: ${{ secrets.AUTH_FOR_GITHUB_PRIVATE_KEY }}
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
+          token: ${{ steps.generate-token.outputs.token }}
           ref: ${{ github.head_ref }}
       - name: Sync Dependencies
         run: bazel run //:vendor
@@ -29,9 +35,10 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4.12.0
         with:
           commit_message: Apply syncdeps changes
+          commit_user_name: kindlymachine[bot]
           branch: ${{ github.head_ref }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         if: (github.actor == 'dependabot-preview[bot]') || (github.actor == 'renovate[bot]')
       - name: bazel build
         run: bazel run :install
@@ -44,7 +51,7 @@ jobs:
       - name: dry run goreleaser
         uses: goreleaser/goreleaser-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:
           version: latest
           args: release --snapshot --skip-publish

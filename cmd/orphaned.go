@@ -134,20 +134,25 @@ func getRootedResources(svc CloudformationAPI, kind string) map[string]bool {
 			if Debug {
 				fmt.Printf("Processing %v\n", *stack.StackName)
 			}
-			resources, err := svc.ListStackResources(&cloudformation.ListStackResourcesInput{
-				StackName: stack.StackName,
-			})
-			if err != nil {
-				fmt.Printf("Error processing %v: %v\n", *stack.StackName, err)
-				continue
-			}
-			for _, resource := range resources.StackResourceSummaries {
-				if *resource.ResourceType == kind {
-					if Debug {
-						fmt.Printf("Found rooted resource %v : %v\n", *resource.PhysicalResourceId, *resource.ResourceType)
-					}
-					rootedResources[*resource.PhysicalResourceId] = true
+			var resourceToken *string
+			for ok := true; ok; ok = (resourceToken != nil) {
+				resources, err := svc.ListStackResources(&cloudformation.ListStackResourcesInput{
+					StackName: stack.StackName,
+					NextToken: resourceToken,
+				})
+				if err != nil {
+					fmt.Printf("Error processing %v: %v\n", *stack.StackName, err)
+					break
+				}
+				resourceToken = resources.NextToken
 
+				for _, resource := range resources.StackResourceSummaries {
+					if *resource.ResourceType == kind {
+						if Debug {
+							fmt.Printf("Found rooted resource %v : %v\n", *resource.PhysicalResourceId, *resource.ResourceType)
+						}
+						rootedResources[*resource.PhysicalResourceId] = true
+					}
 				}
 			}
 		}

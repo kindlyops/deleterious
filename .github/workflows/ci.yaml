@@ -23,10 +23,12 @@ jobs:
         with:
           app_id: ${{ secrets.AUTH_FOR_GITHUB_APP_ID }}
           private_key: ${{ secrets.AUTH_FOR_GITHUB_PRIVATE_KEY }}
+        if: (github.actor == 'dependabot-preview[bot]') || (github.actor == 'renovate[bot]')
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
         with:
-          token: ${{ steps.generate-token.outputs.token }}
+          # lets see if this works without the custom token
+          # token: ${{ steps.generate-token.outputs.token }}
           ref: ${{ github.head_ref }}
       - name: Sync Dependencies
         run: bazel run //:vendor

@@ -69,8 +69,8 @@ can make a little loop to delete the objects. Here is an example with S3 buckets
 #!/bin/bash
 
 # buckets that need to be deleted
-declare -a buckets=("foo-bananabucket-148lv5q85e3dc"
-	"foo-bananabucket-14bh2oapj6a3e"
+declare -a buckets=("foo-banana-bucket-148lv5q85e3dc"
+	"foo-banana-bucket-14bh2oapj6a3e"
 )
 
 for i in "${buckets[@]}"; do

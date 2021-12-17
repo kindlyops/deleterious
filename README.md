@@ -1,4 +1,7 @@
 # deleterious
+
+[![codecov](https://codecov.io/gh/kindlyops/deleterious/branch/main/graph/badge.svg?token=PSZYQLY38B)](https://codecov.io/gh/kindlyops/deleterious)
+
 Helps you clean up AWS resources. This is handy when
 retention policies on CloudFormation stacks leave lots
 of orphaned AWS resources around costing money.

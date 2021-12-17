@@ -443,7 +443,7 @@ func processDynamoDB(rootedResources map[string]bool, svc DynamoDBAPI) {
 // Resource holds the type of AWS resource we are going to look for
 var Resource string
 
-var supportedTypes string = `AWS::DynamoDB::Table
+var supportedTypes = `AWS::DynamoDB::Table
 AWS::KMS::Key
 AWS::Kinesis::Stream
 AWS::Logs::LogGroup

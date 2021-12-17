@@ -39,15 +39,14 @@ func TestCLIVersion(t *testing.T) {
 	}
 
 	file, err := filepath.EvalSymlinks(path)
-
 	if err != nil {
 		t.Fatalf("Invalid filename %v", path)
 	}
 
 	cmd := exec.Command(file, "--version")
 	cmd.Stderr = os.Stderr
-	res, err := cmd.Output()
 
+	res, err := cmd.Output()
 	if err != nil {
 		t.Fatalf("failed running '%v': %v", path, err)
 	}
@@ -72,15 +71,14 @@ func TestCLIHelp(t *testing.T) {
 	}
 
 	file, err := filepath.EvalSymlinks(path)
-
 	if err != nil {
 		t.Fatalf("Invalid filename %v", path)
 	}
 
 	cmd := exec.Command(file, "--help")
 	cmd.Stderr = os.Stderr
-	res, err := cmd.Output()
 
+	res, err := cmd.Output()
 	if err != nil {
 		t.Fatalf("failed running '%v': %v", path, err)
 	}

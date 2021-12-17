@@ -25,6 +25,8 @@ linters-settings:
   funlen:
     lines: 100
     statements: 50
+  errorlint:
+    asserts: false
 
 linters:
   enable-all: true
@@ -39,6 +41,7 @@ linters:
     - maligned
     - golint
     - gocyclo
+    - cyclop
     - gochecknoinits
 
 run:

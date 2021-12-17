@@ -46,6 +46,12 @@ jobs:
         run: bazel run :install
       - name: Test
         run: bazel test //...
+      - name: Coverage
+        run: bazel coverage --combined_report=lcov //...
+      - uses: codecov/codecov-action@v2
+        name: codecov upload
+        with:
+          files: ./bazel-out/_coverage/_coverage_report.dat
       - name: Set up Go
         uses: actions/setup-go@master
         with:

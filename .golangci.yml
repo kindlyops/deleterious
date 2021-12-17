@@ -11,6 +11,8 @@ linters-settings:
         sizeThreshold: 256
   gocyclo:
     min-complexity: 10
+  nestif:
+    min-complexity: 10
   govet:
     check-shadowing: true
   goconst:
@@ -23,6 +25,8 @@ linters-settings:
   funlen:
     lines: 100
     statements: 50
+  errorlint:
+    asserts: false
 
 linters:
   enable-all: true
@@ -36,6 +40,9 @@ linters:
     - scopelint
     - maligned
     - golint
+    - gocyclo
+    - cyclop
+    - gochecknoinits
 
 run:
   skip-dirs:

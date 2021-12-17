@@ -1,0 +1,15 @@
+---
+yaml-files:
+  - '*.yaml'
+  - '*.yml'
+
+ignore: |
+  vendor/**
+  dist/**
+
+extends: relaxed
+
+rules:
+  line-length:
+    max: 120
+    allow-non-breakable-words: true

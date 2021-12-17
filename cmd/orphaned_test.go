@@ -25,6 +25,7 @@ import (
 
 func Test_getRootedResources(t *testing.T) {
 	t.Parallel()
+
 	type args struct {
 		svc  *mocks.CloudformationAPI
 		kind string
@@ -58,7 +59,8 @@ func Test_getRootedResources(t *testing.T) {
 				StackName:   aws.String("SECOND_STACK"),
 				StackStatus: aws.String("CREATE_COMPLETE"),
 			},
-		}}, nil).Twice()
+		},
+	}, nil).Twice()
 	mockSvc.On("ListStackResources",
 		&cloudformation.ListStackResourcesInput{
 			StackName: aws.String("FIRST_STACK"),
@@ -69,7 +71,8 @@ func Test_getRootedResources(t *testing.T) {
 				LogicalResourceId:  aws.String("FirstBucket"),
 				PhysicalResourceId: aws.String("FirstBucket"),
 			},
-		}}, nil).Once()
+		},
+	}, nil).Once()
 	mockSvc.On("ListStackResources",
 		&cloudformation.ListStackResourcesInput{
 			StackName: aws.String("SECOND_STACK"),
@@ -80,7 +83,8 @@ func Test_getRootedResources(t *testing.T) {
 				LogicalResourceId:  aws.String("OtherResource"),
 				PhysicalResourceId: aws.String("OtherResource"),
 			},
-		}}, nil).Once()
+		},
+	}, nil).Once()
 
 	for _, tt := range tests {
 		tt := tt

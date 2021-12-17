@@ -17,19 +17,24 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"time"
 
+	"github.com/mattn/go-isatty"
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var cfgFile string
+
 var awsProfile string
 
-// Debug controls whether or not debug messages should be printed
+// Debug controls whether or not debug messages should be printed.
 var Debug bool
 
-// rootCmd represents the base command when called without any subcommands
+// rootCmd represents the base command when called without any subcommands.
 var rootCmd = &cobra.Command{
 	Version: "dev",
 	Use:     "deleterious",
@@ -58,13 +63,22 @@ use at your own risk.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute(v string) {
 	rootCmd.SetVersionTemplate(v)
+
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
 		os.Exit(1)
 	}
 }
 
 func init() {
+	zerolog.TimeFieldFormat = time.RFC3339
+
+	if isatty.IsTerminal(os.Stdout.Fd()) {
+		output := zerolog.ConsoleWriter{Out: os.Stderr}
+		log.Logger = log.With().Caller().Logger().Output(output)
+	} else {
+		log.Logger = log.With().Caller().Logger()
+	}
+
 	cobra.OnInitialize(initConfig)
 
 	// Here you will define your flags and configuration settings.
@@ -85,7 +99,7 @@ func initConfig() {
 		// Find home directory.
 		home, err := homedir.Dir()
 		if err != nil {
-			fmt.Println(err)
+			log.Error().Stack().Err(err).Msg("Couldn't locate home dir")
 			os.Exit(1)
 		}
 
@@ -98,6 +112,10 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		log.Info().Msg(fmt.Sprintf("Using config file: %s", viper.ConfigFileUsed()))
+	}
+
+	if Debug {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
 }

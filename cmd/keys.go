@@ -24,10 +24,11 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
-// ExtendedAccessKeyMetadata extends the key metadata struct
+// ExtendedAccessKeyMetadata extends the key metadata struct.
 type ExtendedAccessKeyMetadata struct {
 	AccessKeyID    string
 	CreateDate     *time.Time
@@ -39,7 +40,7 @@ type ExtendedAccessKeyMetadata struct {
 	ConsoleEnabled bool
 }
 
-// lastUsedCmd represents the lastUsed command
+// lastUsedCmd represents the lastUsed command.
 var lastUsedCmd = &cobra.Command{
 	Use:   "apikeys",
 	Short: "Find keys based on window of time in days.",
@@ -48,35 +49,26 @@ var lastUsedCmd = &cobra.Command{
 }
 
 func lastUsed(cmd *cobra.Command, args []string) {
-
 	svc := iam.New(getIamSession())
 	listOfKeys := []ExtendedAccessKeyMetadata{}
-	// TODO add pagination
+
+	// TODO add pagination.
 	var maxItems int64 = 999
+
+	const hoursInDay = 24
+
 	users, err := svc.ListUsers(&iam.ListUsersInput{
 		MaxItems: &maxItems,
 	})
 	if err != nil {
-		fmt.Printf("Error listing users: %v", err)
+		log.Error().Err(err).Msg("Error listing users")
 	}
+
 	for _, user := range users.Users {
-		consoleEnabled := true
-		_, err := svc.GetLoginProfile(&iam.GetLoginProfileInput{
-			UserName: user.UserName,
-		})
-		if err != nil {
-			if aerr, ok := err.(awserr.Error); ok {
-				switch aerr.Code() {
-				case iam.ErrCodeNoSuchEntityException:
-					// console access is disabled by removing the login profile
-					consoleEnabled = false
-				default:
-					fmt.Printf("Error getting user login profile: %s", err.Error())
-					continue
-				}
-			}
-		}
-		if ConsoleOnly && (consoleEnabled == false) {
+		// console access is disabled by removing the login profile.
+		consoleEnabled := isConsoleLoginEnabled(svc, user)
+
+		if ConsoleOnly && (!consoleEnabled) {
 			continue
 		}
 
@@ -85,41 +77,42 @@ func lastUsed(cmd *cobra.Command, args []string) {
 			UserName: user.UserName,
 		})
 		if err != nil {
-			fmt.Printf("Error listing keys: %v", err)
+			log.Error().Err(err).Msg("Error listing keys")
 		}
+
 		for _, key := range keys.AccessKeyMetadata {
 			used, err := svc.GetAccessKeyLastUsed(&iam.GetAccessKeyLastUsedInput{
 				AccessKeyId: key.AccessKeyId,
 			})
 			if err != nil {
-				fmt.Printf("Error listing a key: %v", err)
+				log.Error().Err(err).Msg("Error listing a key")
 			}
 
 			lastUsedDate := used.AccessKeyLastUsed.LastUsedDate
 			now := time.Now()
 			// dateMarkerString is our current date minus days given to search for.
 			dateMarkerString := now.AddDate(0, 0, -Days).Format(time.RFC3339)
+
 			dateMarkerTime, err := time.Parse(time.RFC3339, dateMarkerString)
 			if err != nil {
-				fmt.Println("Error parsing the time.")
+				log.Error().Err(err).Msg("Error parsing the time")
 			}
+
 			newKey := ExtendedAccessKeyMetadata{
 				AccessKeyID:    *key.AccessKeyId,
 				CreateDate:     key.CreateDate,
 				LastUsed:       lastUsedDate,
 				Status:         *key.Status,
 				UserName:       *key.UserName,
-				Age:            int(time.Since(*key.CreateDate).Hours() / 24),
+				Age:            int(time.Since(*key.CreateDate).Hours() / hoursInDay),
 				Arn:            *user.Arn,
 				ConsoleEnabled: consoleEnabled,
 			}
 			// dateTest is a bool which is true if the last used is after the marker time.
-			if Debug {
-				fmt.Printf("lastUsed %v\n", lastUsedDate)
-			}
+			log.Debug().Msgf("lastUsed %v\n", lastUsedDate)
 
 			dateTest := false
-			// sometimes keys have never been used
+			// sometimes keys have never been used.
 			if lastUsedDate != nil {
 				dateTest = lastUsedDate.After(dateMarkerTime)
 			}
@@ -128,11 +121,31 @@ func lastUsed(cmd *cobra.Command, args []string) {
 			if Used == dateTest {
 				listOfKeys = append(listOfKeys, newKey)
 			}
-
 		}
 	}
-	output, err := json.MarshalIndent(listOfKeys, "", "  ")
+
+	output, _ := json.MarshalIndent(listOfKeys, "", "  ")
 	fmt.Fprintf(os.Stdout, "%s", output)
+}
+
+func isConsoleLoginEnabled(svc *iam.IAM, user *iam.User) bool {
+	consoleEnabled := true
+
+	_, err := svc.GetLoginProfile(&iam.GetLoginProfileInput{
+		UserName: user.UserName,
+	})
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case iam.ErrCodeNoSuchEntityException:
+				consoleEnabled = false
+			default:
+				log.Error().Err(err).Msg("Error getting user login information")
+			}
+		}
+	}
+
+	return consoleEnabled
 }
 
 func getIamSession() *session.Session {
@@ -149,7 +162,7 @@ var Days int
 var Used bool
 
 // ConsoleOnly is a flag to indicate whether to filter out accounts that
-// do not have console access
+// do not have console access.
 var ConsoleOnly bool
 
 func init() {
@@ -163,9 +176,10 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
+	const defaultDaysToSearch = 30
 
-	lastUsedCmd.Flags().IntVar(&Days, "days", 30, "How many days to search for.")
+	lastUsedCmd.Flags().IntVar(&Days, "days", defaultDaysToSearch, "How many days to search for.")
 	lastUsedCmd.Flags().BoolVar(&Used, "used", false, "Display only used keys in the last X days. (Defaults to false.)")
-	lastUsedCmd.Flags().BoolVar(&ConsoleOnly, "consoleonly", false, "Display only accounts with console access enabled. (Defaults to false.)")
-
+	lastUsedCmd.Flags().BoolVar(&ConsoleOnly, "consoleonly", false,
+		"Display only accounts with console access enabled. (Defaults to false.)")
 }

@@ -17,13 +17,12 @@ package cmd
 //go:generate mockery --name ".*API"
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 	"time"
-
-	"encoding/json"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
@@ -48,7 +47,6 @@ var orphanedCmd = &cobra.Command{
 }
 
 func orphaned(cmd *cobra.Command, args []string) {
-
 	handler := func(rootedResources map[string]bool) {
 		log.Fatalf("'%v' is not yet supported, supported types are %s", Resource, supportedTypes)
 	}
@@ -112,6 +110,7 @@ func getStackStates() []*string {
 		aws.String("UPDATE_ROLLBACK_COMPLETE"),
 		aws.String("REVIEW_IN_PROGRESS"),
 	}
+
 	return stackStates
 }
 
@@ -119,6 +118,7 @@ func getRootedResources(svc CloudformationAPI, kind string) map[string]bool {
 	rootedResources := make(map[string]bool)
 
 	var token *string
+
 	for ok := true; ok; ok = (token != nil) {
 		stacks, err := svc.ListStacks(&cloudformation.ListStacksInput{
 			NextToken:         token,
@@ -134,7 +134,9 @@ func getRootedResources(svc CloudformationAPI, kind string) map[string]bool {
 			if Debug {
 				fmt.Printf("Processing %v\n", *stack.StackName)
 			}
+
 			var resourceToken *string
+
 			for ok := true; ok; ok = (resourceToken != nil) {
 				resources, err := svc.ListStackResources(&cloudformation.ListStackResourcesInput{
 					StackName: stack.StackName,
@@ -142,6 +144,7 @@ func getRootedResources(svc CloudformationAPI, kind string) map[string]bool {
 				})
 				if err != nil {
 					fmt.Printf("Error processing %v: %v\n", *stack.StackName, err)
+
 					break
 				}
 				resourceToken = resources.NextToken
@@ -157,6 +160,7 @@ func getRootedResources(svc CloudformationAPI, kind string) map[string]bool {
 			}
 		}
 	}
+
 	return rootedResources
 }
 
@@ -167,6 +171,7 @@ func getSession() *session.Session {
 	if awsProfile != "" {
 		os.Setenv("AWS_PROFILE", awsProfile)
 	}
+
 	return session.Must(session.NewSessionWithOptions(session.Options{
 		AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
 		SharedConfigState:       session.SharedConfigEnable,
@@ -184,12 +189,19 @@ type LambdaAPI interface {
 
 func processLogs(rootedResources map[string]bool, svc LogsAPI, l LambdaAPI) {
 	fmt.Printf("GroupName, RetentionDays, StoredBytesRaw, StoredBytesHuman, LastLogEntry, DaysAgo\n")
+
 	var nextGroup *string
+
+	const pageSize = 50
+
+	const hoursInDay = 24
+
 	for ok := true; ok; ok = (nextGroup != nil) {
 		groups, err := svc.DescribeLogGroups(&cloudwatchlogs.DescribeLogGroupsInput{
 			NextToken: nextGroup,
-			Limit:     aws.Int64(50),
+			Limit:     aws.Int64(pageSize),
 		})
+
 		if err != nil {
 			fmt.Printf("Error listing Log Groups: %v\n", err)
 		} else {
@@ -202,6 +214,7 @@ func processLogs(rootedResources map[string]bool, svc LogsAPI, l LambdaAPI) {
 				nextGroup = nil
 			}
 		}
+
 		for _, group := range groups.LogGroups {
 			if Debug {
 				fmt.Printf("Processing %v\n", *group)
@@ -221,11 +234,13 @@ func processLogs(rootedResources map[string]bool, svc LogsAPI, l LambdaAPI) {
 				})
 				if err == nil {
 					ownedByLambda = true
+
 					if Debug {
 						fmt.Printf("Group %v is owned by a lambda function, skipping\n", *group.LogGroupName)
 					}
 				}
 			}
+
 			if ownedByCfn || ownedByLambda {
 				// this stream is owned by a cloudformation stack, skip it
 				if Debug && ownedByCfn {
@@ -254,7 +269,7 @@ func processLogs(rootedResources map[string]bool, svc LogsAPI, l LambdaAPI) {
 						stream.LogStreams[0].LastEventTimestamp != nil {
 						t := time.UnixMilli(*stream.LogStreams[0].LastEventTimestamp)
 						lastEvent = t.Format(time.RFC3339)
-						daysAgo = int64(time.Since(t).Hours() / 24)
+						daysAgo = int64(time.Since(t).Hours() / hoursInDay)
 					}
 				}
 				if group.RetentionInDays != nil {
@@ -305,11 +320,15 @@ type KinesisAPI interface {
 
 func processKinesis(rootedResources map[string]bool, svc KinesisAPI) {
 	var startStream *string
+
+	const pageSize = 50
+
 	for ok := true; ok; ok = (startStream != nil) {
 		streams, err := svc.ListStreams(&kinesis.ListStreamsInput{
 			ExclusiveStartStreamName: startStream,
-			Limit:                    aws.Int64(50),
+			Limit:                    aws.Int64(pageSize),
 		})
+
 		if err != nil {
 			fmt.Printf("Error listing Kinesis Streams: %v\n", err)
 		} else {
@@ -322,10 +341,12 @@ func processKinesis(rootedResources map[string]bool, svc KinesisAPI) {
 				startStream = nil
 			}
 		}
+
 		for _, stream := range streams.StreamNames {
 			if Debug {
 				fmt.Printf("Processing %v\n", *stream)
 			}
+
 			if _, ok := rootedResources[*stream]; ok {
 				// this stream is owned by a cloudformation stack, skip it
 				if Debug {
@@ -345,6 +366,7 @@ type KmsAPI interface {
 
 func processKMS(rootedResources map[string]bool, svc KmsAPI) {
 	var marker *string
+
 	for ok := true; ok; ok = (marker != nil) {
 		keys, err := svc.ListKeys(&kms.ListKeysInput{
 			Marker: marker,
@@ -393,6 +415,7 @@ type DynamoDBAPI interface {
 
 func processDynamoDB(rootedResources map[string]bool, svc DynamoDBAPI) {
 	var lastTable *string
+
 	for ok := true; ok; ok = (lastTable != nil) {
 		tables, err := svc.ListTables(&dynamodb.ListTablesInput{
 			ExclusiveStartTableName: lastTable,
@@ -403,11 +426,12 @@ func processDynamoDB(rootedResources map[string]bool, svc DynamoDBAPI) {
 			lastTable = tables.LastEvaluatedTableName
 		}
 
-		//fmt.Printf("Processing %v tables, %v will be excluded\n", len(tables.TableNames), len(rootedResources))
 		for _, table := range tables.TableNames {
 			if _, ok := rootedResources[*table]; ok {
 				// this table table belongs to a cloudformation stack, skip it
-				//fmt.Printf("skipping %v\n", *table)
+				if Debug {
+					fmt.Printf("skipping %v\n", *table)
+				}
 				continue
 			} else {
 				fmt.Printf("\"%v\"\n", *table)
@@ -418,21 +442,17 @@ func processDynamoDB(rootedResources map[string]bool, svc DynamoDBAPI) {
 
 // Resource holds the type of AWS resource we are going to look for
 var Resource string
-var supportedTypes string = "AWS::DynamoDB::Table, AWS::KMS::Key, AWS::Kinesis::Stream, AWS::Logs::LogGroup, AWS::S3::Bucket"
+
+var supportedTypes string = `AWS::DynamoDB::Table
+AWS::KMS::Key
+AWS::Kinesis::Stream
+AWS::Logs::LogGroup
+AWS::S3::Bucket`
 
 func init() {
 	rootCmd.AddCommand(orphanedCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// dryrunCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 	orphanedCmd.Flags().StringVarP(&Resource, "resource", "r", "",
 		fmt.Sprintf("Which type of resource to enumerate\nSupported types are %s", supportedTypes))
 	orphanedCmd.MarkFlagRequired("resource")
-
 }

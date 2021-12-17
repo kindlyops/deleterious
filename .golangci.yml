@@ -11,6 +11,8 @@ linters-settings:
         sizeThreshold: 256
   gocyclo:
     min-complexity: 10
+  nestif:
+    min-complexity: 10
   govet:
     check-shadowing: true
   goconst:
@@ -36,6 +38,8 @@ linters:
     - scopelint
     - maligned
     - golint
+    - gocyclo
+    - gochecknoinits
 
 run:
   skip-dirs:

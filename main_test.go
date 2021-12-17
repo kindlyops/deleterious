@@ -65,6 +65,7 @@ func TestCLIHelp(t *testing.T) {
 	if _, err = os.Stat(path); os.IsNotExist(err) {
 		t.Fatalf("Missing binary %v", path)
 	}
+
 	file, err := filepath.EvalSymlinks(path)
 	if err != nil {
 		t.Fatalf("Invalid filename %v", path)
@@ -77,7 +78,7 @@ func TestCLIHelp(t *testing.T) {
 	}
 	output := strings.TrimSpace(string(res))
 
-	if strings.Contains(output, "UsageA:") == false {
+	if strings.Contains(output, "Usage:") == false {
 		t.Error("Expected: ", "'Usage:'", "Got:\n", output)
 	}
 }

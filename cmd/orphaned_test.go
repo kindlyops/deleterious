@@ -25,6 +25,7 @@ import (
 
 func Test_getRootedResources(t *testing.T) {
 	t.Parallel()
+
 	type args struct {
 		svc  *mocks.CloudformationAPI
 		kind string

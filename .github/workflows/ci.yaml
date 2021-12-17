@@ -47,12 +47,12 @@ jobs:
         run: |
           bazel coverage //...
           echo "coverage_files=$(find bazel-out/ -name 'coverage.dat' -printf '%p, ' | sed 's/, $//')" >> $GITHUB_ENV
-      - name: Coverage Info
+      - name: Detected Coverage Files
         run: echo ${{ env.coverage_files }}
       - uses: codecov/codecov-action@v2
         name: codecov upload
         with:
-          files: bazel-out/darwin_arm64-fastbuild/testlogs/cmd/go_default_test/coverage.dat, bazel-out/darwin_arm64-fastbuild/testlogs/go_default_test/coverage.dat
+          files: ${{ env.coverage_files }} 
       - name: Set up Go
         uses: actions/setup-go@master
         with:

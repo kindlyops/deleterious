@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -52,7 +55,7 @@ jobs:
       - uses: codecov/codecov-action@v2
         name: codecov upload
         with:
-          files: ${{ env.coverage_files }} 
+          files: ${{ env.coverage_files }}
       - name: Set up Go
         uses: actions/setup-go@master
         with:

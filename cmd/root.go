@@ -26,10 +26,10 @@ import (
 var cfgFile string
 var awsProfile string
 
-// Debug controls whether or not debug messages should be printed
+// Debug controls whether or not debug messages should be printed.
 var Debug bool
 
-// rootCmd represents the base command when called without any subcommands
+// rootCmd represents the base command when called without any subcommands.
 var rootCmd = &cobra.Command{
 	Version: "dev",
 	Use:     "deleterious",
@@ -58,6 +58,7 @@ use at your own risk.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute(v string) {
 	rootCmd.SetVersionTemplate(v)
+
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

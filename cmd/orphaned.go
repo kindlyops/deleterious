@@ -38,7 +38,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// orphanedCmd represents the orphaned command
+// orphanedCmd represents the orphaned command.
 var orphanedCmd = &cobra.Command{
 	Use:   "orphaned",
 	Short: "Find orphaned resources without deleting",
@@ -147,6 +147,7 @@ func getRootedResources(svc CloudformationAPI, kind string) map[string]bool {
 
 					break
 				}
+
 				resourceToken = resources.NextToken
 
 				for _, resource := range resources.StackResourceSummaries {
@@ -154,6 +155,7 @@ func getRootedResources(svc CloudformationAPI, kind string) map[string]bool {
 						if Debug {
 							fmt.Printf("Found rooted resource %v : %v\n", *resource.PhysicalResourceId, *resource.ResourceType)
 						}
+
 						rootedResources[*resource.PhysicalResourceId] = true
 					}
 				}
@@ -219,8 +221,10 @@ func processLogs(rootedResources map[string]bool, svc LogsAPI, l LambdaAPI) {
 			if Debug {
 				fmt.Printf("Processing %v\n", *group)
 			}
+
 			_, ownedByCfn := rootedResources[*group.LogGroupName]
 			ownedByLambda := false
+
 			if strings.HasPrefix(*group.LogGroupName, "/aws/lambda") {
 				// check whether there is a lambda function with a matching name
 				// we do this because log groups are freqently created by the
@@ -229,9 +233,11 @@ func processLogs(rootedResources map[string]bool, svc LogsAPI, l LambdaAPI) {
 				if Debug {
 					fmt.Printf("Checking lambda %v\n", lambdaName)
 				}
+
 				_, err := l.GetFunction(&lambda.GetFunctionInput{
 					FunctionName: aws.String(lambdaName),
 				})
+
 				if err == nil {
 					ownedByLambda = true
 
@@ -309,6 +315,7 @@ func processS3(rootedResources map[string]bool, svc S3API) {
 			orphaned = append(orphaned, *bucket)
 		}
 	}
+
 	output, _ := json.MarshalIndent(orphaned, "", "  ")
 
 	fmt.Printf("%s\n", string(output))
@@ -432,6 +439,7 @@ func processDynamoDB(rootedResources map[string]bool, svc DynamoDBAPI) {
 				if Debug {
 					fmt.Printf("skipping %v\n", *table)
 				}
+
 				continue
 			} else {
 				fmt.Printf("\"%v\"\n", *table)
@@ -440,19 +448,20 @@ func processDynamoDB(rootedResources map[string]bool, svc DynamoDBAPI) {
 	}
 }
 
-// Resource holds the type of AWS resource we are going to look for
+// Resource holds the type of AWS resource we are going to look for.
 var Resource string
 
-var supportedTypes = `AWS::DynamoDB::Table
-AWS::KMS::Key
-AWS::Kinesis::Stream
-AWS::Logs::LogGroup
-AWS::S3::Bucket`
+var supportedTypes = `
+	AWS::DynamoDB::Table
+	AWS::KMS::Key
+	AWS::Kinesis::Stream
+	AWS::Logs::LogGroup
+	AWS::S3::Bucket`
 
 func init() {
 	rootCmd.AddCommand(orphanedCmd)
 
 	orphanedCmd.Flags().StringVarP(&Resource, "resource", "r", "",
-		fmt.Sprintf("Which type of resource to enumerate\nSupported types are %s", supportedTypes))
+		fmt.Sprintf("Which type of resource to enumerate\nSupported types are%s", supportedTypes))
 	orphanedCmd.MarkFlagRequired("resource")
 }

@@ -22,7 +22,7 @@ checksum:
   name_template: 'checksums.txt'
 
 sboms:
-  - artifacts: any
+  - artifacts: source
 
 announce:
   discord:

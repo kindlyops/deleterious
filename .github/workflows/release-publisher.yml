@@ -28,6 +28,10 @@ jobs:
       - name: clean working tree
         run: |
           git checkout -- version.bzl
+      - name: setup-syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | \
+          sh -s -- -b /usr/local/bin v0.32.0
       - name: Run goreleaser
         uses: goreleaser/goreleaser-action@master
         env:

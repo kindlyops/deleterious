@@ -61,6 +61,10 @@ jobs:
         uses: actions/setup-go@master
         with:
           go-version: 1.17.2
+      - name: setup-syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | \
+          sh -s -- -b /usr/local/bin v0.32.0
       - name: dry run goreleaser
         uses: goreleaser/goreleaser-action@v2
         env:

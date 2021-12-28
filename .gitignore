@@ -4,6 +4,7 @@ bazel-deleterious
 bazel-out
 bazel-testlogs
 bazel-workspace
+user.bazelrc
 bdist
 dist
 .vscode/

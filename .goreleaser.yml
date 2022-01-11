@@ -79,7 +79,7 @@ scoop:
   # Git author used to commit to the repository.
   # Defaults are shown.
   commit_author:
-    name: kindlymachine[bot]
+    name: support-kindlyops
     email: support@kindlyops.com
 
   # Your app's homepage.

@@ -3,7 +3,7 @@ module github.com/kindlyops/deleterious
 go 1.17
 
 require (
-	github.com/aws/aws-sdk-go v1.42.41
+	github.com/aws/aws-sdk-go v1.42.42
 	// If changing rules_go version, remember to change version in WORKSPACE also
 	github.com/bazelbuild/rules_go v0.29.0
 	github.com/dustin/go-humanize v1.0.0

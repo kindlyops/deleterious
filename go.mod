@@ -3,7 +3,7 @@ module github.com/kindlyops/deleterious
 go 1.17
 
 require (
-	github.com/aws/aws-sdk-go v1.43.4
+	github.com/aws/aws-sdk-go v1.43.5
 	// If changing rules_go version, remember to change version in WORKSPACE also
 	github.com/bazelbuild/rules_go v0.29.0
 	github.com/dustin/go-humanize v1.0.0
@@ -31,7 +31,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.1.1 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
-	golang.org/x/sys v0.0.0-20211210111614-af8b64212486 // indirect
+	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

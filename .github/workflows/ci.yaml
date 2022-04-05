@@ -44,7 +44,7 @@ jobs:
           echo "coverage_files=$(find bazel-out/ -name 'coverage.dat' -printf '%p, ' | sed 's/, $//')" >> $GITHUB_ENV
       - name: Detected Coverage Files
         run: echo ${{ env.coverage_files }}
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v3
         name: codecov upload
         with:
           files: ${{ env.coverage_files }}

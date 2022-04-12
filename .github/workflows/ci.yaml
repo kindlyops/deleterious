@@ -27,7 +27,7 @@ jobs:
         run: bazel run //:vendor
         if: (github.actor == 'dependabot-preview[bot]') || (github.actor == 'renovate[bot]')
       - name: autocommit
-        uses: stefanzweifel/git-auto-commit-action@v4.13.1
+        uses: stefanzweifel/git-auto-commit-action@v4.14.1
         with:
           commit_message: Apply syncdeps changes
           branch: ${{ github.head_ref }}

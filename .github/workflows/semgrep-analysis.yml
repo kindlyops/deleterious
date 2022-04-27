@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v3
 
       # Scan code using project's configuration on https://semgrep.dev/manage
-      - uses: returntocorp/semgrep-action@2b4371ddcf0d106bbf460a888703b7872873d083
+      - uses: returntocorp/semgrep-action@ab158a4cb4dd2ec3f5e3b6a06b60c995c8e24675
         with:
           publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
           generateSarif: "1"

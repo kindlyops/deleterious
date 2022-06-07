@@ -23,5 +23,8 @@ go_library(
     importmap = "github.com/kindlyops/deleterious/vendor/github.com/rs/zerolog",
     importpath = "github.com/rs/zerolog",
     visibility = ["//visibility:public"],
-    deps = ["//vendor/github.com/rs/zerolog/internal/json:go_default_library"],
+    deps = [
+        "//vendor/github.com/mattn/go-colorable:go_default_library",
+        "//vendor/github.com/rs/zerolog/internal/json:go_default_library",
+    ],
 )

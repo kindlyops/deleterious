@@ -10,14 +10,6 @@ go_library(
     visibility = ["//visibility:public"],
 )
 
-go_test(
-    name = "bazel_test",
-    size = "small",
-    srcs = ["bazel_test.go"],
-    data = ["empty.txt"],
-    embed = [":bazel"],
-)
-
 # Runfiles functionality in this package is tested by //tests/core/runfiles.
 
 filegroup(

@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/aws/aws-sdk-go v1.43.9
 	// If changing rules_go version, remember to change version in WORKSPACE also
-	github.com/bazelbuild/rules_go v0.29.0
+	github.com/bazelbuild/rules_go v0.34.0
 	github.com/dustin/go-humanize v1.0.0
 	github.com/mattn/go-isatty v0.0.16
 	github.com/mitchellh/go-homedir v1.1.0

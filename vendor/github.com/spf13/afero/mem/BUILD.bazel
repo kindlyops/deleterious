@@ -10,4 +10,5 @@ go_library(
     importmap = "github.com/kindlyops/deleterious/vendor/github.com/spf13/afero/mem",
     importpath = "github.com/spf13/afero/mem",
     visibility = ["//visibility:public"],
+    deps = ["//vendor/github.com/spf13/afero/internal/common:go_default_library"],
 )

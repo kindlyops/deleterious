@@ -9,7 +9,7 @@ go_library(
         "viper.go",
         "viper_go1_15.go",
         "watch.go",
-        "watch_wasm.go",
+        "watch_unsupported.go",
     ],
     importmap = "github.com/kindlyops/deleterious/vendor/github.com/spf13/viper",
     importpath = "github.com/spf13/viper",

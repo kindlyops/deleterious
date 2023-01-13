@@ -42,6 +42,8 @@ github.com/aws/aws-sdk-go v1.44.135 h1:DJJP/CkEpgafA5p5jlY9VzDRyKrfABVixzIxrK/3t
 github.com/aws/aws-sdk-go v1.44.135/go.mod h1:aVsgQcEevwlmQ7qHE9I3h+dtQgpqhFB+i8Phjh7fkwI=
 github.com/bazelbuild/rules_go v0.29.0 h1:SfxjyO/V68rVnzOHop92fB0gv/Aa75KNLAN0PMqXbIw=
 github.com/bazelbuild/rules_go v0.29.0/go.mod h1:MC23Dc/wkXEyk3Wpq6lCqz0ZAYOZDw2DR5y3N1q2i7M=
+github.com/bazelbuild/rules_go v0.37.0 h1:vbnESGv/t2WgGEbXatwbXAS95dTx93Lv6Uh5QkVF13s=
+github.com/bazelbuild/rules_go v0.37.0/go.mod h1:TMHmtfpvyfsxaqfL9WnahCsXMWDMICTw7XeK9yVb+YU=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=

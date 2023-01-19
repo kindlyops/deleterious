@@ -2,10 +2,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = [
-        "codec.go",
-        "yaml3.go",
-    ],
+    srcs = ["codec.go"],
     importmap = "github.com/kindlyops/deleterious/vendor/github.com/spf13/viper/internal/encoding/yaml",
     importpath = "github.com/spf13/viper/internal/encoding/yaml",
     visibility = ["//vendor/github.com/spf13/viper:__subpackages__"],

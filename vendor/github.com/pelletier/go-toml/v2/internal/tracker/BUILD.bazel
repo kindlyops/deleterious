@@ -10,5 +10,5 @@ go_library(
     importmap = "github.com/kindlyops/deleterious/vendor/github.com/pelletier/go-toml/v2/internal/tracker",
     importpath = "github.com/pelletier/go-toml/v2/internal/tracker",
     visibility = ["//vendor/github.com/pelletier/go-toml/v2:__subpackages__"],
-    deps = ["//vendor/github.com/pelletier/go-toml/v2/internal/ast:go_default_library"],
+    deps = ["//vendor/github.com/pelletier/go-toml/v2/unstable:go_default_library"],
 )

@@ -7,7 +7,7 @@ require (
 	// If changing rules_go version, remember to change version in WORKSPACE also
 	github.com/bazelbuild/rules_go v0.29.0
 	github.com/dustin/go-humanize v1.0.1
-	github.com/mattn/go-isatty v0.0.17
+	github.com/mattn/go-isatty v0.0.18
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/rs/zerolog v1.29.0
 	github.com/spf13/cobra v1.6.1
@@ -32,7 +32,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
-	golang.org/x/sys v0.3.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

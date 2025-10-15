@@ -31,13 +31,13 @@ jobs:
       - name: setup-syft
         run: |
           curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | \
-          sh -s -- -b /usr/local/bin v0.32.0
+          sh -s -- -b /usr/local/bin v1.18.1
       - name: Run goreleaser
-        uses: goreleaser/goreleaser-action@master
+        uses: goreleaser/goreleaser-action@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
           DISCORD_WEBHOOK_ID: ${{ secrets.DISCORD_WEBHOOK_ID }}
           DISCORD_WEBHOOK_TOKEN: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
         with:
-          version: latest
+          version: v2
           args: release

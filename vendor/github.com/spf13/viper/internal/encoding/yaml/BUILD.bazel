@@ -6,5 +6,5 @@ go_library(
     importmap = "github.com/kindlyops/deleterious/vendor/github.com/spf13/viper/internal/encoding/yaml",
     importpath = "github.com/spf13/viper/internal/encoding/yaml",
     visibility = ["//vendor/github.com/spf13/viper:__subpackages__"],
-    deps = ["//vendor/gopkg.in/yaml.v3:go_default_library"],
+    deps = ["//vendor/go.yaml.in/yaml/v3:go_default_library"],
 )

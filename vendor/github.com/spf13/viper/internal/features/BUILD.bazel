@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "bind_struct_default.go",
+        "finder_default.go",
+    ],
+    importmap = "github.com/kindlyops/deleterious/vendor/github.com/spf13/viper/internal/features",
+    importpath = "github.com/spf13/viper/internal/features",
+    visibility = ["//vendor/github.com/spf13/viper:__subpackages__"],
+)

@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checkout project source
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
       # Scan code using project's configuration on https://semgrep.dev/manage
       - uses: returntocorp/semgrep-action@549796168c0ddcb9149b10a0e79e5f6522f50797

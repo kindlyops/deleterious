@@ -4,6 +4,7 @@ go_library(
     name = "go_default_library",
     srcs = [
         "connection_reset_error.go",
+        "doc.go",
         "handlers.go",
         "http_request.go",
         "offset_reader.go",

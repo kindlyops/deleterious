@@ -4,6 +4,7 @@ go_library(
     name = "go_default_library",
     srcs = [
         "cache.go",
+        "doc.go",
         "endpoint.go",
         "sync_map.go",
         "sync_map_1_8.go",

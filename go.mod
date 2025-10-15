@@ -3,7 +3,7 @@ module github.com/kindlyops/deleterious
 go 1.22.0
 
 require (
-	github.com/aws/aws-sdk-go v1.44.135
+	github.com/aws/aws-sdk-go v1.55.8
 	github.com/bazelbuild/rules_go v0.57.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/mattn/go-isatty v0.0.20

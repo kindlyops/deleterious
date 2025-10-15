@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.44.135
 	github.com/bazelbuild/rules_go v0.57.0
 	github.com/dustin/go-humanize v1.0.1
-	github.com/mattn/go-isatty v0.0.19
+	github.com/mattn/go-isatty v0.0.20
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/rs/zerolog v1.29.1
 	github.com/spf13/cobra v1.7.0

@@ -1,17 +1,12 @@
 # .goreleaser.yml
 project_name: deleterious
+before:
+  hooks:
+    - ./goreleaser-post-hook.sh
+
 builds:
   -
-    main: dummy.go
-    targets:
-      - linux_amd64
-      - linux_arm64
-      - darwin_amd64
-      - darwin_arm64
-      - windows_amd64
-    binary: deleterious
-    hooks:
-      post: ./goreleaser-post-hook.sh
+    skip: true
 
 checksum:
   name_template: 'checksums.txt'

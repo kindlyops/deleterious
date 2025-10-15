@@ -4,40 +4,40 @@ project_name: deleterious
 
 builds:
   - id: darwin-amd64
-    builder: prebuilt
+    main: dummy.go
     goos: [darwin]
     goarch: [amd64]
     binary: deleterious
-    prebuilt:
-      path: bdist/deleterious-darwin
+    hooks:
+      post: cp -fv bdist/deleterious-darwin "{{ .Path }}"
   - id: darwin-arm64
-    builder: prebuilt
+    main: dummy.go
     goos: [darwin]
     goarch: [arm64]
     binary: deleterious
-    prebuilt:
-      path: bdist/deleterious-darwin-m1
+    hooks:
+      post: cp -fv bdist/deleterious-darwin-m1 "{{ .Path }}"
   - id: linux-amd64
-    builder: prebuilt
+    main: dummy.go
     goos: [linux]
     goarch: [amd64]
     binary: deleterious
-    prebuilt:
-      path: bdist/deleterious-linux
+    hooks:
+      post: cp -fv bdist/deleterious-linux "{{ .Path }}"
   - id: linux-arm64
-    builder: prebuilt
+    main: dummy.go
     goos: [linux]
     goarch: [arm64]
     binary: deleterious
-    prebuilt:
-      path: bdist/deleterious-linux-arm
+    hooks:
+      post: cp -fv bdist/deleterious-linux-arm "{{ .Path }}"
   - id: windows-amd64
-    builder: prebuilt
+    main: dummy.go
     goos: [windows]
     goarch: [amd64]
     binary: deleterious
-    prebuilt:
-      path: bdist/deleterious-windows.exe
+    hooks:
+      post: cp -fv bdist/deleterious-windows.exe "{{ .Path }}"
 
 checksum:
   name_template: 'checksums.txt'

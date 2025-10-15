@@ -1,17 +1,43 @@
 # .goreleaser.yml
+version: 2
 project_name: deleterious
+
 builds:
-  -
+  - id: darwin-amd64
     main: dummy.go
-    targets:
-      - linux_amd64
-      - linux_arm64
-      - darwin_amd64
-      - darwin_arm64
-      - windows_amd64
+    goos: [darwin]
+    goarch: [amd64]
     binary: deleterious
     hooks:
-      post: ./goreleaser-post-hook.sh
+      post: cp -fv bdist/deleterious-darwin "{{ .Path }}"
+  - id: darwin-arm64
+    main: dummy.go
+    goos: [darwin]
+    goarch: [arm64]
+    binary: deleterious
+    hooks:
+      post: cp -fv bdist/deleterious-darwin-m1 "{{ .Path }}"
+  - id: linux-amd64
+    main: dummy.go
+    goos: [linux]
+    goarch: [amd64]
+    binary: deleterious
+    hooks:
+      post: cp -fv bdist/deleterious-linux "{{ .Path }}"
+  - id: linux-arm64
+    main: dummy.go
+    goos: [linux]
+    goarch: [arm64]
+    binary: deleterious
+    hooks:
+      post: cp -fv bdist/deleterious-linux-arm "{{ .Path }}"
+  - id: windows-amd64
+    main: dummy.go
+    goos: [windows]
+    goarch: [amd64]
+    binary: deleterious
+    hooks:
+      post: cp -fv bdist/deleterious-windows.exe "{{ .Path }}"
 
 checksum:
   name_template: 'checksums.txt'

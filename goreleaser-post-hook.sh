@@ -8,8 +8,25 @@ mkdir -p dist/deleterious_linux_amd64_v1
 mkdir -p dist/deleterious_linux_arm64
 mkdir -p dist/deleterious_windows_amd64_v1
 
-sudo cp -f bdist/deleterious-darwin dist/deleterious_darwin_amd64_v1/deleterious
-sudo cp -f bdist/deleterious-darwin-m1 dist/deleterious_darwin_arm64/deleterious
-sudo cp -f bdist/deleterious-linux dist/deleterious_linux_amd64_v1/deleterious
-sudo cp -f bdist/deleterious-linux-arm dist/deleterious_linux_arm64/deleterious
-sudo cp -f bdist/deleterious-windows.exe dist/deleterious_windows_amd64_v1/deleterious.exe
+echo "Checking for existing files..."
+ls -la dist/deleterious_darwin_amd64_v1/ || true
+ls -la dist/deleterious_darwin_arm64/ || true
+ls -la dist/deleterious_linux_amd64_v1/ || true
+ls -la dist/deleterious_linux_arm64/ || true
+ls -la dist/deleterious_windows_amd64_v1/ || true
+
+echo "Removing existing binaries..."
+rm -fv dist/deleterious_darwin_amd64_v1/deleterious
+rm -fv dist/deleterious_darwin_arm64/deleterious
+rm -fv dist/deleterious_linux_amd64_v1/deleterious
+rm -fv dist/deleterious_linux_arm64/deleterious
+rm -fv dist/deleterious_windows_amd64_v1/deleterious.exe
+
+echo "Copying bazel-built binaries..."
+cp -fv bdist/deleterious-darwin dist/deleterious_darwin_amd64_v1/deleterious
+cp -fv bdist/deleterious-darwin-m1 dist/deleterious_darwin_arm64/deleterious
+cp -fv bdist/deleterious-linux dist/deleterious_linux_amd64_v1/deleterious
+cp -fv bdist/deleterious-linux-arm dist/deleterious_linux_arm64/deleterious
+cp -fv bdist/deleterious-windows.exe dist/deleterious_windows_amd64_v1/deleterious.exe
+
+echo "Post-hook complete!"

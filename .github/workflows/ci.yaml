@@ -61,5 +61,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
         with:
-          version: latest
+          version: v2
           args: release --snapshot --skip=publish

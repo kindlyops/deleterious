@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(golangci-lint run:*)",
+      "Bash(gh pr view:*)",
+      "Bash(bazel run:*)",
+      "Bash(go version)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

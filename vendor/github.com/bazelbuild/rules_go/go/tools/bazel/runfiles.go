@@ -40,6 +40,10 @@ const (
 // Runfile may be called from tests invoked with 'bazel test' and
 // binaries invoked with 'bazel run'. On Windows,
 // only tests invoked with 'bazel test' are supported.
+//
+// Deprecated: Use github.com/bazelbuild/rules_go/go/runfiles instead for
+// cross-platform support matching the behavior of the Bazel-provided runfiles
+// libraries.
 func Runfile(path string) (string, error) {
 	// Search in working directory
 	if _, err := os.Stat(path); err == nil {
@@ -51,8 +55,19 @@ func Runfile(path string) (string, error) {
 	}
 
 	// Search manifest if we have one.
-	if entry, ok := runfiles.index[path]; ok {
+	if entry, ok := runfiles.index.GetIgnoringWorkspace(path); ok {
 		return entry.Path, nil
+	}
+
+	if strings.HasPrefix(path, "../") || strings.HasPrefix(path, "external/") {
+		pathParts := strings.Split(path, "/")
+		if len(pathParts) >= 3 {
+			workspace := pathParts[1]
+			pathInsideWorkspace := strings.Join(pathParts[2:], "/")
+			if path := runfiles.index.Get(workspace, pathInsideWorkspace); path != "" {
+				return path, nil
+			}
+		}
 	}
 
 	// Search the main workspace.
@@ -82,6 +97,11 @@ func Runfile(path string) (string, error) {
 // FindBinary may be called from tests invoked with 'bazel test' and
 // binaries invoked with 'bazel run'. On Windows,
 // only tests invoked with 'bazel test' are supported.
+//
+// Deprecated: Use runfiles.Rlocation instead. The path argument can be
+// obtained by passing `$(rlocationpath //pkg:name)` to the `go_*` target
+// via `args`, `env` or `x_defs` (the latter is also available on `go_library`).
+// This avoids hardcoding the package and name of the binary in the source code.
 func FindBinary(pkg, name string) (string, bool) {
 	if err := ensureRunfiles(); err != nil {
 		return "", false
@@ -150,6 +170,8 @@ func FindBinary(pkg, name string) (string, bool) {
 }
 
 // A RunfileEntry describes a runfile.
+//
+// Deprecated: See comment on ListRunfiles.
 type RunfileEntry struct {
 	// Workspace is the bazel workspace the file came from. For example,
 	// this would be "io_bazel_rules_go" for a file in rules_go.
@@ -165,6 +187,9 @@ type RunfileEntry struct {
 }
 
 // ListRunfiles returns a list of available runfiles.
+//
+// Deprecated: Use fs.Glob or fs.WalkDir on the fs.FS implementation provided
+// by runfiles.New() instead.
 func ListRunfiles() ([]RunfileEntry, error) {
 	if err := ensureRunfiles(); err != nil {
 		return nil, err
@@ -212,6 +237,9 @@ func ListRunfiles() ([]RunfileEntry, error) {
 // TestWorkspace returns the name of the Bazel workspace for this test.
 // TestWorkspace returns an error if the TEST_WORKSPACE environment variable
 // was not set or SetDefaultTestWorkspace was not called.
+//
+// Deprecated: With Bzlmod enabled, the workspace name is always "_main". Use
+// github.com/bazelbuild/rules_go/go/runfiles instead to access runfiles.
 func TestWorkspace() (string, error) {
 	if err := ensureRunfiles(); err != nil {
 		return "", err
@@ -225,6 +253,9 @@ func TestWorkspace() (string, error) {
 // SetDefaultTestWorkspace allows you to set a fake value for the
 // environment variable TEST_WORKSPACE if it is not defined. This is useful
 // when running tests on the command line and not through Bazel.
+//
+// Deprecated: With Bzlmod enabled, the workspace name is always "_main". Use
+// github.com/bazelbuild/rules_go/go/runfiles instead to access runfiles.
 func SetDefaultTestWorkspace(w string) {
 	ensureRunfiles()
 	runfiles.workspace = w
@@ -234,6 +265,9 @@ func SetDefaultTestWorkspace(w string) {
 // It will return an error if there is no runfiles tree, for example because
 // the executable is run on Windows or was not invoked with 'bazel test'
 // or 'bazel run'.
+//
+// Deprecated: Use github.com/bazelbuild/rules_go/go/runfiles instead to access
+// runfiles, which provides a platform-agnostic fs.FS implementation.
 func RunfilesPath() (string, error) {
 	if err := ensureRunfiles(); err != nil {
 		return "", err
@@ -251,26 +285,6 @@ func RunfilesPath() (string, error) {
 	return filepath.Join(runfiles.dir, runfiles.workspace), nil
 }
 
-// EnterRunfiles locates the directory under which a built binary can find its data dependencies
-// using relative paths, and enters that directory.
-//
-// "workspace" indicates the name of the current project, "pkg" indicates the relative path to the
-// build package that contains the binary target, "binary" indicates the basename of the binary
-// searched for, and "cookie" indicates an arbitrary data file that we expect to find within the
-// runfiles tree.
-//
-// DEPRECATED: use RunfilesPath instead.
-func EnterRunfiles(workspace string, pkg string, binary string, cookie string) error {
-	runfiles, ok := findRunfiles(workspace, pkg, binary, cookie)
-	if !ok {
-		return fmt.Errorf("cannot find runfiles tree")
-	}
-	if err := os.Chdir(runfiles); err != nil {
-		return fmt.Errorf("cannot enter runfiles tree: %v", err)
-	}
-	return nil
-}
-
 var runfiles = struct {
 	once, listOnce sync.Once
 
@@ -279,7 +293,7 @@ var runfiles = struct {
 	list []RunfileEntry
 
 	// index maps runfile short paths to absolute paths.
-	index map[string]RunfileEntry
+	index index
 
 	// dir is a path to the runfile directory. Typically this is a directory
 	// named <target>.runfiles, with a subdirectory for each workspace.
@@ -296,6 +310,47 @@ var runfiles = struct {
 	err error
 }{}
 
+type index struct {
+	indexWithWorkspace     map[indexKey]*RunfileEntry
+	indexIgnoringWorksapce map[string]*RunfileEntry
+}
+
+func newIndex() index {
+	return index{
+		indexWithWorkspace:     make(map[indexKey]*RunfileEntry),
+		indexIgnoringWorksapce: make(map[string]*RunfileEntry),
+	}
+}
+
+func (i *index) Put(entry *RunfileEntry) {
+	i.indexWithWorkspace[indexKey{
+		workspace: entry.Workspace,
+		shortPath: entry.ShortPath,
+	}] = entry
+	i.indexIgnoringWorksapce[entry.ShortPath] = entry
+}
+
+func (i *index) Get(workspace string, shortPath string) string {
+	entry := i.indexWithWorkspace[indexKey{
+		workspace: workspace,
+		shortPath: shortPath,
+	}]
+	if entry == nil {
+		return ""
+	}
+	return entry.Path
+}
+
+func (i *index) GetIgnoringWorkspace(shortPath string) (*RunfileEntry, bool) {
+	entry, ok := i.indexIgnoringWorksapce[shortPath]
+	return entry, ok
+}
+
+type indexKey struct {
+	workspace string
+	shortPath string
+}
+
 func ensureRunfiles() error {
 	runfiles.once.Do(initRunfiles)
 	return runfiles.err
@@ -307,7 +362,7 @@ func initRunfiles() {
 		// On Windows, Bazel doesn't create a symlink tree of runfiles because
 		// Windows doesn't support symbolic links by default. Instead, runfile
 		// locations are written to a manifest file.
-		runfiles.index = make(map[string]RunfileEntry)
+		runfiles.index = newIndex()
 		data, err := ioutil.ReadFile(manifest)
 		if err != nil {
 			runfiles.err = err
@@ -359,9 +414,16 @@ func initRunfiles() {
 					entry.ShortPath = entry.ShortPath[i+1:]
 				}
 			}
+			if strings.HasPrefix(entry.ShortPath, "../") {
+				entry.ShortPath = entry.ShortPath[len("../"):]
+				if i := strings.IndexByte(entry.ShortPath, '/'); i >= 0 {
+					entry.Workspace = entry.ShortPath[:i]
+					entry.ShortPath = entry.ShortPath[i+1:]
+				}
+			}
 
 			runfiles.list = append(runfiles.list, entry)
-			runfiles.index[entry.ShortPath] = entry
+			runfiles.index.Put(&entry)
 		}
 	}
 
@@ -403,38 +465,4 @@ func initRunfiles() {
 		}
 		sort.Strings(runfiles.workspaces)
 	}
-}
-
-// getCandidates returns the list of all possible "prefix/suffix" paths where there might be an
-// optional component in-between the two pieces.
-//
-// This function exists to cope with issues #1239 because we cannot tell where the built Go
-// binaries are located upfront.
-//
-// DEPRECATED: only used by EnterRunfiles.
-func getCandidates(prefix string, suffix string) []string {
-	candidates := []string{filepath.Join(prefix, suffix)}
-	if entries, err := ioutil.ReadDir(prefix); err == nil {
-		for _, entry := range entries {
-			candidate := filepath.Join(prefix, entry.Name(), suffix)
-			candidates = append(candidates, candidate)
-		}
-	}
-	return candidates
-}
-
-// findRunfiles locates the directory under which a built binary can find its data dependencies
-// using relative paths.
-//
-// DEPRECATED: only used by EnterRunfiles.
-func findRunfiles(workspace string, pkg string, binary string, cookie string) (string, bool) {
-	candidates := getCandidates(filepath.Join("bazel-bin", pkg), filepath.Join(binary+".runfiles", workspace))
-	candidates = append(candidates, ".")
-
-	for _, candidate := range candidates {
-		if _, err := os.Stat(filepath.Join(candidate, cookie)); err == nil {
-			return candidate, true
-		}
-	}
-	return "", false
 }

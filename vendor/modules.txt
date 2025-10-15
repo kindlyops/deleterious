@@ -57,8 +57,8 @@ github.com/aws/aws-sdk-go/service/sso
 github.com/aws/aws-sdk-go/service/sso/ssoiface
 github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
-# github.com/bazelbuild/rules_go v0.29.0
-## explicit
+# github.com/bazelbuild/rules_go v0.57.0
+## explicit; go 1.22.0
 github.com/bazelbuild/rules_go/go/tools/bazel
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
@@ -156,13 +156,12 @@ github.com/stretchr/testify/mock
 # github.com/subosito/gotenv v1.4.2
 ## explicit; go 1.18
 github.com/subosito/gotenv
-# golang.org/x/sys v0.6.0
-## explicit; go 1.17
-golang.org/x/sys/internal/unsafeheader
+# golang.org/x/sys v0.30.0
+## explicit; go 1.18
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.5.0
-## explicit; go 1.17
+# golang.org/x/text v0.22.0
+## explicit; go 1.18
 golang.org/x/text/runes
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm

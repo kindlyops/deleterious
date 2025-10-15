@@ -8,7 +8,7 @@
 // For general information about KMS, see the Key Management Service Developer
 // Guide (https://docs.aws.amazon.com/kms/latest/developerguide/).
 //
-// KMS is replacing the term customer master key (CMK) with KMS key and KMS
+// KMS has replaced the term customer master key (CMK) with KMS key and KMS
 // key. The concept has not changed. To prevent breaking changes, KMS is keeping
 // some variations of this term.
 //
@@ -38,14 +38,14 @@
 //
 // # Signing Requests
 //
-// Requests must be signed by using an access key ID and a secret access key.
-// We strongly recommend that you do not use your Amazon Web Services account
-// (root) access key ID and secret key for everyday work with KMS. Instead,
-// use the access key ID and secret access key for an IAM user. You can also
-// use the Amazon Web Services Security Token Service to generate temporary
-// security credentials that you can use to sign requests.
+// Requests must be signed using an access key ID and a secret access key. We
+// strongly recommend that you do not use your Amazon Web Services account root
+// access key ID and secret access key for everyday work. You can use the access
+// key ID and secret access key for an IAM user or you can use the Security
+// Token Service (STS) to generate temporary security credentials and use those
+// to sign requests.
 //
-// All KMS operations require Signature Version 4 (https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html).
+// All KMS requests must be signed with Signature Version 4 (https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html).
 //
 // # Logging API Requests
 //
@@ -110,4 +110,7 @@
 // See the AWS Key Management Service client KMS for more
 // information on creating client for this service.
 // https://docs.aws.amazon.com/sdk-for-go/api/service/kms/#New
+//
+// Deprecated: aws-sdk-go is deprecated. Use aws-sdk-go-v2.
+// See https://aws.amazon.com/blogs/developer/announcing-end-of-support-for-aws-sdk-for-go-v1-on-july-31-2025/.
 package kms

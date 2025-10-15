@@ -20,9 +20,10 @@ sboms:
   - artifacts: archive
     cmd: syft
     args:
+      - "scan"
       - "$artifact"
       - "--output"
-      - "spdx-json@2.3=$document"
+      - "spdx-json=$document"
 
 announce:
   discord:

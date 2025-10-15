@@ -55,7 +55,7 @@ jobs:
       - name: setup-syft
         run: |
           curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | \
-          sh -s -- -b /usr/local/bin v0.32.0
+          sh -s -- -b /usr/local/bin v1.18.1
       - name: dry run goreleaser
         uses: goreleaser/goreleaser-action@v5
         env:

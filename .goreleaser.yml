@@ -18,6 +18,12 @@ checksum:
 
 sboms:
   - artifacts: archive
+    cmd: syft
+    args:
+      - "scan"
+      - "$artifact"
+      - "--output"
+      - "spdx-json=$document"
 
 announce:
   discord:
@@ -27,7 +33,7 @@ announce:
 
 brews:
   - # Repository to push the tap to.
-    tap:
+    repository:
       owner: kindlyops
       name: homebrew-tap
 
@@ -68,28 +74,28 @@ brews:
     install: |
       bin.install "deleterious"
 
-scoop:
-  url_template: "http://github.com/kindlyops/deleterious/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+scoops:
+  - url_template: "http://github.com/kindlyops/deleterious/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
 
-  # Repository to push the app manifest to.
-  bucket:
-    owner: kindlyops
-    name: kindlyops-scoop
+    # Repository to push the app manifest to.
+    repository:
+      owner: kindlyops
+      name: kindlyops-scoop
 
-  # Git author used to commit to the repository.
-  # Defaults are shown.
-  commit_author:
-    name: support-kindlyops
-    email: support@kindlyops.com
+    # Git author used to commit to the repository.
+    # Defaults are shown.
+    commit_author:
+      name: support-kindlyops
+      email: support@kindlyops.com
 
-  # Your app's homepage.
-  # Default is empty.
-  homepage: "https://github.com/kindlyops/deleterious"
+    # Your app's homepage.
+    # Default is empty.
+    homepage: "https://github.com/kindlyops/deleterious"
 
-  # Your app's description.
-  # Default is empty.
-  description: "Deleterious helps find orphaned resources from AWS CloudFormation DeletionPolicy: Retain"
+    # Your app's description.
+    # Default is empty.
+    description: "Deleterious helps find orphaned resources from AWS CloudFormation DeletionPolicy: Retain"
 
-  # Your app's license
-  # Default is empty.
-  license: Apache2
+    # Your app's license
+    # Default is empty.
+    license: Apache2

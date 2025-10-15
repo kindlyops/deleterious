@@ -1,3 +1,5 @@
+version: 2
+
 linters-settings:
   gocritic:
     # Enable multiple checks by tags, run `GL_DEBUG=gocritic golangci-lint` run to see all tags and checks.
@@ -34,12 +36,7 @@ linters:
     # prealloc is not recommended by `golangci-lint` developers.
     - prealloc
     - gochecknoglobals
-    - exhaustivestruct
     - testpackage
-    - interfacer
-    - scopelint
-    - maligned
-    - golint
     - gocyclo
     - cyclop
     - gochecknoinits

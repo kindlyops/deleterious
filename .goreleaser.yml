@@ -4,30 +4,35 @@ project_name: deleterious
 
 builds:
   - id: darwin-amd64
+    builder: prebuilt
     goos: [darwin]
     goarch: [amd64]
     binary: deleterious
     prebuilt:
       path: bdist/deleterious-darwin
   - id: darwin-arm64
+    builder: prebuilt
     goos: [darwin]
     goarch: [arm64]
     binary: deleterious
     prebuilt:
       path: bdist/deleterious-darwin-m1
   - id: linux-amd64
+    builder: prebuilt
     goos: [linux]
     goarch: [amd64]
     binary: deleterious
     prebuilt:
       path: bdist/deleterious-linux
   - id: linux-arm64
+    builder: prebuilt
     goos: [linux]
     goarch: [arm64]
     binary: deleterious
     prebuilt:
       path: bdist/deleterious-linux-arm
   - id: windows-amd64
+    builder: prebuilt
     goos: [windows]
     goarch: [amd64]
     binary: deleterious

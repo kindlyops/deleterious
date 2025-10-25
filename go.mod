@@ -4,7 +4,7 @@ go 1.22.0
 
 require (
 	github.com/aws/aws-sdk-go v1.55.8
-	github.com/bazelbuild/rules_go v0.58.1
+	github.com/bazelbuild/rules_go v0.58.2
 	github.com/dustin/go-humanize v1.0.1
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mitchellh/go-homedir v1.1.0

@@ -2,7 +2,7 @@ module github.com/kindlyops/deleterious
 
 go 1.24.0
 
-toolchain go1.24.13
+toolchain go1.25.7
 
 require (
 	github.com/aws/aws-sdk-go v1.55.8

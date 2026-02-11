@@ -11,7 +11,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@master
         with:
-          go-version: 1.25.7
+          go-version: 1.26.0
       - name: Install bazelisk
         # yamllint disable rule:line-length
         run: |

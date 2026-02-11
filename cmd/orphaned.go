@@ -51,29 +51,29 @@ func orphaned(cmd *cobra.Command, args []string) {
 		log.Fatal().Msgf("'%v' is not yet supported, supported types are %s", Resource, supportedTypes)
 	}
 
-	switch {
-	case Resource == "AWS::DynamoDB::Table":
+	switch Resource {
+	case "AWS::DynamoDB::Table":
 		handler = func(rootedResources map[string]bool) {
 			svc := dynamodb.New(getSession())
 			processDynamoDB(rootedResources, svc)
 		}
-	case Resource == "AWS::KMS::Key":
+	case "AWS::KMS::Key":
 		handler = func(rootedResources map[string]bool) {
 			svc := kms.New(getSession())
 			processKMS(rootedResources, svc)
 		}
-	case Resource == "AWS::Kinesis::Stream":
+	case "AWS::Kinesis::Stream":
 		handler = func(rootedResources map[string]bool) {
 			svc := kinesis.New(getSession())
 			processKinesis(rootedResources, svc)
 		}
-	case Resource == "AWS::Logs::LogGroup":
+	case "AWS::Logs::LogGroup":
 		handler = func(rootedResources map[string]bool) {
 			svc := cloudwatchlogs.New(getSession())
 			l := lambda.New(getSession())
 			processLogs(rootedResources, svc, l)
 		}
-	case Resource == "AWS::S3::Bucket":
+	case "AWS::S3::Bucket":
 		handler = func(rootedResources map[string]bool) {
 			svc := s3.New(getSession())
 			processS3(rootedResources, svc)
@@ -236,7 +236,8 @@ func processLogs(rootedResources map[string]bool, svc LogsAPI, lambdaService Lam
 }
 
 func getLogGroupLastWrites(svc LogsAPI, group *cloudwatchlogs.LogGroup) (
-	lastEvent string, daysAgo int64, retentionDays int64) {
+	lastEvent string, daysAgo int64, retentionDays int64,
+) {
 	stream, err := svc.DescribeLogStreams(&cloudwatchlogs.DescribeLogStreamsInput{
 		LogGroupName: aws.String(*group.LogGroupName),
 		OrderBy:      aws.String("LastEventTime"),
@@ -254,8 +255,7 @@ func getLogGroupLastWrites(svc LogsAPI, group *cloudwatchlogs.LogGroup) (
 		lastEvent = "Unknown"
 		daysAgo = -1
 		retentionDays = -1
-	} else if stream.LogStreams != nil &&
-		len(stream.LogStreams) > 0 &&
+	} else if len(stream.LogStreams) > 0 &&
 		stream.LogStreams[0].LastEventTimestamp != nil {
 		t := time.UnixMilli(*stream.LogStreams[0].LastEventTimestamp)
 		lastEvent = t.Format(time.RFC3339)
@@ -377,31 +377,33 @@ func processKMS(rootedResources map[string]bool, svc KmsAPI) {
 
 		for _, key := range keys.Keys {
 			if _, ok := rootedResources[*key.KeyId]; ok {
-				// this key is owned by a cloudformation stack, skip it
-			} else {
-				metadata, err := svc.DescribeKey(&kms.DescribeKeyInput{
-					KeyId: key.KeyId,
-				})
-				if err != nil {
-					// There are some strange key IDs that are returned by
-					// ListKeys but that were never successfully created.
-					// These keys don't exist, and if we can't DescribeKey,
-					// treat it as not existing. If you are running with
-					// reduced permissions you could also hit the same permission
-					// denied error. but this is still the best indicator that
-					// we have that a key is not there.
-					continue
-				}
-				mgr := metadata.KeyMetadata.KeyManager
-				if *mgr == "AWS" {
-					// don't mess with AWS managed keys
-					continue
-				}
-				state := metadata.KeyMetadata.KeyState
-				if *state == "Enabled" {
-					// candidate for cleanup
-					fmt.Fprintf(os.Stdout, "\"%v\"\n", *key.KeyId)
-				}
+				continue
+			}
+
+			metadata, err := svc.DescribeKey(&kms.DescribeKeyInput{
+				KeyId: key.KeyId,
+			})
+			if err != nil {
+				// There are some strange key IDs that are returned by
+				// ListKeys but that were never successfully created.
+				// These keys don't exist, and if we can't DescribeKey,
+				// treat it as not existing. If you are running with
+				// reduced permissions you could also hit the same permission
+				// denied error. but this is still the best indicator that
+				// we have that a key is not there.
+				continue
+			}
+
+			mgr := metadata.KeyMetadata.KeyManager
+			if *mgr == "AWS" {
+				// don't mess with AWS managed keys
+				continue
+			}
+
+			state := metadata.KeyMetadata.KeyState
+			if *state == "Enabled" {
+				// candidate for cleanup
+				fmt.Fprintf(os.Stdout, "\"%v\"\n", *key.KeyId)
 			}
 		}
 	}
@@ -430,9 +432,9 @@ func processDynamoDB(rootedResources map[string]bool, svc DynamoDBAPI) {
 				log.Debug().Msgf("skipping %v\n", *table)
 
 				continue
-			} else {
-				fmt.Fprintf(os.Stdout, "\"%v\"\n", *table)
 			}
+
+			fmt.Fprintf(os.Stdout, "\"%v\"\n", *table)
 		}
 	}
 }

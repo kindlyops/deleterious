@@ -87,7 +87,6 @@ func Test_getRootedResources(t *testing.T) {
 	}, nil).Once()
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			if got := getRootedResources(tt.args.svc, tt.args.kind); !reflect.DeepEqual(got, tt.want) {

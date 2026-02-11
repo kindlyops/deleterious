@@ -229,7 +229,6 @@ func Test_countImages(t *testing.T) {
 
 func Test_processECR(t *testing.T) {
 	t.Run("single repo with untagged images", func(t *testing.T) {
-
 		mockSvc := &mocks.EcrAPI{}
 
 		mockSvc.On("DescribeRepositories", &ecr.DescribeRepositoriesInput{}).

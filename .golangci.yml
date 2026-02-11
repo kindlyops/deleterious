@@ -1,48 +1,86 @@
-version: 2
-
-linters-settings:
-  gocritic:
-    # Enable multiple checks by tags, run `GL_DEBUG=gocritic golangci-lint` run to see all tags and checks.
-    # Empty list by default. See https://github.com/go-critic/go-critic#usage -> section "Tags".
-    enabled-tags:
-      - performance
-      - diagnostic
-      - style
-    settings:
-      hugeParam:
-        sizeThreshold: 256
-  gocyclo:
-    min-complexity: 10
-  nestif:
-    min-complexity: 10
-  govet:
-    check-shadowing: true
-  goconst:
-    min-len: 2
-    min-occurrences: 3
-  lll:
-    line-length: 120
-  misspell:
-    locale: US
-  funlen:
-    lines: 100
-    statements: 50
-  errorlint:
-    asserts: false
-
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
-    # prealloc is not recommended by `golangci-lint` developers.
-    - prealloc
-    - gochecknoglobals
-    - testpackage
-    - gocyclo
+    - copyloopvar
     - cyclop
+    - depguard
+    - dupword
+    - errchkjson
+    - exhaustruct
+    - gochecknoglobals
     - gochecknoinits
-
-run:
-  skip-dirs:
-    - vendor
-  skip-files:
-    - dummy.go
+    - gocyclo
+    - godox
+    - modernize
+    - musttag
+    - noctx
+    - noinlineerr
+    - nonamedreturns
+    - paralleltest
+    - perfsprint
+    - prealloc
+    - testpackage
+    - varnamelen
+    - wrapcheck
+    - wsl
+    - wsl_v5
+  settings:
+    errorlint:
+      asserts: false
+    funlen:
+      lines: 100
+      statements: 50
+    goconst:
+      min-len: 2
+      min-occurrences: 3
+    gocritic:
+      enabled-tags:
+        - performance
+        - diagnostic
+        - style
+      settings:
+        hugeParam:
+          sizeThreshold: 256
+    gocyclo:
+      min-complexity: 10
+    lll:
+      line-length: 120
+    misspell:
+      locale: US
+    nestif:
+      min-complexity: 10
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters: [staticcheck]
+        text: "SA1019.*aws-sdk-go"
+      - linters: [staticcheck]
+        text: "SA1019.*bazel"
+      - linters: [revive]
+        text: "unused-parameter"
+      - linters: [gosec]
+        text: "G115"
+      - linters: [funlen]
+        path: _test\.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

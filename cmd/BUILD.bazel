@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = [
+        "ecr.go",
         "keys.go",
         "orphaned.go",
         "root.go",
@@ -17,6 +18,7 @@ go_library(
         "//vendor/github.com/aws/aws-sdk-go/service/cloudformation:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/cloudwatchlogs:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/dynamodb:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/service/ecr:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/iam:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/kinesis:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/kms:go_default_library",
@@ -35,11 +37,15 @@ go_library(
 go_test(
     name = "go_default_test",
     size = "small",
-    srcs = ["orphaned_test.go"],
+    srcs = [
+        "ecr_test.go",
+        "orphaned_test.go",
+    ],
     embed = [":go_default_library"],
     deps = [
         "//cmd/mocks:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/aws:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/cloudformation:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/service/ecr:go_default_library",
     ],
 )

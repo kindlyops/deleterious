@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "CloudformationAPI.go",
         "DynamoDBAPI.go",
+        "EcrAPI.go",
         "KinesisAPI.go",
         "KmsAPI.go",
         "LambdaAPI.go",
@@ -17,6 +18,7 @@ go_library(
         "//vendor/github.com/aws/aws-sdk-go/service/cloudformation:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/cloudwatchlogs:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/dynamodb:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/service/ecr:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/kinesis:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/kms:go_default_library",
         "//vendor/github.com/aws/aws-sdk-go/service/lambda:go_default_library",

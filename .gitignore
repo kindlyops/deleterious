@@ -8,4 +8,5 @@ user.bazelrc
 bdist
 dist
 .vscode/
+.claude/*.local.*
 !vendor/

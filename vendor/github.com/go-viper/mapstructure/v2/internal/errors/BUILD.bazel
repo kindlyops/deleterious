@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "errors.go",
+        "join.go",
+        "join_go1_19.go",
+    ],
+    importmap = "github.com/kindlyops/deleterious/vendor/github.com/go-viper/mapstructure/v2/internal/errors",
+    importpath = "github.com/go-viper/mapstructure/v2/internal/errors",
+    visibility = ["//vendor/github.com/go-viper/mapstructure/v2:__subpackages__"],
+)

@@ -9,6 +9,7 @@ go_library(
         "kind.go",
         "parser.go",
         "scanner.go",
+        "unmarshaler.go",
     ],
     importmap = "github.com/kindlyops/deleterious/vendor/github.com/pelletier/go-toml/v2/unstable",
     importpath = "github.com/pelletier/go-toml/v2/unstable",

@@ -5,6 +5,7 @@ bazel-out
 bazel-testlogs
 bazel-workspace
 user.bazelrc
+.bazel-distdir
 bdist
 dist
 .vscode/

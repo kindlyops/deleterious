@@ -20,7 +20,7 @@ URLS=$(grep -oE 'https://[^"]+\.(tar\.gz|zip)' "$WORKSPACE_DIR/WORKSPACE" | sort
 # Resolve Starlark format strings like {0} by extracting version variables
 buildtools_version=$(grep -oP 'buildtools_version = "\K[^"]+' "$WORKSPACE_DIR/WORKSPACE" || true)
 if [ -n "$buildtools_version" ]; then
-  URLS=$(echo "$URLS" | sed "s/{0}/$buildtools_version/g")
+  URLS="${URLS//\{0\}/$buildtools_version}"
 fi
 
 downloaded=0

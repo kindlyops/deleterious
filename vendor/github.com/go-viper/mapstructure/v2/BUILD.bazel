@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "decode_hooks.go",
+        "errors.go",
+        "mapstructure.go",
+        "reflect_go1_19.go",
+        "reflect_go1_20.go",
+    ],
+    importmap = "github.com/kindlyops/deleterious/vendor/github.com/go-viper/mapstructure/v2",
+    importpath = "github.com/go-viper/mapstructure/v2",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/github.com/go-viper/mapstructure/v2/internal/errors:go_default_library"],
+)

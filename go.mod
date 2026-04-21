@@ -10,7 +10,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/mattn/go-isatty v0.0.21
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/rs/zerolog v1.35.0
+	github.com/rs/zerolog v1.35.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1

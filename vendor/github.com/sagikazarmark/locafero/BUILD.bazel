@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "file_type.go",
+        "finder.go",
+        "glob.go",
+        "glob_windows.go",
+        "helpers.go",
+    ],
+    importmap = "github.com/kindlyops/deleterious/vendor/github.com/sagikazarmark/locafero",
+    importpath = "github.com/sagikazarmark/locafero",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/sourcegraph/conc/pool:go_default_library",
+        "//vendor/github.com/spf13/afero:go_default_library",
+    ],
+)

@@ -1,0 +1,10 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["waitgroup.go"],
+    importmap = "github.com/kindlyops/deleterious/vendor/github.com/sourcegraph/conc",
+    importpath = "github.com/sourcegraph/conc",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/github.com/sourcegraph/conc/panics:go_default_library"],
+)

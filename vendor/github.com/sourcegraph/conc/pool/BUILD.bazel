@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "context_pool.go",
+        "error_pool.go",
+        "pool.go",
+        "result_context_pool.go",
+        "result_error_pool.go",
+        "result_pool.go",
+    ],
+    importmap = "github.com/kindlyops/deleterious/vendor/github.com/sourcegraph/conc/pool",
+    importpath = "github.com/sourcegraph/conc/pool",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/github.com/sourcegraph/conc:go_default_library"],
+)

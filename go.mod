@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go v1.55.8
 	github.com/bazelbuild/rules_go v0.62.0
 	github.com/dustin/go-humanize v1.0.1
-	github.com/mattn/go-isatty v0.0.23
+	github.com/mattn/go-isatty v0.0.24
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/rs/zerolog v1.35.1
 	github.com/spf13/cobra v1.7.0

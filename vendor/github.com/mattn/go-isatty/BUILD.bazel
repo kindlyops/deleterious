@@ -8,7 +8,7 @@ go_library(
         "isatty_others.go",
         "isatty_plan9.go",
         "isatty_solaris.go",
-        "isatty_tcgets.go",
+        "isatty_tiocgwinsz.go",
         "isatty_windows.go",
     ],
     importmap = "github.com/kindlyops/deleterious/vendor/github.com/mattn/go-isatty",

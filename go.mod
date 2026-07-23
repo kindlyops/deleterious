@@ -6,7 +6,7 @@ toolchain go1.26.5
 
 require (
 	github.com/aws/aws-sdk-go v1.55.8
-	github.com/bazelbuild/rules_go v0.61.1
+	github.com/bazelbuild/rules_go v0.62.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/mattn/go-isatty v0.0.23
 	github.com/mitchellh/go-homedir v1.1.0

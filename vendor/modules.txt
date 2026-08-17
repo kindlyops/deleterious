@@ -63,8 +63,6 @@ github.com/aws/aws-sdk-go/service/sts/stsiface
 # github.com/bazelbuild/rules_go v0.63.0
 ## explicit; go 1.24.0
 github.com/bazelbuild/rules_go/go/tools/bazel
-# github.com/davecgh/go-spew v1.1.1
-## explicit
 # github.com/dustin/go-humanize v1.0.1
 ## explicit; go 1.16
 github.com/dustin/go-humanize
@@ -98,8 +96,6 @@ github.com/pelletier/go-toml/v2/internal/characters
 github.com/pelletier/go-toml/v2/internal/danger
 github.com/pelletier/go-toml/v2/internal/tracker
 github.com/pelletier/go-toml/v2/unstable
-# github.com/pmezard/go-difflib v1.0.0
-## explicit
 # github.com/rs/zerolog v1.35.1
 ## explicit; go 1.23
 github.com/rs/zerolog

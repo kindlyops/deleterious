@@ -1,0 +1,32 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "encoding.go",
+        "experimental.go",
+        "file.go",
+        "finder.go",
+        "flags.go",
+        "logger.go",
+        "remote.go",
+        "util.go",
+        "viper.go",
+    ],
+    importmap = "github.com/kindlyops/deleterious/vendor/github.com/spf13/viper",
+    importpath = "github.com/spf13/viper",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/fsnotify/fsnotify:go_default_library",
+        "//vendor/github.com/go-viper/mapstructure/v2:go_default_library",
+        "//vendor/github.com/sagikazarmark/locafero:go_default_library",
+        "//vendor/github.com/spf13/afero:go_default_library",
+        "//vendor/github.com/spf13/cast:go_default_library",
+        "//vendor/github.com/spf13/pflag:go_default_library",
+        "//vendor/github.com/spf13/viper/internal/encoding/dotenv:go_default_library",
+        "//vendor/github.com/spf13/viper/internal/encoding/json:go_default_library",
+        "//vendor/github.com/spf13/viper/internal/encoding/toml:go_default_library",
+        "//vendor/github.com/spf13/viper/internal/encoding/yaml:go_default_library",
+        "//vendor/github.com/spf13/viper/internal/features:go_default_library",
+    ],
+)

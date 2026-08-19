@@ -6,5 +6,5 @@ go_library(
     importmap = "github.com/kindlyops/deleterious/vendor/github.com/stretchr/testify/assert/yaml",
     importpath = "github.com/stretchr/testify/assert/yaml",
     visibility = ["//visibility:public"],
-    deps = ["//vendor/gopkg.in/yaml.v3:go_default_library"],
+    deps = ["//vendor/go.yaml.in/yaml/v3:go_default_library"],
 )

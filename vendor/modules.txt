@@ -165,5 +165,3 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/norm
 # gopkg.in/yaml.v2 v2.4.0
 ## explicit; go 1.15
-# gopkg.in/yaml.v3 v3.0.1
-## explicit

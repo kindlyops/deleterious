@@ -1,12 +1,12 @@
 module github.com/kindlyops/deleterious
 
-go 1.24.0
+go 1.25.0
 
 toolchain go1.26.6
 
 require (
 	github.com/aws/aws-sdk-go v1.55.8
-	github.com/bazelbuild/rules_go v0.63.0
+	github.com/bazelbuild/rules_go v0.64.1
 	github.com/dustin/go-humanize v1.1.0
 	github.com/mattn/go-isatty v0.0.24
 	github.com/mitchellh/go-homedir v1.1.0
@@ -31,7 +31,7 @@ require (
 	github.com/stretchr/objx v0.5.3 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/sys v0.33.0 // indirect
-	golang.org/x/text v0.28.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

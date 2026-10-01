@@ -60,8 +60,8 @@ github.com/aws/aws-sdk-go/service/sso/ssoiface
 github.com/aws/aws-sdk-go/service/ssooidc
 github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
-# github.com/bazelbuild/rules_go v0.63.0
-## explicit; go 1.24.0
+# github.com/bazelbuild/rules_go v0.64.1
+## explicit; go 1.25.0
 github.com/bazelbuild/rules_go/go/tools/bazel
 # github.com/dustin/go-humanize v1.1.0
 ## explicit; go 1.21
@@ -149,12 +149,12 @@ github.com/subosito/gotenv
 # go.yaml.in/yaml/v3 v3.0.5
 ## explicit; go 1.16
 go.yaml.in/yaml/v3
-# golang.org/x/sys v0.33.0
-## explicit; go 1.23.0
+# golang.org/x/sys v0.47.0
+## explicit; go 1.25.0
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.28.0
-## explicit; go 1.23.0
+# golang.org/x/text v0.40.0
+## explicit; go 1.25.0
 golang.org/x/text/encoding
 golang.org/x/text/encoding/internal
 golang.org/x/text/encoding/internal/identifier
